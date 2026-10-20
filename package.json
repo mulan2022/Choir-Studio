@@ -1,0 +1,30 @@
+{
+  "name": "choirsinger",
+  "version": "0.1.0",
+  "private": true,
+  "description": "合唱分声部训练原型",
+  "scripts": {
+    "dev": "concurrently -k \"vite --host 127.0.0.1 --port 5187 --strictPort\" \"node server.mjs --api-only\"",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "start": "node server.mjs",
+    "soundfont": "node scripts/repack-soundfont.mjs",
+    "soundfont:verify": "node scripts/verify-soundfont.mjs tools/soundfonts/Choir_practice.sf2 public/soundfonts/choir-practice-lite.sf2",
+    "fetch:soundfont": "node scripts/fetch-soundfont.mjs",
+    "deploy": "node scripts/deploy-pages.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "UNLICENSED",
+  "type": "module",
+  "dependencies": {
+    "jszip": "^3.10.2",
+    "opensheetmusicdisplay": "^2.2.1",
+    "spessasynth_lib": "^4.3.14",
+    "vite": "^8.3.4"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.6",
+    "playwright-core": "^1.64.1"
+  }
+}

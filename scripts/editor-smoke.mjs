@@ -1,0 +1,105 @@
+import { chromium } from 'playwright-core';
+
+const browser = await chromium.launch({ channel: 'msedge', headless: true });
+try {
+  const page = await browser.newPage({ viewport: { width: 1500, height: 1000 } });
+  const errors = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.goto('http://127.0.0.1:5173/');
+  const core = await page.evaluate(async () => {
+    const { ScoreEditor } = await import('/src/editor.js');
+    const { parseScore } = await import('/src/score.js');
+    const { ChoirPlayer } = await import('/src/audio.js');
+    const { sampleXML } = await import('/src/sample.js');
+    const e = new ScoreEditor(sampleXML);
+    e.changePitch('0:0:0', 69);
+    const pitch = parseScore(e.serialize()).tracks[0].notes[0].midi;
+    e.changeRhythm('0:0:0', 2);
+    const rhythm = e.records.filter(r => r.partIndex === 0 && r.measureIndex === 0).map(r => r.durationUnits / r.divisions);
+    const issueAfterRhythm = parseScore(e.serialize()).measureIssues;
+    e.undo();
+    const restored = e.get('0:0:0').durationUnits / e.get('0:0:0').divisions;
+    e.redo();
+    e.changeMeter(0, 3, 4);
+    const meters = [e.meterAt(0), e.meterAt(1)];
+    const issueAfterMeter = parseScore(e.serialize()).measureIssues;
+    const ties = new ScoreEditor(sampleXML);
+    ties.changePitch('0:1:0', 76);
+    ties.changeTie('0:0:3', '0:1:0');
+    const tied = ties.get('0:0:3').node.querySelector('tie[type="start"]') && ties.get('0:1:0').node.querySelector('tie[type="stop"]');
+    const player = new ChoirPlayer(() => {}, () => {});
+    player.setScore(parseScore(ties.serialize()));
+    const joined = player.sustainedNotes(player.score.tracks[0]).some(note => note.beat === 3 && note.end === 5);
+    const polyXML = `<score-partwise version="4.0"><part-list><score-part id="P1"><part-name>Voice</part-name></score-part></part-list><part id="P1"><measure number="1"><attributes><divisions>4</divisions><time><beats>4</beats><beat-type>4</beat-type></time></attributes><note><pitch><step>C</step><octave>4</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type></note><note><chord/><pitch><step>E</step><octave>4</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type></note>${['D','E','F'].map(step => `<note><pitch><step>${step}</step><octave>4</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type></note>`).join('')}<backup><duration>16</duration></backup>${['G','A'].map(step => `<note><pitch><step>${step}</step><octave>3</octave></pitch><duration>8</duration><voice>2</voice><type>half</type></note>`).join('')}</measure></part></score-partwise>`;
+    const poly = new ScoreEditor(polyXML);
+    poly.changeRhythm('0:0:1', 2);
+    const chordDurations = [poly.get('0:0:0'), poly.get('0:0:1')].map(record => record.durationUnits / record.divisions);
+    poly.changeMeter(0, 3, 4);
+    const polyIssue = parseScore(poly.serialize()).measureIssues;
+    const backup = Number(poly.doc.querySelector('backup duration')?.textContent);
+    return { pitch, rhythm, issueAfterRhythm, restored, meters, issueAfterMeter, tied: !!tied, joined, chordDurations, polyIssue, backup };
+  });
+  if (core.pitch !== 69 || core.rhythm[0] !== 2 || core.rhythm.reduce((a, b) => a + b, 0) !== 4 || core.restored !== 1 || core.meters[0].beats !== 3 || core.meters[1].beats !== 4 || !core.tied || !core.joined || core.issueAfterRhythm.length || core.issueAfterMeter.length || core.chordDurations.some(value => value !== 2) || core.polyIssue.length || core.backup !== 48) throw new Error(`Core editor failed: ${JSON.stringify(core)}`);
+  await page.locator('#sample-button').click();
+  await page.waitForSelector('#score-view svg');
+  await page.locator('#edit-tab').click();
+  const notehead = page.locator('#score-view svg .vf-stavenote .vf-notehead').first();
+  await notehead.click({ force: true });
+  const selected = await page.locator('#editor-selection').textContent();
+  if (!selected.includes('第 1 小节')) throw new Error(`Score click did not select note: ${selected}`);
+  // 选中音符后点谱面更高处（-15 px ≈ 高三个音级），应当只出现虚线预览。
+  const ghostTarget = await page.locator('#score-view svg .editor-selection-mark').first().evaluate(mark => {
+    const svg = mark.ownerSVGElement;
+    const point = svg.createSVGPoint();
+    point.x = Number(mark.getAttribute('cx'));
+    point.y = Number(mark.getAttribute('cy')) - 15;
+    const client = point.matrixTransform(svg.getScreenCTM());
+    return { x: client.x, y: client.y };
+  });
+  await page.mouse.click(ghostTarget.x, ghostTarget.y);
+  await page.waitForFunction(() => document.querySelector('#pitch-target')?.textContent !== '—', { timeout: 10000 });
+  const pendingName = await page.locator('#pitch-target').textContent();
+  const currentName = await page.locator('#pitch-current').textContent();
+  if (pendingName === currentName) throw new Error(`Pitch preview did not move: ${pendingName}`);
+  if (!(await page.locator('#score-view svg .pitch-ghost').count())) throw new Error('No ghost notehead preview drawn on the score');
+  await page.locator('#apply-pitch').click();
+  await page.waitForFunction(() => document.querySelector('#editor-message')?.textContent?.includes('已更新'), { timeout: 30000 });
+  const updated = await page.locator('#editor-selection').textContent();
+  if (!updated.includes(pendingName)) throw new Error(`Pitch UI did not update: ${updated} (expected ${pendingName})`);
+  if (await page.locator('#score-view svg .pitch-ghost').count()) throw new Error('Ghost preview was not cleared after applying');
+  await page.locator('#edit-undo').click();
+  await page.waitForFunction(() => document.querySelector('#editor-message')?.textContent?.includes('已更新'), { timeout: 30000 });
+  const heads = page.locator('#score-view svg .vf-stavenote .vf-notehead');
+  await heads.nth(1).click({ modifiers: ['Control'], force: true });
+  const ctrlSelected = await page.locator('#editor-selection').textContent();
+  if (!ctrlSelected.includes('2 个音符')) throw new Error(`Ctrl multi-select failed: ${ctrlSelected}`);
+  await heads.nth(3).click({ modifiers: ['Shift'], force: true });
+  const shiftSelected = await page.locator('#editor-selection').textContent();
+  if (!shiftSelected.includes('3 个音符')) throw new Error(`Shift range select failed: ${shiftSelected}`);
+  const blank = await page.locator('#score-view svg').first().evaluate(svg => {
+    const point = svg.createSVGPoint();
+    point.x = 170; point.y = 140;
+    const client = point.matrixTransform(svg.getScreenCTM());
+    return { x: client.x, y: client.y };
+  });
+  await page.mouse.click(blank.x, blank.y);
+  const barSelected = await page.locator('#editor-selection').textContent();
+  if (barSelected !== '第 1 小节') throw new Error(`Bar selection failed: ${barSelected}`);
+  await page.locator('#file-input').setInputFiles('diagnostic-xnotes/page-40-recovered.mxl');
+  await page.waitForFunction(() => document.querySelector('#score-meta')?.textContent?.includes('叉形符头'), { timeout: 60000 });
+  await page.waitForFunction(() => document.querySelector('#import-progress')?.hidden && !!document.querySelector('#score-view svg .vf-notehead'), { timeout: 60000 });
+  const recoveredHeads = page.locator('#score-view svg .vf-stavenote .vf-notehead');
+  let mxlSelected = '';
+  for (let i = 0; i < Math.min(20, await recoveredHeads.count()); i++) {
+    await recoveredHeads.nth(i).click({ force: true });
+    mxlSelected = await page.locator('#editor-selection').textContent();
+    if (mxlSelected.includes('·')) break;
+  }
+  if (!mxlSelected.includes('·')) throw new Error(`MXL score click failed: ${mxlSelected}`);
+  const downloadPromise = page.waitForEvent('download');
+  await page.locator('#edit-download').click();
+  const download = await downloadPromise;
+  if (!download.suggestedFilename().endsWith('-edited.musicxml')) throw new Error(`MusicXML export failed: ${download.suggestedFilename()}`);
+  if (errors.length) throw new Error(`Browser errors: ${errors.join('; ')}`);
+  console.log(JSON.stringify({ core, selected, updated, ctrlSelected, shiftSelected, barSelected, mxlSelected, exportFile: download.suggestedFilename(), errors }, null, 2));
+} finally { await browser.close(); }

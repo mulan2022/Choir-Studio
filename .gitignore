@@ -1,0 +1,32 @@
+node_modules/
+dist/
+.cache/
+.player-reference.js
+tools/
+smoke-*.png
+omr-fixture.*
+omr-response.bin
+
+# The sound bank is a 32 MB binary built from the CC BY-NC-SA source bank; it is
+# fetched at build time instead of living in git history.
+public/soundfonts/*.sf2
+
+# Uploaded scores are copyrighted; keep them out of the public repo.
+*.pdf
+exports/
+diagnostic-*.png
+diagnostic-*.txt
+diagnostic-*.log
+*-text-diagnostic.txt
+user-pdf-preview.png
+follow-score-smoke.png
+
+# Portable build output
+release/
+
+# Diagnostic / OMR experiment leftovers (contain copyrighted scores)
+diagnostic-export/
+diagnostic-homr/
+diagnostic-xnotes/
+__pycache__/
+*.pyc

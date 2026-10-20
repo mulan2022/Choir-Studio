@@ -83,7 +83,7 @@ async function fetchSoundBank(url, onProgress) {
   }
   const response = await fetch(url);
   if (!response.ok) throw new Error(`合唱音色下载失败（HTTP ${response.status}）。`);
-  const header = Number(response.headers.get('content-length')) || 0;
+  let header = Number(response.headers.get('content-length')) || 0;
   if (!response.body) {
     const buffer = await response.arrayBuffer();
     onProgress?.({ loaded: buffer.byteLength, total: header || buffer.byteLength });
@@ -99,6 +99,10 @@ async function fetchSoundBank(url, onProgress) {
     if (done) break;
     chunks.push(value);
     loaded += value.byteLength;
+    // Static hosts may serve the bank pre-compressed, in which case the
+    // Content-Length is the compressed size and would never match the decoded
+    // byte count; drop the total and fall back to showing megabytes.
+    if (header && loaded > header * 1.01) header = 0;
     const now = performance.now();
     if (now - lastReport > 100) { lastReport = now; onProgress?.({ loaded, total: header }); }
   }

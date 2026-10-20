@@ -169,7 +169,7 @@ async function processJob(job, bin, input, temp, key) {
   const count = job.lastPage - job.firstPage + 1;
   await runAudiveris(bin, input, output, {
     sheets,
-    timeout: Math.min(30 * 60 * 1000, Math.max(180000, count * 75000)),
+    timeout: Math.min(30 * 60 * 1000, Math.max(180000, count * 180000)),
     onProgress: ({ page, step, stage }) => {
       job.page = page;
       job.step = step;

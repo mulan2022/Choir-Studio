@@ -11,7 +11,8 @@
     "soundfont": "node scripts/repack-soundfont.mjs",
     "soundfont:verify": "node scripts/verify-soundfont.mjs tools/soundfonts/Choir_practice.sf2 public/soundfonts/choir-practice-lite.sf2",
     "fetch:soundfont": "node scripts/fetch-soundfont.mjs",
-    "deploy": "node scripts/deploy-pages.mjs"
+    "deploy": "node scripts/deploy-pages.mjs",
+    "pack": "node scripts/pack-portable.mjs"
   },
   "keywords": [],
   "author": "",

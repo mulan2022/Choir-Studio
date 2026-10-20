@@ -16,22 +16,25 @@ npm run dev
 
 ## 部署（GitHub Pages）
 
-线上版是纯静态站：MusicXML 播放、分声部、变速、谱面跟随都在浏览器里跑；**PDF／图片识谱需要本机服务，线上不可用**，页面会在侧栏直接写明，并且探活 `/api/health` 失败时给出提示而不是报网络错误。
+线上版是纯静态站：MusicXML 播放、分声部、变速、谱面跟随、导出音频都在浏览器里跑；**PDF／图片识谱需要本机服务，线上不可用**，页面会在侧栏直接写明（静态构建不去探活 `/api/health`，也就没有那条 404）。
 
-1. 把 `public/soundfonts/choir-practice-lite.sf2`（约 54 MB）上传到 Cloudflare R2 或 GitHub Release，拿到直链；它不进 git 历史（见 `.gitignore`）。
-2. 仓库 → Settings → Secrets and variables → Actions → Variables 里加 `SOUNDFONT_URL`，值是那个直链。
-3. Settings → Pages → Source 选 **GitHub Actions**，推送到 `main` 即自动构建发布，站点在 `https://<用户名>.github.io/<仓库名>/`。
+```powershell
+npm run deploy     # 构建 + 强推到 gh-pages（单 commit，54 MB 声库不累积历史）
+```
 
-`.github/workflows/pages.yml` 会在构建前把声库下载进 `public/soundfonts/`，所以线上是**同源**加载，不需要配 CORS；想直接走 CDN 的话，构建时设 `VITE_SOUNDFONT_URL=<直链>` 即可，此时 CDN 必须允许跨域。
+一次性设置：仓库 → Settings → Pages → Source 选 **Deploy from a branch**，分支 `gh-pages`，目录 `/ (root)`。线上地址 `https://<用户名>.github.io/<仓库名>/`，当前部署在 <https://mulan2022.github.io/Choir-Studio/>。
 
-构建时的两个环境变量：
+`npm run deploy` 会用 `VITE_BASE=/<仓库名>/` 和 `VITE_STATIC=1` 构建，声库随站点同源发布（不需要 CORS），因此仓库本身不必存那个 54 MB 的二进制；新克隆用 `SOUNDFONT_URL=<直链> npm run fetch:soundfont` 取回来即可，或者本地重新 `npm run soundfont`。
 
-- `VITE_BASE=/<仓库名>/`：项目页要挂在子路径下，workflow 自动按仓库名填。
-- `VITE_STATIC=1`：声明这是没有识谱后端的静态版，页面直接显示「线上试听版」，不再去探活 `/api/health`（省掉浏览器控制台里那条 404）。本地 `npm run build` 不设它，所以 `npm start` 打包版仍会探测本机服务、能力与 `npm run dev` 一致。
+> **大陆网络提醒**：GitHub Pages 在国内拉 54 MB 声库实测只有 ~10 KB/s，还容易连接中断，公网版更适合海外访问或接国内 CDN（把 `VITE_SOUNDFONT_URL` 指到 OSS/COS）。真正排练请用下面的本地包。
 
-本地想预演线上效果：`VITE_BASE=/ VITE_STATIC=1 npm run build`，再把 `dist/` 用任意静态服务器打开即可。
+## 本地部署包（Windows）
 
-本地没有声库时用 `SOUNDFONT_URL=<直链> npm run fetch:soundfont` 补齐。
+```powershell
+npm run pack       # → release/和声间-win64.zip
+```
+
+包里自带 Node、Python（含 Pillow）、Poppler、Audiveris、声库和站点，解压后双击 `启动.cmd` 就能用，浏览器自动打开 <http://127.0.0.1:4173/>；识谱、导出音频全部是本机能力，不需要联网也不需要管理员权限。打包前需要 `tools/audiveris/`、`tools/runtime/poppler/`、`tools/runtime/python/` 就位（都不进仓库）。
 
 
 ## 已支持

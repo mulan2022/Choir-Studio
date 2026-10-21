@@ -1,0 +1,278 @@
+2026-10-20 23:03:31,277 INFO [score]                 Book.java:560  | 3 sheets in D:\demo\ChoirSinger\tmp_omr\Te_iwi_e_PLS_by鸡腿_54c08221_dcf5_4e3b_80dd_bd19b4c59904\score.tif
+2026-10-20 23:03:31,322 WARN []                 Book.java:2528 | Error storing Book{score} to D:\demo\ChoirSinger\tmp_omr\Te_iwi_e_PLS_by鸡腿_54c08221_dcf5_4e3b_80dd_bd19b4c59904\out\score.omr ex:java.nio.file.ReadOnlyFileSystemException
+java.nio.file.ReadOnlyFileSystemException: null
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.checkWritable(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.deleteFile(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipPath.delete(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystemProvider.delete(Unknown Source)
+	at java.base/java.nio.file.spi.FileSystemProvider.deleteIfExists(Unknown Source)
+	at java.base/java.nio.file.Files.deleteIfExists(Unknown Source)
+	at org.audiveris.omr.sheet.Book.storeBookInfo(Book.java:2560)
+	at org.audiveris.omr.sheet.Book.store(Book.java:2476)
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:855)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+2026-10-20 23:03:31,324 INFO []                 Book.java:1929 | Book reaching PAGE on sheets:[#1#2#3]
+2026-10-20 23:03:31,325 INFO [score#1]       StepMonitoring.java:98   | LOAD
+2026-10-20 23:03:31,427 INFO [score#1]            SheetStub.java:1278 | Loaded image #1 3400x4400 from D:\demo\ChoirSinger\tmp_omr\Te_iwi_e_PLS_by鸡腿_54c08221_dcf5_4e3b_80dd_bd19b4c59904\score.tif
+2026-10-20 23:03:31,430 INFO [score#1]            ImageUtil.java:152  | Converting max RGB to gray
+2026-10-20 23:03:31,606 INFO [score#1]       StepMonitoring.java:98   | BINARY
+2026-10-20 23:03:32,073 INFO [score#1]       StepMonitoring.java:98   | SCALE
+2026-10-20 23:03:32,086 INFO [score#1]         ScaleBuilder.java:254  | Beam  guessed height: 14 -- 0.25 of [11..23] range
+2026-10-20 23:03:32,086 INFO [score#1]         ScaleBuilder.java:271  | Beam measured height: 12 -- 0.08 of [11..23] range at 142% of needed quorum
+2026-10-20 23:03:32,087 INFO [score#1]         ScaleBuilder.java:401  | Normalized black jitter: 4.17 %
+2026-10-20 23:03:32,087 INFO [score#1]            ScaleStep.java:65   | Scale{ interline(23,24,24) line(2,3,3) beam(12)}
+2026-10-20 23:03:32,087 INFO [score#1]       StepMonitoring.java:98   | GRID
+2026-10-20 23:03:32,292 INFO [score#1]       LinesRetriever.java:1508 | Global slope: 0.00000
+2026-10-20 23:03:32,320 INFO [score#1]    ClustersRetriever.java:326  | Retrieved raw line clusters: 10 of sizes [5] with interline(23,24,24)
+2026-10-20 23:03:32,428 INFO [score#1]            PeakGraph.java:310  | Systems: #1[1, 2, 3, 4, 5] #2[6, 7, 8, 9, 10]
+2026-10-20 23:03:32,636 INFO [score#1]        SystemManager.java:800  | 5 parts along 2 systems
+2026-10-20 23:03:32,638 INFO [score#1]                 Book.java:543  | Created scores: [{Score 1}]
+2026-10-20 23:03:32,639 INFO [score#1]       StepMonitoring.java:98   | HEADERS
+2026-10-20 23:03:33,221 INFO [score#1]       StepMonitoring.java:98   | STEM_SEEDS
+2026-10-20 23:03:33,561 INFO [score#1]        StemSeedsStep.java:86   | stem(5 max:6)
+2026-10-20 23:03:33,775 INFO [score#1]       StepMonitoring.java:98   | BEAMS
+2026-10-20 23:04:08,266 INFO [score#1]       StepMonitoring.java:98   | LEDGERS
+2026-10-20 23:04:09,091 INFO [score#1]       StepMonitoring.java:98   | HEADS
+2026-10-20 23:04:52,693 INFO [score#1]        HeadSeedTally.java:235  | Scale information: HeadSeeds{NOTEHEAD_VOID[R:0.5] NOTEHEAD_BLACK[L:-0.2,R:0.6]}
+2026-10-20 23:04:52,696 INFO [score#1]       StepMonitoring.java:98   | STEMS
+2026-10-20 23:04:56,739 INFO [score#1]       StepMonitoring.java:98   | REDUCTION
+2026-10-20 23:04:57,107 INFO [score#1]        ReductionStep.java:105  | Stems free length median value: 78 pixels, 3.3 interlines
+2026-10-20 23:04:57,121 INFO [score#1]       StepMonitoring.java:98   | CUE_BEAMS
+2026-10-20 23:04:57,122 INFO [score#1]         CueBeamsStep.java:81   | Step CUE_BEAMS is skipped because small heads switch is off
+2026-10-20 23:04:57,124 INFO [score#1]       StepMonitoring.java:98   | TEXTS
+2026-10-20 23:04:57,808 WARN [score#1]         TesseractOCR.java:335  | The collection of supported languages is empty
+2026-10-20 23:04:57,809 INFO [score#1]              OcrUtil.java:106  | Missing support for 'eng' language(s)
+2026-10-20 23:04:57,843 INFO [score#1]       StepMonitoring.java:98   | MEASURES
+2026-10-20 23:04:57,885 INFO [score#1]                 Page.java:307  | 11 raw measures: [6 in system#1, 5 in system#2]
+2026-10-20 23:04:57,887 INFO [score#1]       StepMonitoring.java:98   | CHORDS
+2026-10-20 23:04:57,973 INFO [score#1]       StepMonitoring.java:98   | CURVES
+2026-10-20 23:05:03,652 INFO [score#1]         SlursBuilder.java:240  | Slurs: 15
+2026-10-20 23:05:03,744 INFO [score#1]      SegmentsBuilder.java:155  | Segments: 15
+2026-10-20 23:05:03,775 INFO [score#1]       StepMonitoring.java:98   | SYMBOLS
+2026-10-20 23:05:10,961 INFO [score#1]       StepMonitoring.java:98   | LINKS
+2026-10-20 23:05:11,332 INFO [score#1]       StepMonitoring.java:98   | RHYTHMS
+2026-10-20 23:05:11,670 INFO [score#1]       StepMonitoring.java:98   | PAGE
+2026-10-20 23:05:11,700 INFO [score#1]                 Book.java:2584 | Book{score} storing
+2026-10-20 23:05:11,701 WARN [score#1]                 Book.java:2428 | Bookpath not defined
+2026-10-20 23:05:11,702 INFO [score#1]            SheetStub.java:1650 | Stub#1 storing
+2026-10-20 23:05:11,715 WARN [score#1]            SheetStub.java:1673 | Error swapping sheet
+java.nio.file.ReadOnlyFileSystemException: null
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.checkWritable(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.deleteFile(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipPath.delete(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystemProvider.delete(Unknown Source)
+	at java.base/java.nio.file.spi.FileSystemProvider.deleteIfExists(Unknown Source)
+	at java.base/java.nio.file.Files.deleteIfExists(Unknown Source)
+	at org.audiveris.omr.sheet.Book.storeBookInfo(Book.java:2560)
+	at org.audiveris.omr.sheet.SheetStub.storeSheet(SheetStub.java:1627)
+	at org.audiveris.omr.sheet.SheetStub.swapSheet(SheetStub.java:1651)
+	at org.audiveris.omr.sheet.Book.swapAllSheets(Book.java:2596)
+	at org.audiveris.omr.sheet.Book.reachBookStep(Book.java:2049)
+	at org.audiveris.omr.sheet.Book.transcribe(Book.java:2626)
+	at org.audiveris.omr.sheet.Book.export(Book.java:593)
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:927)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+2026-10-20 23:05:11,716 INFO [score#1]                 Book.java:2050 | End of Stub#1
+2026-10-20 23:05:11,729 INFO [score#2]       StepMonitoring.java:98   | LOAD
+2026-10-20 23:05:12,268 INFO [score#2]            SheetStub.java:1278 | Loaded image #2 3400x4400 from D:\demo\ChoirSinger\tmp_omr\Te_iwi_e_PLS_by鸡腿_54c08221_dcf5_4e3b_80dd_bd19b4c59904\score.tif
+2026-10-20 23:05:12,269 INFO [score#2]            ImageUtil.java:152  | Converting max RGB to gray
+2026-10-20 23:05:14,296 INFO [score#2]       StepMonitoring.java:98   | BINARY
+2026-10-20 23:05:17,812 INFO [score#2]       StepMonitoring.java:98   | SCALE
+2026-10-20 23:05:17,889 INFO [score#2]         ScaleBuilder.java:254  | Beam  guessed height: 14 -- 0.25 of [11..23] range
+2026-10-20 23:05:17,891 INFO [score#2]         ScaleBuilder.java:271  | Beam measured height: 12 -- 0.08 of [11..23] range at 222% of needed quorum
+2026-10-20 23:05:17,892 INFO [score#2]         ScaleBuilder.java:401  | Normalized black jitter: 4.17 %
+2026-10-20 23:05:17,892 INFO [score#2]            ScaleStep.java:65   | Scale{ interline(23,24,24) line(2,3,3) beam(12)}
+2026-10-20 23:05:17,894 INFO [score#2]       StepMonitoring.java:98   | GRID
+2026-10-20 23:05:19,007 INFO [score#2]       LinesRetriever.java:1508 | Global slope: 0.00000
+2026-10-20 23:05:19,110 INFO [score#2]    ClustersRetriever.java:326  | Retrieved raw line clusters: 15 of sizes [5] with interline(23,24,24)
+2026-10-20 23:05:19,923 INFO [score#2]            PeakGraph.java:310  | Systems: #1[1, 2, 3, 4, 5] #2[6, 7, 8, 9, 10] #3[11, 12, 13, 14, 15]
+2026-10-20 23:05:20,757 INFO [score#2]        SystemManager.java:800  | 5 parts along 3 systems
+2026-10-20 23:05:20,759 INFO [score#2]       StepMonitoring.java:98   | HEADERS
+2026-10-20 23:05:21,810 INFO [score#2]       StepMonitoring.java:98   | STEM_SEEDS
+2026-10-20 23:05:22,045 INFO [score#2]        StemSeedsStep.java:86   | stem(5 max:6)
+2026-10-20 23:05:22,111 INFO [score#2]       StepMonitoring.java:98   | BEAMS
+2026-10-20 23:05:53,740 INFO [score#2]       StepMonitoring.java:98   | LEDGERS
+2026-10-20 23:05:55,742 INFO [score#2]       StepMonitoring.java:98   | HEADS
+2026-10-20 23:07:10,221 INFO [score#2]        HeadSeedTally.java:235  | Scale information: HeadSeeds{NOTEHEAD_BLACK[L:-0.1,R:0.4]}
+2026-10-20 23:07:10,222 INFO [score#2]       StepMonitoring.java:98   | STEMS
+2026-10-20 23:07:16,041 INFO [score#2]       StepMonitoring.java:98   | REDUCTION
+2026-10-20 23:07:16,346 INFO [score#2]        ReductionStep.java:105  | Stems free length median value: 83 pixels, 3.5 interlines
+2026-10-20 23:07:16,357 INFO [score#2]       StepMonitoring.java:98   | CUE_BEAMS
+2026-10-20 23:07:16,358 INFO [score#2]         CueBeamsStep.java:81   | Step CUE_BEAMS is skipped because small heads switch is off
+2026-10-20 23:07:16,360 INFO [score#2]       StepMonitoring.java:98   | TEXTS
+2026-10-20 23:07:17,042 WARN [score#2]         TesseractOCR.java:335  | The collection of supported languages is empty
+2026-10-20 23:07:17,043 INFO [score#2]              OcrUtil.java:106  | Missing support for 'eng' language(s)
+2026-10-20 23:07:17,053 INFO [score#2]       StepMonitoring.java:98   | MEASURES
+2026-10-20 23:07:17,064 INFO [score#2]                 Page.java:307  | 15 raw measures: [5 in system#1, 5 in system#2, 5 in system#3]
+2026-10-20 23:07:17,065 INFO [score#2]       StepMonitoring.java:98   | CHORDS
+2026-10-20 23:07:17,111 INFO [score#2]       StepMonitoring.java:98   | CURVES
+2026-10-20 23:07:22,570 INFO [score#2]         SlursBuilder.java:240  | Slurs: 34
+2026-10-20 23:07:22,590 INFO [score#2]      SegmentsBuilder.java:155  | Segments: 11
+2026-10-20 23:07:22,591 INFO [score#2]       StepMonitoring.java:98   | SYMBOLS
+2026-10-20 23:07:39,126 INFO [score#2]       StepMonitoring.java:98   | LINKS
+2026-10-20 23:07:39,485 INFO [score#2]        SymbolsLinker.java:258  | No chord linked to OctaveShiftInter#10522{(0.122) staff:13 QUINDICESIMA BASSA} at java.awt.Point[x=844,y=3665]
+2026-10-20 23:07:39,597 INFO [score#2]       StepMonitoring.java:98   | RHYTHMS
+2026-10-20 23:07:39,598 INFO [score#2]           PageRhythm.java:199  | {Page#2.1} Time value reused from sheet#1
+2026-10-20 23:07:39,803 INFO [score#2]       StepMonitoring.java:98   | PAGE
+2026-10-20 23:07:39,817 INFO [score#2]                 Book.java:2584 | Book{score} storing
+2026-10-20 23:07:39,818 WARN [score#2]                 Book.java:2428 | Bookpath not defined
+2026-10-20 23:07:39,818 INFO [score#2]            SheetStub.java:1650 | Stub#1 storing
+2026-10-20 23:07:39,824 WARN [score#2]            SheetStub.java:1673 | Error swapping sheet
+java.nio.file.FileSystemAlreadyExistsException: null
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystemProvider.newFileSystem(Unknown Source)
+	at java.base/java.nio.file.FileSystems.newFileSystem(Unknown Source)
+	at org.audiveris.omr.util.ZipFileSystem.open(ZipFileSystem.java:111)
+	at org.audiveris.omr.sheet.SheetStub.storeSheet(SheetStub.java:1626)
+	at org.audiveris.omr.sheet.SheetStub.swapSheet(SheetStub.java:1651)
+	at org.audiveris.omr.sheet.Book.swapAllSheets(Book.java:2596)
+	at org.audiveris.omr.sheet.Book.reachBookStep(Book.java:2049)
+	at org.audiveris.omr.sheet.Book.transcribe(Book.java:2626)
+	at org.audiveris.omr.sheet.Book.export(Book.java:593)
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:927)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+2026-10-20 23:07:39,825 INFO [score#2]            SheetStub.java:1650 | Stub#2 storing
+2026-10-20 23:07:39,832 WARN [score#2]            SheetStub.java:1673 | Error swapping sheet
+java.nio.file.FileSystemAlreadyExistsException: null
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystemProvider.newFileSystem(Unknown Source)
+	at java.base/java.nio.file.FileSystems.newFileSystem(Unknown Source)
+	at org.audiveris.omr.util.ZipFileSystem.open(ZipFileSystem.java:111)
+	at org.audiveris.omr.sheet.SheetStub.storeSheet(SheetStub.java:1626)
+	at org.audiveris.omr.sheet.SheetStub.swapSheet(SheetStub.java:1651)
+	at org.audiveris.omr.sheet.Book.swapAllSheets(Book.java:2596)
+	at org.audiveris.omr.sheet.Book.reachBookStep(Book.java:2049)
+	at org.audiveris.omr.sheet.Book.transcribe(Book.java:2626)
+	at org.audiveris.omr.sheet.Book.export(Book.java:593)
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:927)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+2026-10-20 23:07:39,832 INFO [score#2]                 Book.java:2050 | End of Stub#2
+2026-10-20 23:07:39,833 INFO [score#3]       StepMonitoring.java:98   | LOAD
+2026-10-20 23:07:40,253 INFO [score#3]            SheetStub.java:1278 | Loaded image #3 3400x4400 from D:\demo\ChoirSinger\tmp_omr\Te_iwi_e_PLS_by鸡腿_54c08221_dcf5_4e3b_80dd_bd19b4c59904\score.tif
+2026-10-20 23:07:40,254 INFO [score#3]            ImageUtil.java:152  | Converting max RGB to gray
+2026-10-20 23:07:42,121 INFO [score#3]       StepMonitoring.java:98   | BINARY
+2026-10-20 23:07:45,513 INFO [score#3]       StepMonitoring.java:98   | SCALE
+2026-10-20 23:07:45,523 INFO [score#3]         ScaleBuilder.java:254  | Beam  guessed height: 14 -- 0.25 of [11..23] range
+2026-10-20 23:07:45,526 INFO [score#3]         ScaleBuilder.java:271  | Beam measured height: 13 -- 0.17 of [11..23] range at 179% of needed quorum
+2026-10-20 23:07:45,526 INFO [score#3]         ScaleBuilder.java:401  | Normalized black jitter: 4.17 %
+2026-10-20 23:07:45,527 INFO [score#3]            ScaleStep.java:65   | Scale{ interline(23,24,24) line(2,3,3) beam(13)}
+2026-10-20 23:07:45,527 INFO [score#3]       StepMonitoring.java:98   | GRID
+2026-10-20 23:07:46,430 INFO [score#3]       LinesRetriever.java:1508 | Global slope: 0.00000
+2026-10-20 23:07:46,514 INFO [score#3]    ClustersRetriever.java:851  | Destroying spurious Cluster#C1264{interline(23,24,24) size:5 fil#1220@0 fil#1231@1 fil#1245@2 fil#1253@3 fil#1264@4}
+2026-10-20 23:07:46,515 INFO [score#3]    ClustersRetriever.java:851  | Destroying spurious Cluster#C1311{interline(23,24,24) size:5 fil#1267@0 fil#1278@1 fil#1292@2 fil#1300@3 fil#1311@4}
+2026-10-20 23:07:46,516 INFO [score#3]    ClustersRetriever.java:851  | Destroying spurious Cluster#C1358{interline(23,24,24) size:5 fil#1314@0 fil#1325@1 fil#1339@2 fil#1347@3 fil#1358@4}
+2026-10-20 23:07:46,516 INFO [score#3]    ClustersRetriever.java:851  | Destroying spurious Cluster#C1361{interline(23,24,24) size:5 fil#1361@0 fil#1363@1 fil#1372@2 fil#1396@3 fil#1398@4}
+2026-10-20 23:07:46,519 INFO [score#3]    ClustersRetriever.java:326  | Retrieved raw line clusters: 11 of sizes [5] with interline(23,24,24)
+2026-10-20 23:07:46,798 INFO [score#3]            PeakGraph.java:310  | Systems: #1[1, 2, 3, 4, 5] #2[6, 7, 8, 9, 10]
+2026-10-20 23:07:47,712 INFO [score#3]        SystemManager.java:800  | 5 parts along 2 systems
+2026-10-20 23:07:47,715 INFO [score#3]       StepMonitoring.java:98   | HEADERS
+2026-10-20 23:07:48,462 INFO [score#3]       StepMonitoring.java:98   | STEM_SEEDS
+2026-10-20 23:07:48,713 INFO [score#3]        StemSeedsStep.java:86   | stem(5 max:6)
+2026-10-20 23:07:48,738 INFO [score#3]       StepMonitoring.java:98   | BEAMS
+2026-10-20 23:08:19,377 INFO [score#3]       StepMonitoring.java:98   | LEDGERS
+2026-10-20 23:08:20,226 INFO [score#3]       StepMonitoring.java:98   | HEADS
+2026-10-20 23:09:03,296 INFO [score#3]        HeadSeedTally.java:235  | Scale information: HeadSeeds{NOTEHEAD_BLACK[L:0.3,R:0.6]}
+2026-10-20 23:09:03,297 INFO [score#3]       StepMonitoring.java:98   | STEMS
+2026-10-20 23:09:05,981 INFO [score#3]       StepMonitoring.java:98   | REDUCTION
+2026-10-20 23:09:06,101 INFO [score#3]        ReductionStep.java:105  | Stems free length median value: 78 pixels, 3.3 interlines
+2026-10-20 23:09:06,107 INFO [score#3]       StepMonitoring.java:98   | CUE_BEAMS
+2026-10-20 23:09:06,107 INFO [score#3]         CueBeamsStep.java:81   | Step CUE_BEAMS is skipped because small heads switch is off
+2026-10-20 23:09:06,108 INFO [score#3]       StepMonitoring.java:98   | TEXTS
+2026-10-20 23:09:06,585 WARN [score#3]         TesseractOCR.java:335  | The collection of supported languages is empty
+2026-10-20 23:09:06,586 INFO [score#3]              OcrUtil.java:106  | Missing support for 'eng' language(s)
+2026-10-20 23:09:06,590 INFO [score#3]       StepMonitoring.java:98   | MEASURES
+2026-10-20 23:09:06,593 INFO [score#3]      MeasuresBuilder.java:416  | S2 partial barline column: s6:G(x:3062,y:1736)[88] s7:G(x:3062,y:1967)[101] s9:G(x:3062,y:2434)[127] s10:G(x:3062,y:2690)[140]
+2026-10-20 23:09:06,595 INFO [score#3]      MeasuresBuilder.java:424  | S2 expanding major column: s6:G(x:3062,y:1736)[88] s7:G(x:3062,y:1967)[101] s9:G(x:3062,y:2434)[127] s10:G(x:3062,y:2690)[140]
+2026-10-20 23:09:06,598 INFO [score#3]                 Page.java:307  | 12 raw measures: [6 in system#1, 6 in system#2]
+2026-10-20 23:09:06,598 INFO [score#3]       StepMonitoring.java:98   | CHORDS
+2026-10-20 23:09:06,609 INFO [score#3]       StepMonitoring.java:98   | CURVES
+2026-10-20 23:09:09,879 INFO [score#3]         SlursBuilder.java:240  | Slurs: 11
+2026-10-20 23:09:09,929 INFO [score#3]      SegmentsBuilder.java:155  | Segments: 19
+2026-10-20 23:09:09,964 INFO [score#3]       StepMonitoring.java:98   | SYMBOLS
+2026-10-20 23:09:18,962 INFO [score#3]       StepMonitoring.java:98   | LINKS
+2026-10-20 23:09:19,119 INFO [score#3]       StepMonitoring.java:98   | RHYTHMS
+2026-10-20 23:09:19,120 INFO [score#3]           PageRhythm.java:199  | {Page#3.1} Time value reused from sheet#1
+2026-10-20 23:09:19,195 INFO [score#3]       StepMonitoring.java:98   | PAGE
+2026-10-20 23:09:19,201 INFO [score#3]                 Book.java:2584 | Book{score} storing
+2026-10-20 23:09:19,201 WARN [score#3]                 Book.java:2428 | Bookpath not defined
+2026-10-20 23:09:19,202 INFO [score#3]            SheetStub.java:1650 | Stub#1 storing
+2026-10-20 23:09:19,207 WARN [score#3]            SheetStub.java:1673 | Error swapping sheet
+java.nio.file.FileSystemAlreadyExistsException: null
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystemProvider.newFileSystem(Unknown Source)
+	at java.base/java.nio.file.FileSystems.newFileSystem(Unknown Source)
+	at org.audiveris.omr.util.ZipFileSystem.open(ZipFileSystem.java:111)
+	at org.audiveris.omr.sheet.SheetStub.storeSheet(SheetStub.java:1626)
+	at org.audiveris.omr.sheet.SheetStub.swapSheet(SheetStub.java:1651)
+	at org.audiveris.omr.sheet.Book.swapAllSheets(Book.java:2596)
+	at org.audiveris.omr.sheet.Book.reachBookStep(Book.java:2049)
+	at org.audiveris.omr.sheet.Book.transcribe(Book.java:2626)
+	at org.audiveris.omr.sheet.Book.export(Book.java:593)
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:927)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+2026-10-20 23:09:19,208 INFO [score#3]            SheetStub.java:1650 | Stub#2 storing
+2026-10-20 23:09:19,213 WARN [score#3]            SheetStub.java:1673 | Error swapping sheet
+java.nio.file.FileSystemAlreadyExistsException: null
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystemProvider.newFileSystem(Unknown Source)
+	at java.base/java.nio.file.FileSystems.newFileSystem(Unknown Source)
+	at org.audiveris.omr.util.ZipFileSystem.open(ZipFileSystem.java:111)
+	at org.audiveris.omr.sheet.SheetStub.storeSheet(SheetStub.java:1626)
+	at org.audiveris.omr.sheet.SheetStub.swapSheet(SheetStub.java:1651)
+	at org.audiveris.omr.sheet.Book.swapAllSheets(Book.java:2596)
+	at org.audiveris.omr.sheet.Book.reachBookStep(Book.java:2049)
+	at org.audiveris.omr.sheet.Book.transcribe(Book.java:2626)
+	at org.audiveris.omr.sheet.Book.export(Book.java:593)
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:927)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+2026-10-20 23:09:19,213 INFO [score#3]            SheetStub.java:1650 | Stub#3 storing
+2026-10-20 23:09:19,218 WARN [score#3]            SheetStub.java:1673 | Error swapping sheet
+java.nio.file.FileSystemAlreadyExistsException: null
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystemProvider.newFileSystem(Unknown Source)
+	at java.base/java.nio.file.FileSystems.newFileSystem(Unknown Source)
+	at org.audiveris.omr.util.ZipFileSystem.open(ZipFileSystem.java:111)
+	at org.audiveris.omr.sheet.SheetStub.storeSheet(SheetStub.java:1626)
+	at org.audiveris.omr.sheet.SheetStub.swapSheet(SheetStub.java:1651)
+	at org.audiveris.omr.sheet.Book.swapAllSheets(Book.java:2596)
+	at org.audiveris.omr.sheet.Book.reachBookStep(Book.java:2049)
+	at org.audiveris.omr.sheet.Book.transcribe(Book.java:2626)
+	at org.audiveris.omr.sheet.Book.export(Book.java:593)
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:927)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+2026-10-20 23:09:19,219 INFO [score#3]                 Book.java:2050 | End of Stub#3
+2026-10-20 23:09:19,219 INFO [score]                 Book.java:2057 | End of Book{score}
+2026-10-20 23:09:20,940 INFO [score]      PartwiseBuilder.java:2707 | Exporting sheet(s): [#1#2#3]
+2026-10-20 23:09:21,530 INFO [score]        ScoreExporter.java:164  | Score score exported to D:\demo\ChoirSinger\tmp_omr\Te_iwi_e_PLS_by鸡腿_54c08221_dcf5_4e3b_80dd_bd19b4c59904\out\score.mxl
+2026-10-20 23:09:21,874 WARN [score]                 Book.java:2528 | Error storing Book{score} to D:\demo\ChoirSinger\tmp_omr\Te_iwi_e_PLS_by鸡腿_54c08221_dcf5_4e3b_80dd_bd19b4c59904\out\score.omr ex:java.nio.file.ReadOnlyFileSystemException
+java.nio.file.ReadOnlyFileSystemException: null
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.checkWritable(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.deleteFile(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipPath.delete(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystemProvider.delete(Unknown Source)
+	at java.base/java.nio.file.spi.FileSystemProvider.deleteIfExists(Unknown Source)
+	at java.base/java.nio.file.Files.deleteIfExists(Unknown Source)
+	at org.audiveris.omr.sheet.Book.storeBookInfo(Book.java:2560)
+	at org.audiveris.omr.sheet.Book.store(Book.java:2476)
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:965)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+2026-10-20 23:09:21,880 INFO [score]                Score.java:181  | Closing {Score 1}

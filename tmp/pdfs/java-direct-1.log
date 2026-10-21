@@ -1,0 +1,155 @@
+INFO  []                      Main 259  | Running in batch mode
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::loadLibrary has been called by org.bytedeco.javacpp.Loader in an unnamed module (file:/D:/demo/ChoirSinger/tools/audiveris/Audiveris/app/javacpp-1.5.13.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+WARN  []                 Languages 142  | *** No installed OCR languages ***
+INFO  []             AliasPatterns 146  | Alias patterns: [(IMSLP[0-9]*)-.*]
+INFO  []                      Main 194  | Submitting 1 task(s) in sequence:
+    Input "D:\demo\ChoirSinger\tmp\pdfs\yumenguan-raster-1.tif"
+INFO  [yumenguan-raster-1]                      Book 560  | 1 sheet in D:\demo\ChoirSinger\tmp\pdfs\yumenguan-raster-1.tif
+WARN  []                      Book 2528 | Error storing Book{yumenguan-raster-1} to tmp\pdfs\java-direct-1\yumenguan-raster-1.omr ex:java.nio.file.ReadOnlyFileSystemException
+java.nio.file.ReadOnlyFileSystemException: null
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.checkWritable(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.deleteFile(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipPath.delete(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystemProvider.delete(Unknown Source)
+	at java.base/java.nio.file.spi.FileSystemProvider.deleteIfExists(Unknown Source)
+	at java.base/java.nio.file.Files.deleteIfExists(Unknown Source)
+	at org.audiveris.omr.sheet.Book.storeBookInfo(Book.java:2560)
+	at org.audiveris.omr.sheet.Book.store(Book.java:2476)
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:855)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+INFO  []                      Book 1929 | Book reaching PAGE on sheets:[#1]
+INFO  [yumenguan-raster-1]            StepMonitoring 98   | LOAD
+INFO  [yumenguan-raster-1]                 SheetStub 1278 | Loaded image #1 2480x3509 from D:\demo\ChoirSinger\tmp\pdfs\yumenguan-raster-1.tif
+INFO  [yumenguan-raster-1]            StepMonitoring 98   | BINARY
+INFO  [yumenguan-raster-1]            StepMonitoring 98   | SCALE
+INFO  [yumenguan-raster-1]              ScaleBuilder 254  | Beam  guessed height: 10 -- 0.25 of [8..16] range
+INFO  [yumenguan-raster-1]              ScaleBuilder 271  | Beam measured height: 12 -- 0.50 of [8..16] range at 191% of needed quorum
+INFO  [yumenguan-raster-1]              ScaleBuilder 401  | Normalized black jitter: 17.65 %
+INFO  [yumenguan-raster-1]                 ScaleStep 65   | Scale{ interline(16,17,17) line(1,2,4) beam(12)}
+INFO  [yumenguan-raster-1]            StepMonitoring 98   | GRID
+INFO  [yumenguan-raster-1]            LinesRetriever 1508 | Global slope: 0.00000
+INFO  [yumenguan-raster-1]         ClustersRetriever 326  | Retrieved raw line clusters: 8 of sizes [5] with interline(16,17,17)
+INFO  [yumenguan-raster-1]                 PeakGraph 310  | Systems: #1[1, 2, 3, 4] #2[5, 6, 7, 8]
+INFO  [yumenguan-raster-1]             BarsRetriever 1305 | System#1
+INFO  [yumenguan-raster-1]             BarsRetriever 1308 |    PartGroup{bracket number:1 barline:false staves:1-4}
+INFO  [yumenguan-raster-1]             BarsRetriever 1305 | System#2
+INFO  [yumenguan-raster-1]             BarsRetriever 1308 |    PartGroup{bracket number:1 barline:false staves:5-8}
+INFO  [yumenguan-raster-1]             SystemManager 134  | Indentation detected for system #1
+INFO  [yumenguan-raster-1]             SystemManager 800  | 4 parts along 2 systems
+INFO  [yumenguan-raster-1]                      Book 543  | Created scores: [{Score 1}]
+INFO  [yumenguan-raster-1]            StepMonitoring 98   | HEADERS
+INFO  [yumenguan-raster-1]            StepMonitoring 98   | STEM_SEEDS
+INFO  [yumenguan-raster-1]             StemSeedsStep 86   | stem(3 max:4)
+INFO  [yumenguan-raster-1]            StepMonitoring 98   | BEAMS
+INFO  [yumenguan-raster-1]            StepMonitoring 98   | LEDGERS
+INFO  [yumenguan-raster-1]            StepMonitoring 98   | HEADS
+INFO  [yumenguan-raster-1]             HeadSeedTally 235  | Scale information: HeadSeeds{NOTEHEAD_VOID[R:0.5] NOTEHEAD_BLACK[L:0.5,R:0.4]}
+INFO  [yumenguan-raster-1]            StepMonitoring 98   | STEMS
+INFO  [yumenguan-raster-1]            StepMonitoring 98   | REDUCTION
+INFO  [yumenguan-raster-1]             ReductionStep 105  | Stems free length median value: 50 pixels, 2.9 interlines
+INFO  [yumenguan-raster-1]            StepMonitoring 98   | CUE_BEAMS
+INFO  [yumenguan-raster-1]              CueBeamsStep 81   | Step CUE_BEAMS is skipped because small heads switch is off
+INFO  [yumenguan-raster-1]            StepMonitoring 98   | TEXTS
+WARN  [yumenguan-raster-1]              TesseractOCR 335  | The collection of supported languages is empty
+INFO  [yumenguan-raster-1]                   OcrUtil 106  | Missing support for 'eng' language(s)
+INFO  [yumenguan-raster-1]            StepMonitoring 98   | MEASURES
+INFO  [yumenguan-raster-1]           MeasuresBuilder 416  | S1 partial barline column: s1:G(x:2243,y:604)[22] s2:G(x:2243,y:926)[42] s3:G(x:2243,y:1239)[62]
+INFO  [yumenguan-raster-1]           MeasuresBuilder 424  | S1 expanding major column: s1:G(x:2243,y:604)[22] s2:G(x:2243,y:926)[42] s3:G(x:2243,y:1239)[62]
+INFO  [yumenguan-raster-1]                      Page 307  | 14 raw measures: [9 in system#1, 5 in system#2]
+INFO  [yumenguan-raster-1]            StepMonitoring 98   | CHORDS
+INFO  [yumenguan-raster-1]            StepMonitoring 98   | CURVES
+INFO  [yumenguan-raster-1]              SlursBuilder 240  | Slurs: 19
+INFO  [yumenguan-raster-1]           SegmentsBuilder 155  | Segments: 75
+INFO  [yumenguan-raster-1]            StepMonitoring 98   | SYMBOLS
+INFO  [yumenguan-raster-1]            StepMonitoring 98   | LINKS
+INFO  [yumenguan-raster-1]             SymbolsLinker 258  | No chord linked to OctaveShiftInter#5067{(0.133) staff:1 VENTIDUESIMA ALTA} at java.awt.Point[x=2067,y=424]
+INFO  [yumenguan-raster-1]            StepMonitoring 98   | RHYTHMS
+WARN  [yumenguan-raster-1]                      Book 2044 | Error processing stub java.lang.NullPointerException: Cannot invoke "org.audiveris.omr.sheet.rhythm.Measure.purgeVoices()" because "measure" is null
+java.util.concurrent.ExecutionException: java.lang.NullPointerException: Cannot invoke "org.audiveris.omr.sheet.rhythm.Measure.purgeVoices()" because "measure" is null
+	at java.base/java.util.concurrent.FutureTask.report(Unknown Source)
+	at java.base/java.util.concurrent.FutureTask.get(Unknown Source)
+	at org.audiveris.omr.sheet.SheetStub.doOneStep(SheetStub.java:519)
+	at org.audiveris.omr.sheet.SheetStub.reachStep(SheetStub.java:1405)
+	at org.audiveris.omr.sheet.Book.reachBookStep(Book.java:2035)
+	at org.audiveris.omr.sheet.Book.transcribe(Book.java:2626)
+	at org.audiveris.omr.sheet.Book.export(Book.java:593)
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:927)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+Caused by: java.lang.NullPointerException: Cannot invoke "org.audiveris.omr.sheet.rhythm.Measure.purgeVoices()" because "measure" is null
+	at org.audiveris.omr.sheet.rhythm.Voices.refineSystem(Voices.java:430)
+	at org.audiveris.omr.sheet.rhythm.PageRhythm.processRanges(PageRhythm.java:288)
+	at org.audiveris.omr.sheet.rhythm.PageRhythm.process(PageRhythm.java:248)
+	at org.audiveris.omr.sheet.rhythm.RhythmsStep.doit(RhythmsStep.java:192)
+	at org.audiveris.omr.step.OmrStep.doit(OmrStep.java:138)
+	at org.audiveris.omr.sheet.SheetStub.lambda$doOneStep$0(SheetStub.java:503)
+	at java.base/java.util.concurrent.FutureTask.run(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+INFO  [yumenguan-raster-1]                      Book 2584 | Book{yumenguan-raster-1} storing
+WARN  [yumenguan-raster-1]                      Book 2428 | Bookpath not defined
+INFO  [yumenguan-raster-1]                 SheetStub 1650 | Stub#1 storing
+WARN  [yumenguan-raster-1]                 SheetStub 1673 | Error swapping sheet
+java.nio.file.ReadOnlyFileSystemException: null
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.checkWritable(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.deleteFile(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipPath.delete(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystemProvider.delete(Unknown Source)
+	at java.base/java.nio.file.spi.FileSystemProvider.deleteIfExists(Unknown Source)
+	at java.base/java.nio.file.Files.deleteIfExists(Unknown Source)
+	at org.audiveris.omr.sheet.Book.storeBookInfo(Book.java:2560)
+	at org.audiveris.omr.sheet.SheetStub.storeSheet(SheetStub.java:1627)
+	at org.audiveris.omr.sheet.SheetStub.swapSheet(SheetStub.java:1651)
+	at org.audiveris.omr.sheet.Book.swapAllSheets(Book.java:2596)
+	at org.audiveris.omr.sheet.Book.reachBookStep(Book.java:2049)
+	at org.audiveris.omr.sheet.Book.transcribe(Book.java:2626)
+	at org.audiveris.omr.sheet.Book.export(Book.java:593)
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:927)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+INFO  [yumenguan-raster-1]                      Book 2050 | End of Stub#1
+INFO  [yumenguan-raster-1]                      Book 2057 | End of Book{yumenguan-raster-1}
+INFO  [yumenguan-raster-1]                      Book 596  | Could not export since transcription did not complete successfully
+WARN  [yumenguan-raster-1]                       CLI 956  | Exception occurred java.lang.Exception: Error in export
+java.lang.Exception: Error in export
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:930)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+WARN  [yumenguan-raster-1]                      Book 2528 | Error storing Book{yumenguan-raster-1} to tmp\pdfs\java-direct-1\yumenguan-raster-1.omr ex:java.nio.file.ReadOnlyFileSystemException
+java.nio.file.ReadOnlyFileSystemException: null
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.checkWritable(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.deleteFile(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipPath.delete(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystemProvider.delete(Unknown Source)
+	at java.base/java.nio.file.spi.FileSystemProvider.deleteIfExists(Unknown Source)
+	at java.base/java.nio.file.Files.deleteIfExists(Unknown Source)
+	at org.audiveris.omr.sheet.Book.storeBookInfo(Book.java:2560)
+	at org.audiveris.omr.sheet.Book.store(Book.java:2476)
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:965)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+INFO  [yumenguan-raster-1]                     Score 181  | Closing {Score 1}
+WARN  []                      Main 373  | Exception on yumenguan-raster-1, java.lang.Exception: Error in export
+java.lang.Exception: Error in export
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:930)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+WARN  []                      Main 307  | Exit forced. Failure

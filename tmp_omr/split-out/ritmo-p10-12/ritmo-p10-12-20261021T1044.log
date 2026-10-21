@@ -1,0 +1,365 @@
+2026-10-21 10:44:21,337 INFO [ritmo-p10-12]                 Book.java:560  | 3 sheets in D:\demo\ChoirSinger\tmp_omr\split\ritmo-p10-12.tif
+2026-10-21 10:44:21,646 WARN []                 Book.java:2528 | Error storing Book{ritmo-p10-12} to D:\demo\ChoirSinger\tmp_omr\split-out\ritmo-p10-12\ritmo-p10-12.omr ex:java.nio.file.ReadOnlyFileSystemException
+java.nio.file.ReadOnlyFileSystemException: null
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.checkWritable(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.deleteFile(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipPath.delete(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystemProvider.delete(Unknown Source)
+	at java.base/java.nio.file.spi.FileSystemProvider.deleteIfExists(Unknown Source)
+	at java.base/java.nio.file.Files.deleteIfExists(Unknown Source)
+	at org.audiveris.omr.sheet.Book.storeBookInfo(Book.java:2560)
+	at org.audiveris.omr.sheet.Book.store(Book.java:2476)
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:855)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+2026-10-21 10:44:21,663 INFO []                 Book.java:1929 | Book reaching PAGE on sheets:[#1#2#3]
+2026-10-21 10:44:21,670 INFO [ritmo-p10-12#1]       StepMonitoring.java:98   | LOAD
+2026-10-21 10:44:22,570 INFO [ritmo-p10-12#1]            SheetStub.java:1278 | Loaded image #1 2550x3300 from D:\demo\ChoirSinger\tmp_omr\split\ritmo-p10-12.tif
+2026-10-21 10:44:22,583 INFO [ritmo-p10-12#1]            ImageUtil.java:152  | Converting max RGB to gray
+2026-10-21 10:44:23,184 INFO [ritmo-p10-12#1]       StepMonitoring.java:98   | BINARY
+2026-10-21 10:44:24,973 INFO [ritmo-p10-12#1]       StepMonitoring.java:98   | SCALE
+2026-10-21 10:44:25,118 INFO [ritmo-p10-12#1]         ScaleBuilder.java:254  | Beam  guessed height:  9 -- 0.25 of [7..15] range
+2026-10-21 10:44:25,124 INFO [ritmo-p10-12#1]         ScaleBuilder.java:271  | Beam measured height:  9 -- 0.25 of [7..15] range at 241% of needed quorum
+2026-10-21 10:44:25,126 INFO [ritmo-p10-12#1]         ScaleBuilder.java:401  | Normalized black jitter: 12.50 %
+2026-10-21 10:44:25,127 INFO [ritmo-p10-12#1]            ScaleStep.java:65   | Scale{ interline(15,16,17) line(2,3,4) beam(9)}
+2026-10-21 10:44:25,131 INFO [ritmo-p10-12#1]       StepMonitoring.java:98   | GRID
+2026-10-21 10:44:27,517 INFO [ritmo-p10-12#1]       LinesRetriever.java:1508 | Global slope: -0.00611
+2026-10-21 10:44:27,816 INFO [ritmo-p10-12#1]    ClustersRetriever.java:326  | Retrieved raw line clusters: 8 of sizes [5] with interline(15,16,17)
+2026-10-21 10:44:28,669 INFO [ritmo-p10-12#1]            PeakGraph.java:310  | Systems: #1[1, 2, 3, 4] #2[5, 6, 7, 8]
+2026-10-21 10:44:28,931 INFO [ritmo-p10-12#1]        BarsRetriever.java:769  | No brace partner at level:1 for Peak{160-172 F#3199 T#3 [BRACE]}
+2026-10-21 10:44:28,932 INFO [ritmo-p10-12#1]        BarsRetriever.java:769  | No brace partner at level:1 for Peak{161-172 F#3200 T#4 [BRACE]}
+2026-10-21 10:44:28,933 INFO [ritmo-p10-12#1]        BarsRetriever.java:769  | No brace partner at level:1 for Peak{163-173 F#3203 T#7 [BRACE]}
+2026-10-21 10:44:28,934 INFO [ritmo-p10-12#1]        BarsRetriever.java:769  | No brace partner at level:1 for Peak{164-174 F#3204 T#8 [BRACE]}
+2026-10-21 10:44:28,942 INFO [ritmo-p10-12#1]        BarsRetriever.java:1305 | System#1
+2026-10-21 10:44:28,942 INFO [ritmo-p10-12#1]        BarsRetriever.java:1308 |    PartGroup{bracket number:1 barline:false staves:1-2}
+2026-10-21 10:44:28,943 INFO [ritmo-p10-12#1]        BarsRetriever.java:1305 | System#2
+2026-10-21 10:44:28,943 INFO [ritmo-p10-12#1]        BarsRetriever.java:1308 |    PartGroup{bracket number:1 barline:false staves:5-6}
+2026-10-21 10:44:30,355 INFO [ritmo-p10-12#1]        SystemManager.java:800  | 4 parts along 2 systems
+2026-10-21 10:44:30,364 INFO [ritmo-p10-12#1]                 Book.java:543  | Created scores: [{Score 1}]
+2026-10-21 10:44:30,366 INFO [ritmo-p10-12#1]       StepMonitoring.java:98   | HEADERS
+2026-10-21 10:44:36,485 INFO [ritmo-p10-12#1]       StepMonitoring.java:98   | STEM_SEEDS
+2026-10-21 10:44:36,784 INFO [ritmo-p10-12#1]        StemSeedsStep.java:86   | stem(3 max:4)
+2026-10-21 10:44:37,073 INFO [ritmo-p10-12#1]       StepMonitoring.java:98   | BEAMS
+2026-10-21 10:44:50,884 INFO [ritmo-p10-12#1]       StepMonitoring.java:98   | LEDGERS
+2026-10-21 10:44:53,348 INFO [ritmo-p10-12#1]       StepMonitoring.java:98   | HEADS
+2026-10-21 10:45:16,645 INFO [ritmo-p10-12#1]        HeadSeedTally.java:235  | Scale information: HeadSeeds{NOTEHEAD_VOID[L:0.2,R:0.1] NOTEHEAD_BLACK[L:0.0,R:-0.5]}
+2026-10-21 10:45:16,651 INFO [ritmo-p10-12#1]       StepMonitoring.java:98   | STEMS
+2026-10-21 10:45:28,563 INFO [ritmo-p10-12#1]       StepMonitoring.java:98   | REDUCTION
+2026-10-21 10:45:30,034 INFO [ritmo-p10-12#1]        ReductionStep.java:105  | Stems free length median value: 57 pixels, 3.6 interlines
+2026-10-21 10:45:30,053 INFO [ritmo-p10-12#1]       StepMonitoring.java:98   | CUE_BEAMS
+2026-10-21 10:45:30,053 INFO [ritmo-p10-12#1]         CueBeamsStep.java:81   | Step CUE_BEAMS is skipped because small heads switch is off
+2026-10-21 10:45:30,056 INFO [ritmo-p10-12#1]       StepMonitoring.java:98   | TEXTS
+2026-10-21 10:45:30,893 WARN [ritmo-p10-12#1]         TesseractOCR.java:335  | The collection of supported languages is empty
+2026-10-21 10:45:30,895 INFO [ritmo-p10-12#1]              OcrUtil.java:106  | Missing support for 'eng' language(s)
+2026-10-21 10:45:30,942 INFO [ritmo-p10-12#1]       StepMonitoring.java:98   | MEASURES
+2026-10-21 10:45:30,979 INFO [ritmo-p10-12#1]                 Page.java:307  | 8 raw measures: [4 in system#1, 4 in system#2]
+2026-10-21 10:45:30,980 INFO [ritmo-p10-12#1]       StepMonitoring.java:98   | CHORDS
+2026-10-21 10:45:31,053 INFO [ritmo-p10-12#1]       StepMonitoring.java:98   | CURVES
+2026-10-21 10:45:36,440 INFO [ritmo-p10-12#1]         SlursBuilder.java:240  | Slurs: 39
+2026-10-21 10:45:36,669 INFO [ritmo-p10-12#1]      SegmentsBuilder.java:155  | Segments: 46
+2026-10-21 10:45:36,762 WARN [ritmo-p10-12#1]         TesseractOCR.java:335  | The collection of supported languages is empty
+2026-10-21 10:45:36,764 INFO [ritmo-p10-12#1]              OcrUtil.java:106  | Missing support for 'eng' language(s)
+2026-10-21 10:45:36,766 INFO [ritmo-p10-12#1]    RehearsalsBuilder.java:199  | No text found in rehearsal enclosure java.awt.Rectangle[x=701,y=1655,width=47,height=46]
+2026-10-21 10:45:36,786 INFO [ritmo-p10-12#1]       StepMonitoring.java:98   | SYMBOLS
+2026-10-21 10:45:42,183 INFO [ritmo-p10-12#1]       StepMonitoring.java:98   | LINKS
+2026-10-21 10:45:42,215 INFO [ritmo-p10-12#1]             KeyInter.java:1198 | No effective key before AlterInter#7830{(0.471) staff:1 NATURAL pitch:0.0}
+2026-10-21 10:45:42,218 INFO [ritmo-p10-12#1]             KeyInter.java:1198 | No effective key before AlterInter#7757{(0.799) staff:2 NATURAL pitch:-1.0}
+2026-10-21 10:45:42,219 INFO [ritmo-p10-12#1]             KeyInter.java:1198 | No effective key before AlterInter#7759{(0.799) staff:2 NATURAL pitch:-4.0}
+2026-10-21 10:45:42,403 INFO [ritmo-p10-12#1]        SymbolsLinker.java:258  | No chord linked to OctaveShiftInter#8025{(0.195) staff:6 QUINDICESIMA BASSA} at java.awt.Point[x=610,y=2177]
+2026-10-21 10:45:42,561 INFO [ritmo-p10-12#1]       StepMonitoring.java:98   | RHYTHMS
+2026-10-21 10:45:42,893 INFO [ritmo-p10-12#1]       StepMonitoring.java:98   | PAGE
+2026-10-21 10:45:42,918 WARN [ritmo-p10-12#1]         MeasureFixer.java:343  | System#1 No target duration for measures local IDs [1, 2, 3, 4], please check time signatures
+2026-10-21 10:45:42,922 WARN [ritmo-p10-12#1]         MeasureFixer.java:343  | System#2 No target duration for measures local IDs [5, 6, 7, 8], please check time signatures
+2026-10-21 10:45:42,926 INFO [ritmo-p10-12#1]                 Book.java:2584 | Book{ritmo-p10-12} storing
+2026-10-21 10:45:42,926 WARN [ritmo-p10-12#1]                 Book.java:2428 | Bookpath not defined
+2026-10-21 10:45:42,928 INFO [ritmo-p10-12#1]            SheetStub.java:1650 | Stub#1 storing
+2026-10-21 10:45:42,942 WARN [ritmo-p10-12#1]            SheetStub.java:1673 | Error swapping sheet
+java.nio.file.ReadOnlyFileSystemException: null
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.checkWritable(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.deleteFile(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipPath.delete(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystemProvider.delete(Unknown Source)
+	at java.base/java.nio.file.spi.FileSystemProvider.deleteIfExists(Unknown Source)
+	at java.base/java.nio.file.Files.deleteIfExists(Unknown Source)
+	at org.audiveris.omr.sheet.Book.storeBookInfo(Book.java:2560)
+	at org.audiveris.omr.sheet.SheetStub.storeSheet(SheetStub.java:1627)
+	at org.audiveris.omr.sheet.SheetStub.swapSheet(SheetStub.java:1651)
+	at org.audiveris.omr.sheet.Book.swapAllSheets(Book.java:2596)
+	at org.audiveris.omr.sheet.Book.reachBookStep(Book.java:2049)
+	at org.audiveris.omr.sheet.Book.transcribe(Book.java:2626)
+	at org.audiveris.omr.sheet.Book.export(Book.java:593)
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:927)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+2026-10-21 10:45:42,944 INFO [ritmo-p10-12#1]                 Book.java:2050 | End of Stub#1
+2026-10-21 10:45:42,945 INFO [ritmo-p10-12#2]       StepMonitoring.java:98   | LOAD
+2026-10-21 10:45:43,870 INFO [ritmo-p10-12#2]            SheetStub.java:1278 | Loaded image #2 2550x3300 from D:\demo\ChoirSinger\tmp_omr\split\ritmo-p10-12.tif
+2026-10-21 10:45:43,873 INFO [ritmo-p10-12#2]            ImageUtil.java:152  | Converting max RGB to gray
+2026-10-21 10:45:45,272 INFO [ritmo-p10-12#2]       StepMonitoring.java:98   | BINARY
+2026-10-21 10:45:47,401 INFO [ritmo-p10-12#2]       StepMonitoring.java:98   | SCALE
+2026-10-21 10:45:47,428 INFO [ritmo-p10-12#2]         ScaleBuilder.java:254  | Beam  guessed height:  9 -- 0.25 of [7..15] range
+2026-10-21 10:45:47,430 INFO [ritmo-p10-12#2]         ScaleBuilder.java:271  | Beam measured height:  9 -- 0.25 of [7..15] range at 294% of needed quorum
+2026-10-21 10:45:47,431 INFO [ritmo-p10-12#2]         ScaleBuilder.java:401  | Normalized black jitter: 12.50 %
+2026-10-21 10:45:47,431 INFO [ritmo-p10-12#2]            ScaleStep.java:65   | Scale{ interline(15,16,17) line(2,3,4) beam(9)}
+2026-10-21 10:45:47,432 INFO [ritmo-p10-12#2]       StepMonitoring.java:98   | GRID
+2026-10-21 10:45:48,709 INFO [ritmo-p10-12#2]       LinesRetriever.java:1508 | Global slope: -0.01139
+2026-10-21 10:45:48,816 INFO [ritmo-p10-12#2]    ClustersRetriever.java:326  | Retrieved raw line clusters: 8 of sizes [5] with interline(15,16,17)
+2026-10-21 10:45:49,515 INFO [ritmo-p10-12#2]            PeakGraph.java:310  | Systems: #1[1, 2, 3, 4] #2[5, 6, 7, 8]
+2026-10-21 10:45:49,615 INFO [ritmo-p10-12#2]        BarsRetriever.java:769  | No brace partner at level:1 for Peak{161-176 F#3414 T#3 [BRACE]}
+2026-10-21 10:45:49,617 INFO [ritmo-p10-12#2]        BarsRetriever.java:769  | No brace partner at level:1 for Peak{163-177 F#3415 T#4 [BRACE]}
+2026-10-21 10:45:49,619 INFO [ritmo-p10-12#2]        BarsRetriever.java:769  | No brace partner at level:1 for Peak{177-188 F#3418 T#7 [BRACE]}
+2026-10-21 10:45:49,620 INFO [ritmo-p10-12#2]        BarsRetriever.java:769  | No brace partner at level:1 for Peak{179-190 F#3419 T#8 [BRACE]}
+2026-10-21 10:45:49,620 INFO [ritmo-p10-12#2]        BarsRetriever.java:1305 | System#1
+2026-10-21 10:45:49,621 INFO [ritmo-p10-12#2]        BarsRetriever.java:1308 |    PartGroup{bracket number:1 barline:false staves:1-2}
+2026-10-21 10:45:49,622 INFO [ritmo-p10-12#2]        BarsRetriever.java:1305 | System#2
+2026-10-21 10:45:49,623 INFO [ritmo-p10-12#2]        BarsRetriever.java:1308 |    PartGroup{bracket number:1 barline:false staves:5-6}
+2026-10-21 10:45:51,173 INFO [ritmo-p10-12#2]        SystemManager.java:800  | 4 parts along 2 systems
+2026-10-21 10:45:51,175 INFO [ritmo-p10-12#2]       StepMonitoring.java:98   | HEADERS
+2026-10-21 10:45:52,318 INFO [ritmo-p10-12#2]       StepMonitoring.java:98   | STEM_SEEDS
+2026-10-21 10:45:52,471 INFO [ritmo-p10-12#2]        StemSeedsStep.java:86   | stem(3 max:4)
+2026-10-21 10:45:52,534 INFO [ritmo-p10-12#2]       StepMonitoring.java:98   | BEAMS
+2026-10-21 10:46:04,763 INFO [ritmo-p10-12#2]       StepMonitoring.java:98   | LEDGERS
+2026-10-21 10:46:06,053 INFO [ritmo-p10-12#2]       StepMonitoring.java:98   | HEADS
+2026-10-21 10:46:19,593 INFO [ritmo-p10-12#2]        HeadSeedTally.java:235  | Scale information: HeadSeeds{NOTEHEAD_VOID[L:0.2,R:-0.5] NOTEHEAD_BLACK[L:0.1,R:-0.3]}
+2026-10-21 10:46:19,594 INFO [ritmo-p10-12#2]       StepMonitoring.java:98   | STEMS
+2026-10-21 10:46:32,503 INFO [ritmo-p10-12#2]       StepMonitoring.java:98   | REDUCTION
+2026-10-21 10:46:33,230 INFO [ritmo-p10-12#2]        ReductionStep.java:105  | Stems free length median value: 56 pixels, 3.5 interlines
+2026-10-21 10:46:33,246 INFO [ritmo-p10-12#2]       StepMonitoring.java:98   | CUE_BEAMS
+2026-10-21 10:46:33,247 INFO [ritmo-p10-12#2]         CueBeamsStep.java:81   | Step CUE_BEAMS is skipped because small heads switch is off
+2026-10-21 10:46:33,247 INFO [ritmo-p10-12#2]       StepMonitoring.java:98   | TEXTS
+2026-10-21 10:46:33,816 WARN [ritmo-p10-12#2]         TesseractOCR.java:335  | The collection of supported languages is empty
+2026-10-21 10:46:33,816 INFO [ritmo-p10-12#2]              OcrUtil.java:106  | Missing support for 'eng' language(s)
+2026-10-21 10:46:33,828 INFO [ritmo-p10-12#2]       StepMonitoring.java:98   | MEASURES
+2026-10-21 10:46:33,835 INFO [ritmo-p10-12#2]                 Page.java:307  | 7 raw measures: [3 in system#1, 4 in system#2]
+2026-10-21 10:46:33,835 INFO [ritmo-p10-12#2]       StepMonitoring.java:98   | CHORDS
+2026-10-21 10:46:33,910 INFO [ritmo-p10-12#2]       StepMonitoring.java:98   | CURVES
+2026-10-21 10:46:40,055 INFO [ritmo-p10-12#2]         SlursBuilder.java:240  | Slurs: 32
+2026-10-21 10:46:40,275 INFO [ritmo-p10-12#2]      SegmentsBuilder.java:155  | Segments: 35
+2026-10-21 10:46:40,367 INFO [ritmo-p10-12#2]       StepMonitoring.java:98   | SYMBOLS
+2026-10-21 10:46:48,898 INFO [ritmo-p10-12#2]       StepMonitoring.java:98   | LINKS
+2026-10-21 10:46:48,922 INFO [ritmo-p10-12#2]        SymbolsLinker.java:258  | No chord linked to OctaveShiftInter#7361{(0.724) staff:1 OTTAVA ALTA} at java.awt.Point[x=226,y=348]
+2026-10-21 10:46:48,925 INFO [ritmo-p10-12#2]        SymbolsLinker.java:258  | No chord linked to OctaveShiftInter#7372{(0.349) staff:3 OTTAVA ALTA} at java.awt.Point[x=231,y=928]
+2026-10-21 10:46:48,926 INFO [ritmo-p10-12#2]        SymbolsLinker.java:258  | No chord linked to OctaveShiftInter#7381{(0.639) staff:4 OTTAVA BASSA} at java.awt.Point[x=237,y=1736]
+2026-10-21 10:46:48,929 INFO [ritmo-p10-12#2]        SymbolsLinker.java:258  | No chord linked to OctaveShiftInter#7548{(0.128) staff:4 QUINDICESIMA BASSA} at java.awt.Point[x=1316,y=1611]
+2026-10-21 10:46:48,932 INFO [ritmo-p10-12#2]             KeyInter.java:1198 | No effective key before AlterInter#7472{(0.663) staff:4 NATURAL pitch:-4.0}
+2026-10-21 10:46:48,932 INFO [ritmo-p10-12#2]             KeyInter.java:1198 | No effective key before AlterInter#7507{(0.692) staff:4 NATURAL pitch:-4.0}
+2026-10-21 10:46:49,075 INFO [ritmo-p10-12#2]        SymbolsLinker.java:258  | No chord linked to OctaveShiftInter#7759{(0.639) staff:5 OTTAVA ALTA} at java.awt.Point[x=237,y=1736]
+2026-10-21 10:46:49,078 INFO [ritmo-p10-12#2]        SymbolsLinker.java:258  | No chord linked to OctaveShiftInter#7760{(0.584) staff:7 OTTAVA ALTA} at java.awt.Point[x=243,y=2451]
+2026-10-21 10:46:49,081 INFO [ritmo-p10-12#2]        SymbolsLinker.java:258  | No chord linked to OctaveShiftInter#7888{(0.169) staff:5 OTTAVA BASSA} at java.awt.Point[x=1134,y=1925]
+2026-10-21 10:46:49,084 INFO [ritmo-p10-12#2]        SymbolsLinker.java:258  | No chord linked to OctaveShiftInter#7950{(0.128) staff:5 QUINDICESIMA ALTA} at java.awt.Point[x=1316,y=1611]
+2026-10-21 10:46:49,086 INFO [ritmo-p10-12#2]             KeyInter.java:1198 | No effective key before AlterInter#7896{(0.579) staff:5 NATURAL pitch:-1.0}
+2026-10-21 10:46:49,245 INFO [ritmo-p10-12#2]       StepMonitoring.java:98   | RHYTHMS
+2026-10-21 10:46:49,413 INFO [ritmo-p10-12#2]       StepMonitoring.java:98   | PAGE
+2026-10-21 10:46:49,420 WARN [ritmo-p10-12#2]         MeasureFixer.java:343  | System#1 No target duration for measures local IDs [1, 2, 3], please check time signatures
+2026-10-21 10:46:49,422 WARN [ritmo-p10-12#2]         MeasureFixer.java:343  | System#2 No target duration for measures local IDs [4, 5, 6, 7], please check time signatures
+2026-10-21 10:46:49,424 INFO [ritmo-p10-12#2]                 Book.java:2584 | Book{ritmo-p10-12} storing
+2026-10-21 10:46:49,425 WARN [ritmo-p10-12#2]                 Book.java:2428 | Bookpath not defined
+2026-10-21 10:46:49,425 INFO [ritmo-p10-12#2]            SheetStub.java:1650 | Stub#1 storing
+2026-10-21 10:46:49,434 WARN [ritmo-p10-12#2]            SheetStub.java:1673 | Error swapping sheet
+java.nio.file.FileSystemAlreadyExistsException: null
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystemProvider.newFileSystem(Unknown Source)
+	at java.base/java.nio.file.FileSystems.newFileSystem(Unknown Source)
+	at org.audiveris.omr.util.ZipFileSystem.open(ZipFileSystem.java:111)
+	at org.audiveris.omr.sheet.SheetStub.storeSheet(SheetStub.java:1626)
+	at org.audiveris.omr.sheet.SheetStub.swapSheet(SheetStub.java:1651)
+	at org.audiveris.omr.sheet.Book.swapAllSheets(Book.java:2596)
+	at org.audiveris.omr.sheet.Book.reachBookStep(Book.java:2049)
+	at org.audiveris.omr.sheet.Book.transcribe(Book.java:2626)
+	at org.audiveris.omr.sheet.Book.export(Book.java:593)
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:927)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+2026-10-21 10:46:49,435 INFO [ritmo-p10-12#2]            SheetStub.java:1650 | Stub#2 storing
+2026-10-21 10:46:49,441 WARN [ritmo-p10-12#2]            SheetStub.java:1673 | Error swapping sheet
+java.nio.file.FileSystemAlreadyExistsException: null
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystemProvider.newFileSystem(Unknown Source)
+	at java.base/java.nio.file.FileSystems.newFileSystem(Unknown Source)
+	at org.audiveris.omr.util.ZipFileSystem.open(ZipFileSystem.java:111)
+	at org.audiveris.omr.sheet.SheetStub.storeSheet(SheetStub.java:1626)
+	at org.audiveris.omr.sheet.SheetStub.swapSheet(SheetStub.java:1651)
+	at org.audiveris.omr.sheet.Book.swapAllSheets(Book.java:2596)
+	at org.audiveris.omr.sheet.Book.reachBookStep(Book.java:2049)
+	at org.audiveris.omr.sheet.Book.transcribe(Book.java:2626)
+	at org.audiveris.omr.sheet.Book.export(Book.java:593)
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:927)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+2026-10-21 10:46:49,441 INFO [ritmo-p10-12#2]                 Book.java:2050 | End of Stub#2
+2026-10-21 10:46:49,442 INFO [ritmo-p10-12#3]       StepMonitoring.java:98   | LOAD
+2026-10-21 10:46:50,242 INFO [ritmo-p10-12#3]            SheetStub.java:1278 | Loaded image #3 2550x3300 from D:\demo\ChoirSinger\tmp_omr\split\ritmo-p10-12.tif
+2026-10-21 10:46:50,243 INFO [ritmo-p10-12#3]            ImageUtil.java:152  | Converting max RGB to gray
+2026-10-21 10:46:51,545 INFO [ritmo-p10-12#3]       StepMonitoring.java:98   | BINARY
+2026-10-21 10:46:53,584 INFO [ritmo-p10-12#3]       StepMonitoring.java:98   | SCALE
+2026-10-21 10:46:53,604 INFO [ritmo-p10-12#3]         ScaleBuilder.java:254  | Beam  guessed height:  9 -- 0.25 of [7..15] range
+2026-10-21 10:46:53,606 INFO [ritmo-p10-12#3]         ScaleBuilder.java:271  | Beam measured height:  9 -- 0.25 of [7..15] range at 356% of needed quorum
+2026-10-21 10:46:53,609 INFO [ritmo-p10-12#3]         ScaleBuilder.java:401  | Normalized black jitter: 12.50 %
+2026-10-21 10:46:53,610 INFO [ritmo-p10-12#3]            ScaleStep.java:65   | Scale{ interline(15,16,17) line(2,3,4) beam(9)}
+2026-10-21 10:46:53,612 INFO [ritmo-p10-12#3]       StepMonitoring.java:98   | GRID
+2026-10-21 10:46:54,644 INFO [ritmo-p10-12#3]       LinesRetriever.java:1508 | Global slope: -0.01275
+2026-10-21 10:46:54,718 INFO [ritmo-p10-12#3]    ClustersRetriever.java:326  | Retrieved raw line clusters: 8 of sizes [5] with interline(15,16,17)
+2026-10-21 10:46:54,961 INFO [ritmo-p10-12#3]            PeakGraph.java:310  | Systems: #1[1, 2, 3, 4] #2[5, 6, 7, 8]
+2026-10-21 10:46:55,030 INFO [ritmo-p10-12#3]        BarsRetriever.java:769  | No brace partner at level:1 for Peak{169-183 F#3503 T#3 [BRACE]}
+2026-10-21 10:46:55,031 INFO [ritmo-p10-12#3]        BarsRetriever.java:769  | No brace partner at level:1 for Peak{171-186 F#3504 T#4 [BRACE]}
+2026-10-21 10:46:55,032 INFO [ritmo-p10-12#3]        BarsRetriever.java:769  | No brace partner at level:1 for Peak{182-196 F#3507 T#7 [BRACE]}
+2026-10-21 10:46:55,032 INFO [ritmo-p10-12#3]        BarsRetriever.java:769  | No brace partner at level:1 for Peak{184-198 F#3508 T#8 [BRACE]}
+2026-10-21 10:46:55,033 INFO [ritmo-p10-12#3]        BarsRetriever.java:1305 | System#1
+2026-10-21 10:46:55,033 INFO [ritmo-p10-12#3]        BarsRetriever.java:1308 |    PartGroup{bracket number:1 barline:false staves:1-2}
+2026-10-21 10:46:55,034 INFO [ritmo-p10-12#3]        BarsRetriever.java:1305 | System#2
+2026-10-21 10:46:55,035 INFO [ritmo-p10-12#3]        BarsRetriever.java:1308 |    PartGroup{bracket number:1 barline:false staves:5-6}
+2026-10-21 10:46:56,365 INFO [ritmo-p10-12#3]        SystemManager.java:800  | 4 parts along 2 systems
+2026-10-21 10:46:56,366 INFO [ritmo-p10-12#3]       StepMonitoring.java:98   | HEADERS
+2026-10-21 10:46:57,712 INFO [ritmo-p10-12#3]       StepMonitoring.java:98   | STEM_SEEDS
+2026-10-21 10:46:57,963 INFO [ritmo-p10-12#3]        StemSeedsStep.java:86   | stem(3 max:4)
+2026-10-21 10:46:58,021 INFO [ritmo-p10-12#3]       StepMonitoring.java:98   | BEAMS
+2026-10-21 10:47:09,949 INFO [ritmo-p10-12#3]       StepMonitoring.java:98   | LEDGERS
+2026-10-21 10:47:11,046 INFO [ritmo-p10-12#3]       StepMonitoring.java:98   | HEADS
+2026-10-21 10:47:25,646 INFO [ritmo-p10-12#3]        HeadSeedTally.java:235  | Scale information: HeadSeeds{NOTEHEAD_VOID[L:0.4,R:-0.1] NOTEHEAD_BLACK[L:0.2,R:-0.2]}
+2026-10-21 10:47:25,650 INFO [ritmo-p10-12#3]       StepMonitoring.java:98   | STEMS
+2026-10-21 10:47:32,851 INFO [ritmo-p10-12#3]       StepMonitoring.java:98   | REDUCTION
+2026-10-21 10:47:33,778 INFO [ritmo-p10-12#3]        ReductionStep.java:105  | Stems free length median value: 33 pixels, 2.1 interlines
+2026-10-21 10:47:33,795 INFO [ritmo-p10-12#3]       StepMonitoring.java:98   | CUE_BEAMS
+2026-10-21 10:47:33,796 INFO [ritmo-p10-12#3]         CueBeamsStep.java:81   | Step CUE_BEAMS is skipped because small heads switch is off
+2026-10-21 10:47:33,797 INFO [ritmo-p10-12#3]       StepMonitoring.java:98   | TEXTS
+2026-10-21 10:47:34,223 WARN [ritmo-p10-12#3]         TesseractOCR.java:335  | The collection of supported languages is empty
+2026-10-21 10:47:34,225 INFO [ritmo-p10-12#3]              OcrUtil.java:106  | Missing support for 'eng' language(s)
+2026-10-21 10:47:34,233 INFO [ritmo-p10-12#3]       StepMonitoring.java:98   | MEASURES
+2026-10-21 10:47:34,242 INFO [ritmo-p10-12#3]                 Page.java:307  | 6 raw measures: [3 in system#1, 3 in system#2]
+2026-10-21 10:47:34,243 INFO [ritmo-p10-12#3]       StepMonitoring.java:98   | CHORDS
+2026-10-21 10:47:34,273 INFO [ritmo-p10-12#3]       StepMonitoring.java:98   | CURVES
+2026-10-21 10:47:38,195 INFO [ritmo-p10-12#3]         SlursBuilder.java:240  | Slurs: 41
+2026-10-21 10:47:38,380 INFO [ritmo-p10-12#3]      SegmentsBuilder.java:155  | Segments: 23
+2026-10-21 10:47:38,446 INFO [ritmo-p10-12#3]       StepMonitoring.java:98   | SYMBOLS
+2026-10-21 10:47:43,985 INFO [ritmo-p10-12#3]       StepMonitoring.java:98   | LINKS
+2026-10-21 10:47:44,011 INFO [ritmo-p10-12#3]        SymbolsLinker.java:258  | No chord linked to OctaveShiftInter#7733{(0.651) staff:1 OTTAVA ALTA} at java.awt.Point[x=230,y=414]
+2026-10-21 10:47:44,013 INFO [ritmo-p10-12#3]        SymbolsLinker.java:258  | No chord linked to OctaveShiftInter#7735{(0.494) staff:3 OTTAVA ALTA} at java.awt.Point[x=237,y=1069]
+2026-10-21 10:47:44,018 INFO [ritmo-p10-12#3]             KeyInter.java:1198 | No effective key before AlterInter#7892{(0.196) staff:1 NATURAL pitch:5.0}
+2026-10-21 10:47:44,238 WARN [ritmo-p10-12#3]                 Book.java:2044 | Error processing stub java.lang.RuntimeException: java.lang.IllegalArgumentException: no such edge in graph: Exclusion
+java.util.concurrent.ExecutionException: java.lang.RuntimeException: java.lang.IllegalArgumentException: no such edge in graph: Exclusion
+	at java.base/java.util.concurrent.FutureTask.report(Unknown Source)
+	at java.base/java.util.concurrent.FutureTask.get(Unknown Source)
+	at org.audiveris.omr.sheet.SheetStub.doOneStep(SheetStub.java:519)
+	at org.audiveris.omr.sheet.SheetStub.reachStep(SheetStub.java:1405)
+	at org.audiveris.omr.sheet.Book.reachBookStep(Book.java:2035)
+	at org.audiveris.omr.sheet.Book.transcribe(Book.java:2626)
+	at org.audiveris.omr.sheet.Book.export(Book.java:593)
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:927)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+Caused by: java.lang.RuntimeException: java.lang.IllegalArgumentException: no such edge in graph: Exclusion
+	at org.audiveris.omr.step.AbstractSystemStep.doitPerSystem(AbstractSystemStep.java:185)
+	at org.audiveris.omr.step.AbstractSystemStep.doit(AbstractSystemStep.java:125)
+	at org.audiveris.omr.step.OmrStep.doit(OmrStep.java:138)
+	at org.audiveris.omr.sheet.SheetStub.lambda$doOneStep$0(SheetStub.java:503)
+	at java.base/java.util.concurrent.FutureTask.run(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.lang.IllegalArgumentException: no such edge in graph: Exclusion
+	at org.jgrapht.graph.BaseIntrusiveEdgesSpecifics.getEdgeSource(BaseIntrusiveEdgesSpecifics.java:98)
+	at org.jgrapht.graph.AbstractBaseGraph.getEdgeSource(AbstractBaseGraph.java:342)
+	at org.jgrapht.graph.GraphDelegator.getEdgeSource(GraphDelegator.java:320)
+	at org.jgrapht.graph.DefaultListenableGraph.removeEdge(DefaultListenableGraph.java:207)
+	at org.jgrapht.graph.AbstractGraph.removeAllEdges(AbstractGraph.java:64)
+	at org.jgrapht.graph.DefaultListenableGraph.removeVertex(DefaultListenableGraph.java:233)
+	at org.audiveris.omr.sig.SIGraph.removeVertex(SIGraph.java:1349)
+	at org.audiveris.omr.sig.inter.AbstractInter.remove(AbstractInter.java:1316)
+	at org.audiveris.omr.sig.inter.AugmentationDotInter.remove(AugmentationDotInter.java:576)
+	at org.audiveris.omr.sig.inter.AbstractInter.remove(AbstractInter.java:1257)
+	at org.audiveris.omr.sig.SIGraph.reduceExclusions(SIGraph.java:1282)
+	at org.audiveris.omr.sig.SIGraph.reduceExclusions(SIGraph.java:1210)
+	at org.audiveris.omr.sig.SigReducer.reduce(SigReducer.java:1931)
+	at org.audiveris.omr.sig.SigReducer.reduceLinks(SigReducer.java:2082)
+	at org.audiveris.omr.sheet.symbol.LinksStep.doSystem(LinksStep.java:136)
+	at org.audiveris.omr.sheet.symbol.LinksStep.doSystem(LinksStep.java:61)
+	at org.audiveris.omr.step.AbstractSystemStep.lambda$doitPerSystem$0(AbstractSystemStep.java:158)
+	at org.audiveris.omr.step.AbstractSystemStep.doitPerSystem(AbstractSystemStep.java:178)
+	... 7 common frames omitted
+2026-10-21 10:47:44,240 INFO [ritmo-p10-12#3]                 Book.java:2584 | Book{ritmo-p10-12} storing
+2026-10-21 10:47:44,241 WARN [ritmo-p10-12#3]                 Book.java:2428 | Bookpath not defined
+2026-10-21 10:47:44,242 INFO [ritmo-p10-12#3]            SheetStub.java:1650 | Stub#1 storing
+2026-10-21 10:47:44,249 WARN [ritmo-p10-12#3]            SheetStub.java:1673 | Error swapping sheet
+java.nio.file.FileSystemAlreadyExistsException: null
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystemProvider.newFileSystem(Unknown Source)
+	at java.base/java.nio.file.FileSystems.newFileSystem(Unknown Source)
+	at org.audiveris.omr.util.ZipFileSystem.open(ZipFileSystem.java:111)
+	at org.audiveris.omr.sheet.SheetStub.storeSheet(SheetStub.java:1626)
+	at org.audiveris.omr.sheet.SheetStub.swapSheet(SheetStub.java:1651)
+	at org.audiveris.omr.sheet.Book.swapAllSheets(Book.java:2596)
+	at org.audiveris.omr.sheet.Book.reachBookStep(Book.java:2049)
+	at org.audiveris.omr.sheet.Book.transcribe(Book.java:2626)
+	at org.audiveris.omr.sheet.Book.export(Book.java:593)
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:927)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+2026-10-21 10:47:44,250 INFO [ritmo-p10-12#3]            SheetStub.java:1650 | Stub#2 storing
+2026-10-21 10:47:44,257 WARN [ritmo-p10-12#3]            SheetStub.java:1673 | Error swapping sheet
+java.nio.file.FileSystemAlreadyExistsException: null
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystemProvider.newFileSystem(Unknown Source)
+	at java.base/java.nio.file.FileSystems.newFileSystem(Unknown Source)
+	at org.audiveris.omr.util.ZipFileSystem.open(ZipFileSystem.java:111)
+	at org.audiveris.omr.sheet.SheetStub.storeSheet(SheetStub.java:1626)
+	at org.audiveris.omr.sheet.SheetStub.swapSheet(SheetStub.java:1651)
+	at org.audiveris.omr.sheet.Book.swapAllSheets(Book.java:2596)
+	at org.audiveris.omr.sheet.Book.reachBookStep(Book.java:2049)
+	at org.audiveris.omr.sheet.Book.transcribe(Book.java:2626)
+	at org.audiveris.omr.sheet.Book.export(Book.java:593)
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:927)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+2026-10-21 10:47:44,258 INFO [ritmo-p10-12#3]            SheetStub.java:1650 | Stub#3 storing
+2026-10-21 10:47:44,263 WARN [ritmo-p10-12#3]            SheetStub.java:1673 | Error swapping sheet
+java.nio.file.FileSystemAlreadyExistsException: null
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystemProvider.newFileSystem(Unknown Source)
+	at java.base/java.nio.file.FileSystems.newFileSystem(Unknown Source)
+	at org.audiveris.omr.util.ZipFileSystem.open(ZipFileSystem.java:111)
+	at org.audiveris.omr.sheet.SheetStub.storeSheet(SheetStub.java:1626)
+	at org.audiveris.omr.sheet.SheetStub.swapSheet(SheetStub.java:1651)
+	at org.audiveris.omr.sheet.Book.swapAllSheets(Book.java:2596)
+	at org.audiveris.omr.sheet.Book.reachBookStep(Book.java:2049)
+	at org.audiveris.omr.sheet.Book.transcribe(Book.java:2626)
+	at org.audiveris.omr.sheet.Book.export(Book.java:593)
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:927)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+2026-10-21 10:47:44,265 INFO [ritmo-p10-12#3]                 Book.java:2050 | End of Stub#3
+2026-10-21 10:47:44,265 INFO [ritmo-p10-12]                 Book.java:2057 | End of Book{ritmo-p10-12}
+2026-10-21 10:47:44,265 INFO [ritmo-p10-12]                 Book.java:596  | Could not export since transcription did not complete successfully
+2026-10-21 10:47:44,266 WARN [ritmo-p10-12]                  CLI.java:956  | Exception occurred java.lang.Exception: Error in export
+java.lang.Exception: Error in export
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:930)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+2026-10-21 10:47:44,783 WARN [ritmo-p10-12]                 Book.java:2528 | Error storing Book{ritmo-p10-12} to D:\demo\ChoirSinger\tmp_omr\split-out\ritmo-p10-12\ritmo-p10-12.omr ex:java.nio.file.ReadOnlyFileSystemException
+java.nio.file.ReadOnlyFileSystemException: null
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.checkWritable(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.deleteFile(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipPath.delete(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystemProvider.delete(Unknown Source)
+	at java.base/java.nio.file.spi.FileSystemProvider.deleteIfExists(Unknown Source)
+	at java.base/java.nio.file.Files.deleteIfExists(Unknown Source)
+	at org.audiveris.omr.sheet.Book.storeBookInfo(Book.java:2560)
+	at org.audiveris.omr.sheet.Book.store(Book.java:2476)
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:965)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+2026-10-21 10:47:44,791 INFO [ritmo-p10-12]                Score.java:181  | Closing {Score 1}

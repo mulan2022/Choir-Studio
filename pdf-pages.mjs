@@ -49,7 +49,9 @@ function hasStaves(bytes) {
   }
   const peaks = [];
   for (const row of rows) if (!peaks.length || row - peaks.at(-1).end > 2) peaks.push({ start: row, end: row }); else peaks.at(-1).end = row;
-  return peaks.length >= 10;
+  // 稀疏扫描页（整页只有 2-3 组谱表）峰值可能只有 6-9；纯文字页通常 ≤4。
+  // 阈值取 6 在两者间安全：宁可多送一页给识谱器，也不漏掉真谱页。
+  return peaks.length >= 6;
 }
 
 export async function inspectPdf(input, temp, onProgress = () => {}) {
@@ -59,19 +61,20 @@ export async function inspectPdf(input, temp, onProgress = () => {}) {
   const scanPages = pages;
   const prefix = path.join(temp, 'preview');
   onProgress({ stage: `扫描 ${scanPages} 页，查找五线谱页`, totalPages: pages });
-  await command('pdftoppm', ['-f', '1', '-l', String(scanPages), '-scale-to', '1200', '-gray', input, prefix], Math.max(90000, pages * 5000));
+  const renderLog = await command('pdftoppm', ['-f', '1', '-l', String(scanPages), '-scale-to', '1200', '-gray', input, prefix], Math.max(180000, pages * 15000));
+  const preferRaster = /No display font|Couldn't find a font|Unknown font/i.test(renderLog);
   const files = (await fs.readdir(temp)).filter(name => /^preview-\d+\.pgm$/.test(name)).sort((a, b) => Number(a.match(/\d+/)[0]) - Number(b.match(/\d+/)[0]));
   const scorePages = [];
   for (const [index, file] of files.entries()) {
     onProgress({ stage: `检查第 ${index + 1} / ${scanPages} 页`, totalPages: pages });
     if (hasStaves(await fs.readFile(path.join(temp, file)))) scorePages.push(index + 1);
   }
-  if (!scorePages.length) return { pages, firstPage: 1, lastPage: pages, detected: false };
+  if (!scorePages.length) return { pages, firstPage: 1, lastPage: pages, detected: false, preferRaster };
   const runs = [];
   for (const page of scorePages) {
     if (runs.length && page === runs.at(-1).lastPage + 1) runs.at(-1).lastPage = page;
     else runs.push({ firstPage: page, lastPage: page });
   }
   const longest = runs.sort((a, b) => (b.lastPage - b.firstPage) - (a.lastPage - a.firstPage))[0];
-  return { pages, ...longest, detected: true };
+  return { pages, ...longest, detected: true, preferRaster };
 }

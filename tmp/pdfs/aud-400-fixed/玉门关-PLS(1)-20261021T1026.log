@@ -1,0 +1,187 @@
+2026-10-21 10:26:15,424 INFO [玉门关-PLS(1)]                 Book.java:560  | 13 sheets in D:\demo\ChoirSinger\玉门关-PLS(1).pdf
+2026-10-21 10:26:15,605 WARN []                 Book.java:2528 | Error storing Book{玉门关-PLS(1)} to D:\demo\ChoirSinger\tmp\pdfs\aud-400-fixed\玉门关-PLS(1).omr ex:java.nio.file.ReadOnlyFileSystemException
+java.nio.file.ReadOnlyFileSystemException: null
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.checkWritable(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.deleteFile(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipPath.delete(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystemProvider.delete(Unknown Source)
+	at java.base/java.nio.file.spi.FileSystemProvider.deleteIfExists(Unknown Source)
+	at java.base/java.nio.file.Files.deleteIfExists(Unknown Source)
+	at org.audiveris.omr.sheet.Book.storeBookInfo(Book.java:2560)
+	at org.audiveris.omr.sheet.Book.store(Book.java:2476)
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:855)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+2026-10-21 10:26:15,614 INFO []                 Book.java:1929 | Book reaching PAGE on sheets:[#1]
+2026-10-21 10:26:15,618 INFO [玉门关-PLS(1)#1]       StepMonitoring.java:98   | LOAD
+2026-10-21 10:26:16,831 INFO [玉门关-PLS(1)#1] FileSystemFontProvider.java:668  | 195 new font files found, font cache will be re-built
+2026-10-21 10:26:16,833 INFO [玉门关-PLS(1)#1] FileSystemFontProvider.java:370  | Building on-disk font cache, this may take a while
+2026-10-21 10:26:21,290 WARN [玉门关-PLS(1)#1] FileSystemFontProvider.java:445  | Could not write to font cache
+java.io.FileNotFoundException: C:\Users\MECHREVO\.pdfbox.cache (拒绝访问。)
+	at java.base/java.io.FileOutputStream.open0(Native Method)
+	at java.base/java.io.FileOutputStream.open(Unknown Source)
+	at java.base/java.io.FileOutputStream.<init>(Unknown Source)
+	at java.base/java.io.FileOutputStream.<init>(Unknown Source)
+	at org.apache.pdfbox.pdmodel.font.FileSystemFontProvider.saveDiskCache(FileSystemFontProvider.java:435)
+	at org.apache.pdfbox.pdmodel.font.FileSystemFontProvider.<init>(FileSystemFontProvider.java:372)
+	at org.apache.pdfbox.pdmodel.font.FontMapperImpl$DefaultFontProvider.<clinit>(FontMapperImpl.java:139)
+	at org.apache.pdfbox.pdmodel.font.FontMapperImpl.getProvider(FontMapperImpl.java:158)
+	at org.apache.pdfbox.pdmodel.font.FontMapperImpl.findFont(FontMapperImpl.java:410)
+	at org.apache.pdfbox.pdmodel.font.FontMapperImpl.getCIDFont(FontMapperImpl.java:503)
+	at org.apache.pdfbox.pdmodel.font.PDCIDFontType2.findFontOrSubstitute(PDCIDFontType2.java:161)
+	at org.apache.pdfbox.pdmodel.font.PDCIDFontType2.<init>(PDCIDFontType2.java:146)
+	at org.apache.pdfbox.pdmodel.font.PDCIDFontType2.<init>(PDCIDFontType2.java:72)
+	at org.apache.pdfbox.pdmodel.font.PDFontFactory.createDescendantFont(PDFontFactory.java:385)
+	at org.apache.pdfbox.pdmodel.font.PDType0Font.<init>(PDType0Font.java:97)
+	at org.apache.pdfbox.pdmodel.font.PDFontFactory.createFont(PDFontFactory.java:173)
+	at org.apache.pdfbox.pdmodel.PDResources.getFont(PDResources.java:170)
+	at org.apache.pdfbox.contentstream.operator.text.SetFontAndSize.process(SetFontAndSize.java:72)
+	at org.apache.pdfbox.contentstream.PDFStreamEngine.processOperator(PDFStreamEngine.java:926)
+	at org.apache.pdfbox.contentstream.PDFStreamEngine.processStreamOperators(PDFStreamEngine.java:559)
+	at org.apache.pdfbox.contentstream.PDFStreamEngine.processStream(PDFStreamEngine.java:517)
+	at org.apache.pdfbox.contentstream.PDFStreamEngine.showForm(PDFStreamEngine.java:189)
+	at org.apache.pdfbox.rendering.PageDrawer.showForm(PageDrawer.java:1656)
+	at org.apache.pdfbox.contentstream.operator.graphics.DrawObject.process(DrawObject.java:96)
+	at org.apache.pdfbox.contentstream.PDFStreamEngine.processOperator(PDFStreamEngine.java:926)
+	at org.apache.pdfbox.contentstream.PDFStreamEngine.processStreamOperators(PDFStreamEngine.java:559)
+	at org.apache.pdfbox.contentstream.PDFStreamEngine.processStream(PDFStreamEngine.java:517)
+	at org.apache.pdfbox.contentstream.PDFStreamEngine.processPage(PDFStreamEngine.java:158)
+	at org.apache.pdfbox.rendering.PageDrawer.drawPage(PageDrawer.java:287)
+	at org.apache.pdfbox.rendering.PDFRenderer.renderImage(PDFRenderer.java:348)
+	at org.apache.pdfbox.rendering.PDFRenderer.renderImage(PDFRenderer.java:262)
+	at org.apache.pdfbox.rendering.PDFRenderer.renderImageWithDPI(PDFRenderer.java:245)
+	at org.audiveris.omr.image.ImageLoading$PdfboxLoader.getImage(ImageLoading.java:342)
+	at org.audiveris.omr.sheet.SheetStub.loadGrayImage(SheetStub.java:1277)
+	at org.audiveris.omr.step.LoadStep.doit(LoadStep.java:69)
+	at org.audiveris.omr.step.OmrStep.doit(OmrStep.java:138)
+	at org.audiveris.omr.sheet.SheetStub.lambda$doOneStep$0(SheetStub.java:503)
+	at java.base/java.util.concurrent.FutureTask.run(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+2026-10-21 10:26:21,294 WARN [玉门关-PLS(1)#1] FileSystemFontProvider.java:446  | Installed fonts information will have to be reloaded for each start
+2026-10-21 10:26:21,295 WARN [玉门关-PLS(1)#1] FileSystemFontProvider.java:447  | You can assign a directory to the 'pdfbox.fontcache' property
+2026-10-21 10:26:21,296 INFO [玉门关-PLS(1)#1] FileSystemFontProvider.java:373  | Finished building on-disk font cache, found 218 fonts
+2026-10-21 10:26:21,951 INFO [玉门关-PLS(1)#1]            SheetStub.java:1278 | Loaded image #1 3305x4677 from D:\demo\ChoirSinger\玉门关-PLS(1).pdf
+2026-10-21 10:26:21,969 INFO [玉门关-PLS(1)#1]       StepMonitoring.java:98   | BINARY
+2026-10-21 10:26:25,492 INFO [玉门关-PLS(1)#1]       StepMonitoring.java:98   | SCALE
+2026-10-21 10:26:25,582 INFO [玉门关-PLS(1)#1]         ScaleBuilder.java:254  | Beam  guessed height: 13 -- 0.25 of [10..21] range
+2026-10-21 10:26:25,586 INFO [玉门关-PLS(1)#1]         ScaleBuilder.java:271  | Beam measured height: 16 -- 0.55 of [10..21] range at 137% of needed quorum
+2026-10-21 10:26:25,588 INFO [玉门关-PLS(1)#1]         ScaleBuilder.java:401  | Normalized black jitter: 9.09 %
+2026-10-21 10:26:25,589 INFO [玉门关-PLS(1)#1]            ScaleStep.java:65   | Scale{ interline(22,22,23) line(2,2,4) beam(16)}
+2026-10-21 10:26:25,594 INFO [玉门关-PLS(1)#1]       StepMonitoring.java:98   | GRID
+2026-10-21 10:26:27,428 INFO [玉门关-PLS(1)#1]       LinesRetriever.java:1508 | Global slope: 0.00000
+2026-10-21 10:26:27,676 INFO [玉门关-PLS(1)#1]    ClustersRetriever.java:326  | Retrieved raw line clusters: 8 of sizes [5] with interline(22,22,23)
+2026-10-21 10:26:28,539 INFO [玉门关-PLS(1)#1]            PeakGraph.java:310  | Systems: #1[1, 2, 3, 4] #2[5, 6, 7, 8]
+2026-10-21 10:26:28,774 INFO [玉门关-PLS(1)#1]        BarsRetriever.java:1305 | System#1
+2026-10-21 10:26:28,775 INFO [玉门关-PLS(1)#1]        BarsRetriever.java:1308 |    PartGroup{bracket number:1 barline:false staves:1-4}
+2026-10-21 10:26:28,777 INFO [玉门关-PLS(1)#1]        BarsRetriever.java:1305 | System#2
+2026-10-21 10:26:28,778 INFO [玉门关-PLS(1)#1]        BarsRetriever.java:1308 |    PartGroup{bracket number:1 barline:false staves:5-8}
+2026-10-21 10:26:30,350 INFO [玉门关-PLS(1)#1]        SystemManager.java:134  | Indentation detected for system #1
+2026-10-21 10:26:30,361 INFO [玉门关-PLS(1)#1]        SystemManager.java:800  | 4 parts along 2 systems
+2026-10-21 10:26:30,364 INFO [玉门关-PLS(1)#1]                 Book.java:543  | Created scores: [{Score 1}]
+2026-10-21 10:26:30,369 INFO [玉门关-PLS(1)#1]       StepMonitoring.java:98   | HEADERS
+2026-10-21 10:26:33,515 INFO [玉门关-PLS(1)#1]       StepMonitoring.java:98   | STEM_SEEDS
+2026-10-21 10:26:33,841 INFO [玉门关-PLS(1)#1]        StemSeedsStep.java:86   | stem(3 max:4)
+2026-10-21 10:26:34,064 INFO [玉门关-PLS(1)#1]       StepMonitoring.java:98   | BEAMS
+2026-10-21 10:27:11,786 INFO [玉门关-PLS(1)#1]       StepMonitoring.java:98   | LEDGERS
+2026-10-21 10:27:15,153 INFO [玉门关-PLS(1)#1]       StepMonitoring.java:98   | HEADS
+2026-10-21 10:27:33,137 INFO [玉门关-PLS(1)#1]        HeadSeedTally.java:235  | Scale information: HeadSeeds{NOTEHEAD_VOID[R:0.0] NOTEHEAD_BLACK[L:0.4,R:0.1]}
+2026-10-21 10:27:33,139 INFO [玉门关-PLS(1)#1]       StepMonitoring.java:98   | STEMS
+2026-10-21 10:27:36,330 INFO [玉门关-PLS(1)#1]       StepMonitoring.java:98   | REDUCTION
+2026-10-21 10:27:36,481 INFO [玉门关-PLS(1)#1]        ReductionStep.java:105  | Stems free length median value: 67 pixels, 3.0 interlines
+2026-10-21 10:27:36,492 INFO [玉门关-PLS(1)#1]       StepMonitoring.java:98   | CUE_BEAMS
+2026-10-21 10:27:36,493 INFO [玉门关-PLS(1)#1]         CueBeamsStep.java:81   | Step CUE_BEAMS is skipped because small heads switch is off
+2026-10-21 10:27:36,494 INFO [玉门关-PLS(1)#1]       StepMonitoring.java:98   | TEXTS
+2026-10-21 10:27:37,165 WARN [玉门关-PLS(1)#1]         TesseractOCR.java:335  | The collection of supported languages is empty
+2026-10-21 10:27:37,167 INFO [玉门关-PLS(1)#1]              OcrUtil.java:106  | Missing support for 'eng' language(s)
+2026-10-21 10:27:37,198 INFO [玉门关-PLS(1)#1]       StepMonitoring.java:98   | MEASURES
+2026-10-21 10:27:37,211 INFO [玉门关-PLS(1)#1]      MeasuresBuilder.java:416  | S1 partial barline column: s1:G(x:2990,y:805)[22] s2:G(x:2990,y:1235)[42] s3:G(x:2990,y:1651)[62]
+2026-10-21 10:27:37,213 INFO [玉门关-PLS(1)#1]      MeasuresBuilder.java:424  | S1 expanding major column: s1:G(x:2990,y:805)[22] s2:G(x:2990,y:1235)[42] s3:G(x:2990,y:1651)[62]
+2026-10-21 10:27:37,232 INFO [玉门关-PLS(1)#1]                 Page.java:307  | 14 raw measures: [9 in system#1, 5 in system#2]
+2026-10-21 10:27:37,233 INFO [玉门关-PLS(1)#1]       StepMonitoring.java:98   | CHORDS
+2026-10-21 10:27:37,264 INFO [玉门关-PLS(1)#1]       StepMonitoring.java:98   | CURVES
+2026-10-21 10:27:51,055 INFO [玉门关-PLS(1)#1]         SlursBuilder.java:240  | Slurs: 21
+2026-10-21 10:27:51,875 INFO [玉门关-PLS(1)#1]      SegmentsBuilder.java:155  | Segments: 69
+2026-10-21 10:27:52,062 INFO [玉门关-PLS(1)#1]       StepMonitoring.java:98   | SYMBOLS
+2026-10-21 10:27:58,705 INFO [玉门关-PLS(1)#1]       StepMonitoring.java:98   | LINKS
+2026-10-21 10:27:58,722 INFO [玉门关-PLS(1)#1]        SymbolsLinker.java:258  | No chord linked to OctaveShiftInter#4798{(0.174) staff:4 QUINDICESIMA BASSA} at java.awt.Point[x=571,y=2746]
+2026-10-21 10:27:58,728 INFO [玉门关-PLS(1)#1]        SymbolsLinker.java:258  | No chord linked to OctaveShiftInter#4953{(0.267) staff:4 QUINDICESIMA ALTA} at java.awt.Point[x=2442,y=1958]
+2026-10-21 10:27:58,729 INFO [玉门关-PLS(1)#1]        SymbolsLinker.java:258  | No chord linked to OctaveShiftInter#5001{(0.126) staff:2 QUINDICESIMA ALTA} at java.awt.Point[x=2526,y=1103]
+2026-10-21 10:27:58,905 INFO [玉门关-PLS(1)#1]       StepMonitoring.java:98   | RHYTHMS
+2026-10-21 10:27:58,991 WARN [玉门关-PLS(1)#1]                 Book.java:2044 | Error processing stub java.lang.NullPointerException: Cannot invoke "org.audiveris.omr.sheet.rhythm.Measure.purgeVoices()" because "measure" is null
+java.util.concurrent.ExecutionException: java.lang.NullPointerException: Cannot invoke "org.audiveris.omr.sheet.rhythm.Measure.purgeVoices()" because "measure" is null
+	at java.base/java.util.concurrent.FutureTask.report(Unknown Source)
+	at java.base/java.util.concurrent.FutureTask.get(Unknown Source)
+	at org.audiveris.omr.sheet.SheetStub.doOneStep(SheetStub.java:519)
+	at org.audiveris.omr.sheet.SheetStub.reachStep(SheetStub.java:1405)
+	at org.audiveris.omr.sheet.Book.reachBookStep(Book.java:2035)
+	at org.audiveris.omr.sheet.Book.transcribe(Book.java:2626)
+	at org.audiveris.omr.sheet.Book.export(Book.java:593)
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:927)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+Caused by: java.lang.NullPointerException: Cannot invoke "org.audiveris.omr.sheet.rhythm.Measure.purgeVoices()" because "measure" is null
+	at org.audiveris.omr.sheet.rhythm.Voices.refineSystem(Voices.java:430)
+	at org.audiveris.omr.sheet.rhythm.PageRhythm.processRanges(PageRhythm.java:288)
+	at org.audiveris.omr.sheet.rhythm.PageRhythm.process(PageRhythm.java:248)
+	at org.audiveris.omr.sheet.rhythm.RhythmsStep.doit(RhythmsStep.java:192)
+	at org.audiveris.omr.step.OmrStep.doit(OmrStep.java:138)
+	at org.audiveris.omr.sheet.SheetStub.lambda$doOneStep$0(SheetStub.java:503)
+	at java.base/java.util.concurrent.FutureTask.run(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+2026-10-21 10:27:58,993 INFO [玉门关-PLS(1)#1]                 Book.java:2584 | Book{玉门关-PLS(1)} storing
+2026-10-21 10:27:58,993 WARN [玉门关-PLS(1)#1]                 Book.java:2428 | Bookpath not defined
+2026-10-21 10:27:58,994 INFO [玉门关-PLS(1)#1]            SheetStub.java:1650 | Stub#1 storing
+2026-10-21 10:27:59,006 WARN [玉门关-PLS(1)#1]            SheetStub.java:1673 | Error swapping sheet
+java.nio.file.ReadOnlyFileSystemException: null
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.checkWritable(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.deleteFile(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipPath.delete(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystemProvider.delete(Unknown Source)
+	at java.base/java.nio.file.spi.FileSystemProvider.deleteIfExists(Unknown Source)
+	at java.base/java.nio.file.Files.deleteIfExists(Unknown Source)
+	at org.audiveris.omr.sheet.Book.storeBookInfo(Book.java:2560)
+	at org.audiveris.omr.sheet.SheetStub.storeSheet(SheetStub.java:1627)
+	at org.audiveris.omr.sheet.SheetStub.swapSheet(SheetStub.java:1651)
+	at org.audiveris.omr.sheet.Book.swapAllSheets(Book.java:2596)
+	at org.audiveris.omr.sheet.Book.reachBookStep(Book.java:2049)
+	at org.audiveris.omr.sheet.Book.transcribe(Book.java:2626)
+	at org.audiveris.omr.sheet.Book.export(Book.java:593)
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:927)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+2026-10-21 10:27:59,008 INFO [玉门关-PLS(1)#1]                 Book.java:2050 | End of Stub#1
+2026-10-21 10:27:59,009 INFO [玉门关-PLS(1)]                 Book.java:2057 | End of Book{玉门关-PLS(1)}
+2026-10-21 10:27:59,010 INFO [玉门关-PLS(1)]                 Book.java:596  | Could not export since transcription did not complete successfully
+2026-10-21 10:27:59,011 WARN [玉门关-PLS(1)]                  CLI.java:956  | Exception occurred java.lang.Exception: Error in export
+java.lang.Exception: Error in export
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:930)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+2026-10-21 10:27:59,229 WARN [玉门关-PLS(1)]                 Book.java:2528 | Error storing Book{玉门关-PLS(1)} to D:\demo\ChoirSinger\tmp\pdfs\aud-400-fixed\玉门关-PLS(1).omr ex:java.nio.file.ReadOnlyFileSystemException
+java.nio.file.ReadOnlyFileSystemException: null
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.checkWritable(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.deleteFile(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipPath.delete(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystemProvider.delete(Unknown Source)
+	at java.base/java.nio.file.spi.FileSystemProvider.deleteIfExists(Unknown Source)
+	at java.base/java.nio.file.Files.deleteIfExists(Unknown Source)
+	at org.audiveris.omr.sheet.Book.storeBookInfo(Book.java:2560)
+	at org.audiveris.omr.sheet.Book.store(Book.java:2476)
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:965)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+2026-10-21 10:27:59,235 INFO [玉门关-PLS(1)]                Score.java:181  | Closing {Score 1}

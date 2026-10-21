@@ -1,7 +1,7 @@
-import { createHash } from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { recognitionKey } from '../recognition-cache.mjs';
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const [input, result] = process.argv.slice(2);
@@ -13,7 +13,7 @@ if (!['pdf', 'png', 'jpg', 'jpeg', 'tif', 'tiff'].includes(inputExtension) || ![
 
 const body = await fs.readFile(input);
 const transcription = await fs.readFile(result);
-const key = createHash('sha256').update(inputExtension).update('\0').update(body).digest('hex');
+const key = recognitionKey(inputExtension, body);
 const cache = path.join(root, '.cache', 'recognition');
 await fs.mkdir(cache, { recursive: true });
 const target = path.join(cache, `${key}.${resultExtension}`);

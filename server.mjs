@@ -1,25 +1,24 @@
 import http from 'node:http';
 import fs from 'node:fs/promises';
 import { createReadStream } from 'node:fs';
-import os from 'node:os';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { createHash, randomUUID } from 'node:crypto';
+import { randomUUID } from 'node:crypto';
 import { inspectPdf } from './pdf-pages.mjs';
+import { recognitionKey } from './recognition-cache.mjs';
+import JSZip from 'jszip';
 
 const root = path.dirname(fileURLToPath(import.meta.url));
 const apiOnly = process.argv.includes('--api-only');
 const port = apiOnly ? 4174 : 4173;
 const allowed = new Set(['pdf', 'png', 'jpg', 'jpeg', 'tif', 'tiff']);
-const maxBytes = 20 * 1024 * 1024;
+const maxBytes = 200 * 1024 * 1024; // local use: a full printed score can be far bigger than 20 MB
 const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.sf2': 'application/octet-stream', '.png': 'image/png', '.ico': 'image/x-icon' };
 const jobs = new Map();
 const activeJobs = new Map();
 const recognitionCache = path.join(root, '.cache', 'recognition');
-// Cache keys include the OMR postprocessor version so a changed recovery
-// algorithm never serves an older score for an identical PDF upload.
-const recognitionVersion = 'cross-noteheads-v2';
+const jobTempRoot = path.join(root, '.cache', 'omr-jobs');
 const steps = ['LOAD', 'BINARY', 'SCALE', 'GRID', 'HEADERS', 'STEM_SEEDS', 'BEAMS', 'LEDGERS', 'HEADS', 'STEMS', 'REDUCTION', 'CUE_BEAMS', 'TEXTS', 'MEASURES', 'CHORDS', 'CURVES', 'SYMBOLS', 'LINKS', 'RHYTHMS', 'PAGE'];
 const stepNames = { LOAD: '读取图像', BINARY: '清理图像', SCALE: '检测五线谱', GRID: '定位谱表', HEADERS: '识别谱号调号', HEADS: '识别音符', TEXTS: '识别文字', MEASURES: '识别小节', RHYTHMS: '检查节奏', PAGE: '完成本页' };
 
@@ -39,13 +38,69 @@ async function findExports(dir) {
   return found;
 }
 
+async function findUsableExports(dir) {
+  const files = await findExports(dir);
+  const usable = [];
+  for (const file of files) {
+    try {
+      let xml;
+      if (file.toLowerCase().endsWith('.mxl')) {
+        const zip = await JSZip.loadAsync(await fs.readFile(file));
+        const entry = Object.values(zip.files).find(item => !item.dir && item.name.endsWith('.xml') && !item.name.startsWith('META-INF/'));
+        xml = await entry?.async('text');
+      } else xml = await fs.readFile(file, 'utf8');
+      if (xml && /<score-partwise\b/.test(xml) && /<part\b/.test(xml)) usable.push(file);
+    } catch { /* Incomplete export: try another file or the raster fallback. */ }
+  }
+  return usable;
+}
+
+async function createJobTemp() {
+  await fs.mkdir(jobTempRoot, { recursive: true });
+  const temp = await fs.mkdtemp(path.join(jobTempRoot, 'job-'));
+  await fs.mkdir(path.join(temp, 'java-temp'));
+  return temp;
+}
+
+async function removeJobTemp(temp) {
+  const base = path.resolve(jobTempRoot) + path.sep;
+  if (!path.resolve(temp).startsWith(base)) throw new Error('拒绝清理识谱目录外的文件。');
+  await fs.rm(temp, { recursive: true, force: true });
+}
+
+function runCommand(binary, args, timeout = 180000) {
+  return new Promise((resolve, reject) => {
+    const child = spawn(binary, args, { windowsHide: true, cwd: root });
+    let output = '';
+    for (const stream of [child.stdout, child.stderr]) stream.on('data', data => { output = (output + data.toString()).slice(-3000); });
+    const timer = setTimeout(() => { child.kill(); reject(new Error(`${path.basename(binary)} 超时。`)); }, timeout);
+    child.on('error', error => { clearTimeout(timer); reject(error); });
+    child.on('close', code => { clearTimeout(timer); code === 0 ? resolve(output) : reject(new Error(`${path.basename(binary)} 失败：${output.slice(-500)}`)); });
+  });
+}
+
+async function rasterizePdf(input, temp, firstPage, lastPage) {
+  const prefix = path.join(temp, 'raster-page');
+  const bundledPoppler = path.join(root, 'tools', 'runtime', 'poppler', 'Library', 'bin', 'pdftoppm.exe');
+  const pdftoppm = await exists(bundledPoppler) ? bundledPoppler : 'pdftoppm';
+  await runCommand(pdftoppm, ['-f', String(firstPage), '-l', String(lastPage), '-r', '300', '-gray', '-png', input, prefix], Math.max(180000, (lastPage - firstPage + 1) * 30000));
+  const names = (await fs.readdir(temp)).filter(name => /^raster-page-\d+\.png$/.test(name)).sort((a, b) => Number(a.match(/\d+/)[0]) - Number(b.match(/\d+/)[0]));
+  if (!names.length) throw new Error('PDF 转图像时没有生成页面。');
+  const tiff = path.join(temp, 'raster-score.tif');
+  await runCommand('python', [path.join(root, 'scripts', 'make-multipage-tiff.py'), tiff, ...names.map(name => path.join(temp, name))], Math.max(180000, names.length * 15000));
+  return tiff;
+}
+
 function runAudiveris(binary, input, output, options = {}) {
   return new Promise((resolve, reject) => {
     const args = ['-batch', '-export', '-swap'];
     if (path.extname(input).toLowerCase() === '.pdf') args.push('-constant', 'org.audiveris.omr.image.ImageLoading.pdfResolution=400');
     if (options.sheets) args.push('-sheets', options.sheets);
     args.push('-output', output, '--', input);
-    const child = spawn(binary, args, { shell: binary.toLowerCase().endsWith('.bat'), windowsHide: true, cwd: root });
+    const javaTemp = options.javaTemp;
+    const javaOption = javaTemp ? `-Djava.io.tmpdir="${javaTemp.replace(/\\/g, '/')}"` : '';
+    const env = javaOption ? { ...process.env, JAVA_TOOL_OPTIONS: [process.env.JAVA_TOOL_OPTIONS, javaOption].filter(Boolean).join(' ') } : process.env;
+    const child = spawn(binary, args, { shell: binary.toLowerCase().endsWith('.bat'), windowsHide: true, cwd: root, env });
     let log = '';
     let pending = '';
     const append = data => {
@@ -65,12 +120,17 @@ function runAudiveris(binary, input, output, options = {}) {
     const timeout = options.timeout || 180000;
     const timer = setTimeout(() => { child.kill(); reject(new Error(`识谱超过 ${Math.round(timeout / 60000)} 分钟，请缩小页数后重试。`)); }, timeout);
     child.on('error', error => { clearTimeout(timer); reject(error); });
-    child.on('close', code => {
+    child.on('close', async code => {
       clearTimeout(timer);
-      if (code === 0) resolve(log);
-      else if (/too low interline|Sheet ignored/i.test(log)) reject(new Error('谱表线太细，无法可靠识别。请上传更清晰的 PDF 或 MusicXML。'));
-      else if (/Could not export since transcription did not complete|Created scores: \[\]/.test(log)) reject(new Error('没有检测到可导出的乐谱；请检查所选页是否包含五线谱。'));
-      else reject(new Error(`Audiveris 识谱失败（退出码 ${code}）。${log.match(/(?:ERROR|WARN).*\|[^\r\n]+/g)?.at(-1)?.slice(-250) || '请尝试缩小页数或上传 MusicXML。'}`));
+      try {
+        if ((await findUsableExports(output)).length) { resolve(log); return; }
+        if (code === 0) { reject(new Error('Audiveris 已处理页面，但没有导出 MusicXML。')); return; }
+        if (/Load error on .*basic-classifier|network\.norms.*null|AccessDeniedException.*AbstractClassifier/.test(log)) reject(new Error('Audiveris 无法写入临时模型文件。'));
+        else if (/Created scores: \[\]/.test(log)) reject(new Error('Audiveris 没有找到可识别的谱表。'));
+        else if (/Error processing stub|Could not export since transcription did not complete|Measure\.purgeVoices/.test(log)) reject(new Error('Audiveris 在解析小节时出错。'));
+        else if (/too low interline|Sheet ignored/i.test(log)) reject(new Error('谱表线太细，无法可靠识别。'));
+        else reject(new Error(`Audiveris 识谱失败（退出码 ${code}）。${log.match(/(?:ERROR|WARN).*\|[^\r\n]+/g)?.at(-1)?.slice(-250) || '请尝试上传更清晰的谱页。'}`));
+      } catch (error) { reject(error); }
     });
   });
 }
@@ -82,7 +142,7 @@ async function recoverCrossNoteheads(pdf, selected, output) {
     const child = spawn('python', [path.join(root, 'scripts', 'recover-x-noteheads.py'), pdf, selected, target], { windowsHide: true, cwd: root });
     let stdout = '';
     let stderr = '';
-    const timer = setTimeout(() => { child.kill(); reject(new Error('叉形符头补识别超时。')); }, 180000);
+    const timer = setTimeout(() => { child.kill(); reject(new Error('叉形符头补识别超时。')); }, 600000);
     child.stdout.on('data', data => { stdout += data.toString(); });
     child.stderr.on('data', data => { stderr = (stderr + data.toString()).slice(-2000); });
     child.on('error', error => { clearTimeout(timer); reject(error); });
@@ -100,7 +160,7 @@ async function readUpload(req) {
   let bytes = 0;
   for await (const chunk of req) {
     bytes += chunk.length;
-    if (bytes > maxBytes) throw Object.assign(new Error('文件不能超过 20 MB。'), { status: 413 });
+    if (bytes > maxBytes) throw Object.assign(new Error('文件不能超过 200 MB。'), { status: 413 });
     chunks.push(chunk);
   }
   if (!bytes) throw Object.assign(new Error('上传文件为空。'), { status: 400 });
@@ -116,7 +176,7 @@ async function createJob(req, res, url) {
   const ext = (url.searchParams.get('ext') || '').toLowerCase();
   if (!allowed.has(ext)) throw Object.assign(new Error('仅支持 PDF、PNG、JPG、TIFF 扫描谱。'), { status: 400 });
   const body = await readUpload(req);
-  const key = createHash('sha256').update(recognitionVersion).update('\0').update(ext).update('\0').update(body).digest('hex');
+  const key = recognitionKey(ext, body);
   const cachedJob = activeJobs.get(key);
   if (cachedJob?.state === 'working') { sendJson(res, 202, { id: cachedJob.id }); return; }
   const cached = await readCachedResult(key);
@@ -124,12 +184,12 @@ async function createJob(req, res, url) {
     const id = randomUUID();
     jobs.set(id, { id, state: 'done', stage: '已载入本地识谱结果', startedAt: Date.now(), page: 0, pagesDone: 0, totalPages: 0, firstPage: 1, lastPage: 1, detected: false, step: '', body: cached.body, extension: cached.extension, cached: true, error: '' });
     sendJson(res, 202, { id });
-    setTimeout(() => jobs.delete(id), 30 * 60 * 1000).unref();
+    setTimeout(() => jobs.delete(id), 6 * 60 * 60 * 1000).unref();
     return;
   }
   const bin = await audiverisPath();
   if (!bin) throw Object.assign(new Error('本机尚未配置 Audiveris。'), { status: 503 });
-  const temp = await fs.mkdtemp(path.join(os.tmpdir(), 'choirsinger-'));
+  const temp = await createJobTemp();
   const input = path.join(temp, `score.${ext}`);
   await fs.writeFile(input, body);
   const id = randomUUID();
@@ -139,8 +199,8 @@ async function createJob(req, res, url) {
   sendJson(res, 202, { id });
   processJob(job, bin, input, temp, key).catch(error => { job.state = 'failed'; job.error = error.message || '识谱失败。'; job.stage = '识谱失败'; }).finally(() => {
     activeJobs.delete(key);
-    fs.rm(temp, { recursive: true, force: true }).catch(() => {});
-    setTimeout(() => jobs.delete(id), 30 * 60 * 1000).unref();
+    removeJobTemp(temp).catch(error => console.warn(`清理识谱目录失败：${error.message}`));
+    setTimeout(() => jobs.delete(id), 6 * 60 * 60 * 1000).unref();
   });
 }
 
@@ -156,31 +216,52 @@ async function readCachedResult(key) {
 async function processJob(job, bin, input, temp, key) {
   const output = path.join(temp, 'output');
   await fs.mkdir(output);
+  const javaTemp = path.join(temp, 'java-temp');
   let sheets;
+  let preferRaster = false;
   if (path.extname(input).toLowerCase() === '.pdf') {
     const pdf = await inspectPdf(input, temp, progress => { job.stage = progress.stage; job.totalPages = progress.totalPages; });
     job.firstPage = pdf.firstPage;
     job.lastPage = pdf.lastPage;
     job.detected = pdf.detected;
     job.totalPages = pdf.pages;
+    preferRaster = pdf.preferRaster;
     sheets = `${pdf.firstPage}-${pdf.lastPage}`;
     job.stage = pdf.detected ? `找到第 ${pdf.firstPage}–${pdf.lastPage} 页五线谱，开始识谱` : '未能自动定位五线谱页，尝试识别全部页面';
   } else { job.firstPage = 1; job.lastPage = 1; job.totalPages = 1; job.stage = '开始识谱'; }
   const count = job.lastPage - job.firstPage + 1;
-  await runAudiveris(bin, input, output, {
-    sheets,
-    timeout: Math.min(30 * 60 * 1000, Math.max(180000, count * 180000)),
-    onProgress: ({ page, step, stage }) => {
-      job.page = page;
-      job.step = step;
-      job.pagesDone = Math.min(count, Math.max(0, page - job.firstPage + (step === 'PAGE' ? 1 : 0)));
-      job.stage = `第 ${Math.max(1, page - job.firstPage + 1)} / ${count} 页 · ${stage}`;
-    },
-  });
+  const timeout = Math.min(6 * 60 * 60 * 1000, Math.max(600000, count * 300000));
+  const onProgress = offset => ({ page, step, stage }) => {
+    const originalPage = page + offset;
+    job.page = originalPage;
+    job.step = step;
+    job.pagesDone = Math.min(count, Math.max(0, originalPage - job.firstPage + (step === 'PAGE' ? 1 : 0)));
+    job.stage = `第 ${Math.max(1, originalPage - job.firstPage + 1)} / ${count} 页 · ${stage}`;
+  };
+  let selected;
+  const pdfInput = path.extname(input).toLowerCase() === '.pdf';
+  const methods = pdfInput ? (preferRaster ? ['raster', 'direct'] : ['direct', 'raster']) : ['direct'];
+  const failures = [];
+  for (const method of methods) {
+    const methodOutput = path.join(output, method);
+    await fs.mkdir(methodOutput);
+    job.page = 0;
+    job.pagesDone = 0;
+    job.stage = method === 'raster' ? '正在用图像识别 PDF 乐谱' : pdfInput ? '正在直接读取 PDF 乐谱' : '正在识别图像乐谱';
+    try {
+      const source = method === 'raster' ? await rasterizePdf(input, temp, job.firstPage, job.lastPage) : input;
+      await runAudiveris(bin, source, methodOutput, { sheets: method === 'direct' ? sheets : undefined, timeout, javaTemp, onProgress: onProgress(method === 'raster' ? job.firstPage - 1 : 0) });
+      const results = await findUsableExports(methodOutput);
+      selected = results.find(file => file.toLowerCase().endsWith('.mxl')) || results[0];
+      if (selected) break;
+      throw new Error('没有生成可读取的 MusicXML。');
+    } catch (error) {
+      failures.push(`${method === 'raster' ? '图像识谱' : '直接识谱'}：${error.message}`);
+      if (methods.length > 1 && method !== methods.at(-1)) job.stage = '首次识谱失败，正在切换识谱方式';
+    }
+  }
+  if (!selected) throw new Error(failures.join('；') || '没有生成 MusicXML。');
   job.stage = '正在整理 MusicXML';
-  const results = await findExports(output);
-  if (!results.length) throw new Error('识谱结束，但没有生成 MusicXML。请尝试上传更清晰的谱页。');
-  let selected = results.find(f => f.toLowerCase().endsWith('.mxl')) || results[0];
   if (path.extname(input).toLowerCase() === '.pdf') {
     job.stage = '正在检查叉形符头与气音';
     try {
@@ -223,26 +304,24 @@ async function recognize(req, res, url) {
   if (!allowed.has(ext)) throw Object.assign(new Error('仅支持 PDF、PNG、JPG、TIFF 扫描谱。'), { status: 400 });
   const bin = await audiverisPath();
   if (!bin) throw Object.assign(new Error('本机尚未配置 Audiveris，当前可直接导入 MusicXML。'), { status: 503 });
-  const temp = await fs.mkdtemp(path.join(os.tmpdir(), 'choirsinger-'));
+  const body = await readUpload(req);
+  const key = recognitionKey(ext, body);
+  const cached = await readCachedResult(key);
+  if (cached) {
+    res.writeHead(200, { 'Content-Type': 'application/octet-stream', 'Content-Length': cached.body.length, 'X-Score-Extension': cached.extension });
+    res.end(cached.body);
+    return;
+  }
+  const temp = await createJobTemp();
   try {
-    const body = await readUpload(req);
     const input = path.join(temp, `score.${ext}`);
-    const output = path.join(temp, 'output');
-    await fs.mkdir(output);
     await fs.writeFile(input, body);
-    await runAudiveris(bin, input, output);
-    const results = await findExports(output);
-    if (!results.length) throw new Error('识谱已结束，但未生成 MusicXML。请换一份清晰的印刷乐谱。');
-    let selected = results.find(f => f.toLowerCase().endsWith('.mxl')) || results[0];
-    if (ext === 'pdf') {
-      try { selected = (await recoverCrossNoteheads(input, selected, output)).file; }
-      catch (error) { console.warn(`叉形符头补识别失败，使用原识谱结果：${error.message}`); }
-    }
-    const exported = await fs.readFile(selected);
-    res.writeHead(200, { 'Content-Type': 'application/octet-stream', 'Content-Length': exported.length, 'X-Score-Extension': path.extname(selected).slice(1) });
-    res.end(exported);
+    const job = { state: 'working', stage: '', page: 0, pagesDone: 0, totalPages: 0, firstPage: 1, lastPage: 1, detected: false, step: '' };
+    await processJob(job, bin, input, temp, key);
+    res.writeHead(200, { 'Content-Type': 'application/octet-stream', 'Content-Length': job.body.length, 'X-Score-Extension': job.extension });
+    res.end(job.body);
   } finally {
-    if (path.dirname(temp) === os.tmpdir() && path.basename(temp).startsWith('choirsinger-')) await fs.rm(temp, { recursive: true, force: true });
+    await removeJobTemp(temp);
   }
 }
 

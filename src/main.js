@@ -377,7 +377,7 @@ function submitRecognition(file, ext) {
   return new Promise((resolve, reject) => {
     const request = new XMLHttpRequest();
     request.open('POST', `/api/recognize-jobs?ext=${encodeURIComponent(ext)}`);
-    request.timeout = 120000;
+    request.timeout = 600000;
     request.upload.onprogress = event => {
       if (event.lengthComputable) importProgress('正在传送到本机识谱服务', `已传送 ${(event.loaded / 1024 / 1024).toFixed(1)} / ${(event.total / 1024 / 1024).toFixed(1)} MB`, event.loaded / event.total * 100);
     };
@@ -908,7 +908,7 @@ async function openFile(file) {
       if (!omrStatus) omrStatus = await probeOmr();
       if (!omrStatus.available) throw new Error(staticOmrMessage);
       if (!omrStatus.omr) throw new Error('本机还没装 Audiveris，暂时只能导入 MusicXML；运行 scripts/setup-audiveris.ps1 可补齐。');
-      if (file.size > 20 * 1024 * 1024) throw new Error('扫描文件不能超过 20 MB。');
+      if (file.size > 200 * 1024 * 1024) throw new Error('扫描文件不能超过 200 MB。');
       const id = await submitRecognition(file, ext);
       sessionStorage.setItem('choir-import-job', JSON.stringify({ id, name: file.name, size: file.size }));
       const recognition = await waitForRecognition(id);

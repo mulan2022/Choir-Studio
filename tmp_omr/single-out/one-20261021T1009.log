@@ -1,0 +1,155 @@
+2026-10-21 10:09:02,159 INFO [one]                 Book.java:560  | 1 sheet in D:\demo\ChoirSinger\tmp_omr\single-test\one.tif
+2026-10-21 10:09:02,293 WARN []                 Book.java:2528 | Error storing Book{one} to D:\demo\ChoirSinger\tmp_omr\single-out\one.omr ex:java.nio.file.ReadOnlyFileSystemException
+java.nio.file.ReadOnlyFileSystemException: null
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.checkWritable(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.deleteFile(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipPath.delete(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystemProvider.delete(Unknown Source)
+	at java.base/java.nio.file.spi.FileSystemProvider.deleteIfExists(Unknown Source)
+	at java.base/java.nio.file.Files.deleteIfExists(Unknown Source)
+	at org.audiveris.omr.sheet.Book.storeBookInfo(Book.java:2560)
+	at org.audiveris.omr.sheet.Book.store(Book.java:2476)
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:855)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+2026-10-21 10:09:02,299 INFO []                 Book.java:1929 | Book reaching PAGE on sheets:[#1]
+2026-10-21 10:09:02,303 INFO [one]       StepMonitoring.java:98   | LOAD
+2026-10-21 10:09:02,815 INFO [one]            SheetStub.java:1278 | Loaded image #1 2550x3300 from D:\demo\ChoirSinger\tmp_omr\single-test\one.tif
+2026-10-21 10:09:02,825 INFO [one]            ImageUtil.java:152  | Converting max RGB to gray
+2026-10-21 10:09:03,284 INFO [one]       StepMonitoring.java:98   | BINARY
+2026-10-21 10:09:04,519 INFO [one]       StepMonitoring.java:98   | SCALE
+2026-10-21 10:09:04,602 INFO [one]         ScaleBuilder.java:254  | Beam  guessed height:  9 -- 0.25 of [7..15] range
+2026-10-21 10:09:04,606 INFO [one]         ScaleBuilder.java:271  | Beam measured height:  9 -- 0.25 of [7..15] range at 321% of needed quorum
+2026-10-21 10:09:04,608 INFO [one]         ScaleBuilder.java:401  | Normalized black jitter: 12.50 %
+2026-10-21 10:09:04,609 INFO [one]            ScaleStep.java:65   | Scale{ interline(15,16,17) line(2,3,4) beam(9)}
+2026-10-21 10:09:04,611 INFO [one]       StepMonitoring.java:98   | GRID
+2026-10-21 10:09:05,923 INFO [one]       LinesRetriever.java:1508 | Global slope: -0.00369
+2026-10-21 10:09:06,076 INFO [one]    ClustersRetriever.java:326  | Retrieved raw line clusters: 8 of sizes [5] with interline(15,16,17)
+2026-10-21 10:09:06,616 INFO [one]            PeakGraph.java:310  | Systems: #1[1, 2, 3, 4] #2[5, 6, 7, 8]
+2026-10-21 10:09:06,823 INFO [one]        BarsRetriever.java:769  | No brace partner at level:1 for Peak{316-329 F#2879 T#3 [BRACE]}
+2026-10-21 10:09:06,825 INFO [one]        BarsRetriever.java:769  | No brace partner at level:1 for Peak{319-331 F#2880 T#4 [BRACE]}
+2026-10-21 10:09:06,825 INFO [one]        BarsRetriever.java:769  | No brace partner at level:1 for Peak{140-151 F#2883 T#7 [BRACE]}
+2026-10-21 10:09:06,826 INFO [one]        BarsRetriever.java:769  | No brace partner at level:1 for Peak{139-150 F#2884 T#8 [BRACE]}
+2026-10-21 10:09:06,833 INFO [one]        BarsRetriever.java:1305 | System#1
+2026-10-21 10:09:06,834 INFO [one]        BarsRetriever.java:1308 |    PartGroup{bracket number:1 barline:false staves:1-2}
+2026-10-21 10:09:06,835 INFO [one]        BarsRetriever.java:1305 | System#2
+2026-10-21 10:09:06,837 INFO [one]        BarsRetriever.java:1308 |    PartGroup{bracket number:1 barline:false staves:5-6}
+2026-10-21 10:09:07,864 INFO [one]        SystemManager.java:134  | Indentation detected for system #1
+2026-10-21 10:09:07,873 INFO [one]        SystemManager.java:800  | 4 parts along 2 systems
+2026-10-21 10:09:07,878 INFO [one]                 Book.java:543  | Created scores: [{Score 1}]
+2026-10-21 10:09:07,880 INFO [one]       StepMonitoring.java:98   | HEADERS
+2026-10-21 10:09:07,945 WARN [one]      BasicClassifier.java:363  | Load error on jar:file:/D:/demo/ChoirSinger/tools/audiveris/Audiveris/app/audiveris.jar!/res/basic-classifier.zip java.nio.file.NoSuchFileException: D:\demo\ChoirSinger\tmp_omr\jvm-tmp\AbstractClassifier-2491331164633232988.tmp
+java.nio.file.NoSuchFileException: D:\demo\ChoirSinger\tmp_omr\jvm-tmp\AbstractClassifier-2491331164633232988.tmp
+	at java.base/sun.nio.fs.WindowsException.translateToIOException(Unknown Source)
+	at java.base/sun.nio.fs.WindowsException.rethrowAsIOException(Unknown Source)
+	at java.base/sun.nio.fs.WindowsException.rethrowAsIOException(Unknown Source)
+	at java.base/sun.nio.fs.WindowsFileSystemProvider.newByteChannel(Unknown Source)
+	at java.base/java.nio.file.Files.newByteChannel(Unknown Source)
+	at java.base/java.nio.file.Files.createFile(Unknown Source)
+	at java.base/java.nio.file.TempFileHelper.create(Unknown Source)
+	at java.base/java.nio.file.TempFileHelper.createTempFile(Unknown Source)
+	at java.base/java.nio.file.Files.createTempFile(Unknown Source)
+	at org.audiveris.omr.classifier.BasicClassifier.load(BasicClassifier.java:336)
+	at org.audiveris.omr.classifier.BasicClassifier.<init>(BasicClassifier.java:127)
+	at org.audiveris.omr.classifier.BasicClassifier$LazySingleton.<clinit>(BasicClassifier.java:780)
+	at org.audiveris.omr.classifier.BasicClassifier.getInstance(BasicClassifier.java:670)
+	at org.audiveris.omr.classifier.ShapeClassifier.getInstance(ShapeClassifier.java:80)
+	at org.audiveris.omr.classifier.ShapeClassifier.lambda$static$0(ShapeClassifier.java:50)
+	at java.base/java.util.concurrent.FutureTask.run(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+2026-10-21 10:09:07,947 INFO [one]      BasicClassifier.java:156  | Creating a brand new Basic Classifier
+2026-10-21 10:09:07,967 INFO [one]        NeuralNetwork.java:195  | Initial complexity, hiddenW2: 1373.9 outputW2: 1876.5
+2026-10-21 10:09:08,263 WARN [one]                 Book.java:2044 | Error processing stub java.lang.RuntimeException: java.lang.NullPointerException: Cannot read field "means" because "this.network.norms" is null
+java.util.concurrent.ExecutionException: java.lang.RuntimeException: java.lang.NullPointerException: Cannot read field "means" because "this.network.norms" is null
+	at java.base/java.util.concurrent.FutureTask.report(Unknown Source)
+	at java.base/java.util.concurrent.FutureTask.get(Unknown Source)
+	at org.audiveris.omr.sheet.SheetStub.doOneStep(SheetStub.java:519)
+	at org.audiveris.omr.sheet.SheetStub.reachStep(SheetStub.java:1405)
+	at org.audiveris.omr.sheet.Book.reachBookStep(Book.java:2035)
+	at org.audiveris.omr.sheet.Book.transcribe(Book.java:2626)
+	at org.audiveris.omr.sheet.Book.export(Book.java:593)
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:927)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+Caused by: java.lang.RuntimeException: java.lang.NullPointerException: Cannot read field "means" because "this.network.norms" is null
+	at org.audiveris.omr.step.AbstractSystemStep.doitPerSystem(AbstractSystemStep.java:185)
+	at org.audiveris.omr.step.AbstractSystemStep.doit(AbstractSystemStep.java:125)
+	at org.audiveris.omr.step.OmrStep.doit(OmrStep.java:138)
+	at org.audiveris.omr.sheet.SheetStub.lambda$doOneStep$0(SheetStub.java:503)
+	at java.base/java.util.concurrent.FutureTask.run(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.lang.NullPointerException: Cannot read field "means" because "this.network.norms" is null
+	at org.audiveris.omr.classifier.BasicClassifier.normalize(BasicClassifier.java:446)
+	at org.audiveris.omr.classifier.BasicClassifier.getNaturalEvaluations(BasicClassifier.java:234)
+	at org.audiveris.omr.classifier.AbstractClassifier.getSortedEvaluations(AbstractClassifier.java:251)
+	at org.audiveris.omr.classifier.AbstractClassifier.evaluate(AbstractClassifier.java:143)
+	at org.audiveris.omr.classifier.AbstractClassifier.evaluate(AbstractClassifier.java:114)
+	at org.audiveris.omr.sheet.clef.ClefBuilder$ClefAdapter.evaluateGlyph(ClefBuilder.java:565)
+	at org.audiveris.omr.glyph.GlyphCluster.process(GlyphCluster.java:161)
+	at org.audiveris.omr.glyph.GlyphCluster.decompose(GlyphCluster.java:102)
+	at org.audiveris.omr.sheet.clef.ClefBuilder.getBestMap(ClefBuilder.java:251)
+	at org.audiveris.omr.sheet.clef.ClefBuilder.findClefs(ClefBuilder.java:213)
+	at org.audiveris.omr.sheet.clef.ClefBuilder$Column.retrieveClefs(ClefBuilder.java:651)
+	at org.audiveris.omr.sheet.header.HeaderBuilder.processHeader(HeaderBuilder.java:275)
+	at org.audiveris.omr.sheet.header.HeadersStep.doSystem(HeadersStep.java:63)
+	at org.audiveris.omr.sheet.header.HeadersStep.doSystem(HeadersStep.java:37)
+	at org.audiveris.omr.step.AbstractSystemStep.lambda$doitPerSystem$0(AbstractSystemStep.java:158)
+	at org.audiveris.omr.step.AbstractSystemStep.doitPerSystem(AbstractSystemStep.java:178)
+	... 7 common frames omitted
+2026-10-21 10:09:08,265 INFO [one]                 Book.java:2584 | Book{one} storing
+2026-10-21 10:09:08,266 WARN [one]                 Book.java:2428 | Bookpath not defined
+2026-10-21 10:09:08,266 INFO [one]            SheetStub.java:1650 | Stub#1 storing
+2026-10-21 10:09:08,272 WARN [one]            SheetStub.java:1673 | Error swapping sheet
+java.nio.file.ReadOnlyFileSystemException: null
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.checkWritable(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.deleteFile(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipPath.delete(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystemProvider.delete(Unknown Source)
+	at java.base/java.nio.file.spi.FileSystemProvider.deleteIfExists(Unknown Source)
+	at java.base/java.nio.file.Files.deleteIfExists(Unknown Source)
+	at org.audiveris.omr.sheet.Book.storeBookInfo(Book.java:2560)
+	at org.audiveris.omr.sheet.SheetStub.storeSheet(SheetStub.java:1627)
+	at org.audiveris.omr.sheet.SheetStub.swapSheet(SheetStub.java:1651)
+	at org.audiveris.omr.sheet.Book.swapAllSheets(Book.java:2596)
+	at org.audiveris.omr.sheet.Book.reachBookStep(Book.java:2049)
+	at org.audiveris.omr.sheet.Book.transcribe(Book.java:2626)
+	at org.audiveris.omr.sheet.Book.export(Book.java:593)
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:927)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+2026-10-21 10:09:08,273 INFO [one]                 Book.java:2050 | End of Stub#1
+2026-10-21 10:09:08,274 INFO [one]                 Book.java:2057 | End of Book{one}
+2026-10-21 10:09:08,274 INFO [one]                 Book.java:596  | Could not export since transcription did not complete successfully
+2026-10-21 10:09:08,274 WARN [one]                  CLI.java:956  | Exception occurred java.lang.Exception: Error in export
+java.lang.Exception: Error in export
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:930)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+2026-10-21 10:09:08,336 WARN [one]                 Book.java:2528 | Error storing Book{one} to D:\demo\ChoirSinger\tmp_omr\single-out\one.omr ex:java.nio.file.ReadOnlyFileSystemException
+java.nio.file.ReadOnlyFileSystemException: null
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.checkWritable(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.deleteFile(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipPath.delete(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystemProvider.delete(Unknown Source)
+	at java.base/java.nio.file.spi.FileSystemProvider.deleteIfExists(Unknown Source)
+	at java.base/java.nio.file.Files.deleteIfExists(Unknown Source)
+	at org.audiveris.omr.sheet.Book.storeBookInfo(Book.java:2560)
+	at org.audiveris.omr.sheet.Book.store(Book.java:2476)
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:965)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+2026-10-21 10:09:08,339 INFO [one]                Score.java:181  | Closing {Score 1}

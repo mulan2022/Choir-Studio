@@ -1,0 +1,520 @@
+java.nio.file.AccessDeniedException: C:\Users\MECHREVO\AppData\Local\Temp\logback-13995704253068289930.xml
+	at java.base/sun.nio.fs.WindowsException.translateToIOException(Unknown Source)
+	at java.base/sun.nio.fs.WindowsException.rethrowAsIOException(Unknown Source)
+	at java.base/sun.nio.fs.WindowsException.rethrowAsIOException(Unknown Source)
+	at java.base/sun.nio.fs.WindowsFileSystemProvider.newByteChannel(Unknown Source)
+	at java.base/java.nio.file.Files.newByteChannel(Unknown Source)
+	at java.base/java.nio.file.Files.createFile(Unknown Source)
+	at java.base/java.nio.file.TempFileHelper.create(Unknown Source)
+	at java.base/java.nio.file.TempFileHelper.createTempFile(Unknown Source)
+	at java.base/java.nio.file.Files.createTempFile(Unknown Source)
+	at org.audiveris.omr.log.LogUtil.initialize(LogUtil.java:245)
+	at org.audiveris.omr.WellKnowns.<clinit>(WellKnowns.java:187)
+	at org.audiveris.omr.Main.<clinit>(Main.java:70)
+	at Audiveris.main(Audiveris.java:50)
+10:25:24,056 |-INFO in ch.qos.logback.classic.LoggerContext[default] - This is logback-classic version 1.4.14
+10:25:24,062 |-INFO in ch.qos.logback.classic.util.ContextInitializer@79079097 - No custom configurators were discovered as a service.
+10:25:24,062 |-INFO in ch.qos.logback.classic.util.ContextInitializer@79079097 - Trying to configure with ch.qos.logback.classic.joran.SerializedModelConfigurator
+10:25:24,066 |-INFO in ch.qos.logback.classic.util.ContextInitializer@79079097 - Constructed configurator of type class ch.qos.logback.classic.joran.SerializedModelConfigurator
+10:25:24,068 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Could NOT find resource [logback-test.scmo]
+10:25:24,068 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Could NOT find resource [logback.scmo]
+10:25:24,082 |-INFO in ch.qos.logback.classic.util.ContextInitializer@79079097 - ch.qos.logback.classic.joran.SerializedModelConfigurator.configure() call lasted 4 milliseconds. ExecutionStatus=INVOKE_NEXT_IF_ANY
+10:25:24,082 |-INFO in ch.qos.logback.classic.util.ContextInitializer@79079097 - Trying to configure with ch.qos.logback.classic.util.DefaultJoranConfigurator
+10:25:24,084 |-INFO in ch.qos.logback.classic.util.ContextInitializer@79079097 - Constructed configurator of type class ch.qos.logback.classic.util.DefaultJoranConfigurator
+10:25:24,085 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Could NOT find resource [logback-test.xml]
+10:25:24,085 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Could NOT find resource [logback.xml]
+10:25:24,085 |-INFO in ch.qos.logback.classic.util.ContextInitializer@79079097 - ch.qos.logback.classic.util.DefaultJoranConfigurator.configure() call lasted 1 milliseconds. ExecutionStatus=INVOKE_NEXT_IF_ANY
+10:25:24,085 |-INFO in ch.qos.logback.classic.util.ContextInitializer@79079097 - Trying to configure with ch.qos.logback.classic.BasicConfigurator
+10:25:24,088 |-INFO in ch.qos.logback.classic.util.ContextInitializer@79079097 - Constructed configurator of type class ch.qos.logback.classic.BasicConfigurator
+10:25:24,088 |-INFO in ch.qos.logback.classic.BasicConfigurator@4d1c00d0 - Setting up default configuration.
+10:25:24,219 |-INFO in ch.qos.logback.classic.util.ContextInitializer@79079097 - ch.qos.logback.classic.BasicConfigurator.configure() call lasted 130 milliseconds. ExecutionStatus=NEUTRAL
+
+10:25:25.005 [main] INFO org.audiveris.omr.Main -- Running in batch mode
+INFO  Caller+0	 at org.audiveris.omr.Main.main(Main.java:259)
+ [] Running in batch mode
+10:25:26.338 [main] WARN org.audiveris.omr.text.tesseract.Languages -- *** No installed OCR languages ***
+WARN  Caller+0	 at org.audiveris.omr.text.tesseract.Languages.checkSupport(Languages.java:142)
+ [] *** No installed OCR languages ***
+10:25:27.055 [main] INFO org.audiveris.omr.sheet.AliasPatterns -- Alias patterns: [(IMSLP[0-9]*)-.*]
+INFO  Caller+0	 at org.audiveris.omr.sheet.AliasPatterns.loadAliasPatterns(AliasPatterns.java:146)
+ [] Alias patterns: [(IMSLP[0-9]*)-.*]
+10:25:27.062 [main] INFO org.audiveris.omr.Main -- Submitting 1 task(s) in sequence:
+    Input "D:\demo\ChoirSinger\玉门关-PLS(1).pdf"
+INFO  Caller+0	 at org.audiveris.omr.Main.logTasks(Main.java:194)
+ [] Submitting 1 task(s) in sequence:
+    Input "D:\demo\ChoirSinger\玉门关-PLS(1).pdf"
+10:25:27.961 [main] INFO org.audiveris.omr.sheet.Book -- 13 sheets in D:\demo\ChoirSinger\玉门关-PLS(1).pdf
+INFO  Caller+0	 at org.audiveris.omr.sheet.Book.createStubs(Book.java:560)
+ [玉门关-PLS(1)] 13 sheets in D:\demo\ChoirSinger\玉门关-PLS(1).pdf
+10:25:28.166 [main] WARN org.audiveris.omr.sheet.Book -- Error storing Book{玉门关-PLS(1)} to D:\demo\ChoirSinger\tmp\pdfs\aud-400\玉门关-PLS(1).omr ex:java.nio.file.ReadOnlyFileSystemException
+java.nio.file.ReadOnlyFileSystemException: null
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.checkWritable(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.deleteFile(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipPath.delete(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystemProvider.delete(Unknown Source)
+	at java.base/java.nio.file.spi.FileSystemProvider.deleteIfExists(Unknown Source)
+	at java.base/java.nio.file.Files.deleteIfExists(Unknown Source)
+	at org.audiveris.omr.sheet.Book.storeBookInfo(Book.java:2560)
+	at org.audiveris.omr.sheet.Book.store(Book.java:2476)
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:855)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+WARN  Caller+0	 at org.audiveris.omr.sheet.Book.store(Book.java:2528)
+ [] Error storing Book{玉门关-PLS(1)} to D:\demo\ChoirSinger\tmp\pdfs\aud-400\玉门关-PLS(1).omr ex:java.nio.file.ReadOnlyFileSystemException
+java.nio.file.ReadOnlyFileSystemException: null
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.checkWritable(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.deleteFile(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipPath.delete(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystemProvider.delete(Unknown Source)
+	at java.base/java.nio.file.spi.FileSystemProvider.deleteIfExists(Unknown Source)
+	at java.base/java.nio.file.Files.deleteIfExists(Unknown Source)
+	at org.audiveris.omr.sheet.Book.storeBookInfo(Book.java:2560)
+	at org.audiveris.omr.sheet.Book.store(Book.java:2476)
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:855)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+10:25:28.189 [main] INFO org.audiveris.omr.sheet.Book -- Book reaching PAGE on sheets:[#1]
+INFO  Caller+0	 at org.audiveris.omr.sheet.Book.reachBookStep(Book.java:1929)
+ [] Book reaching PAGE on sheets:[#1]
+10:25:28.196 [main] INFO org.audiveris.omr.step.ui.StepMonitoring -- LOAD
+INFO  Caller+0	 at org.audiveris.omr.step.ui.StepMonitoring.notifyMsg(StepMonitoring.java:98)
+ [玉门关-PLS(1)#1] LOAD
+10:25:29.524 [cachedLow-thread-1] INFO org.apache.pdfbox.pdmodel.font.FileSystemFontProvider -- 195 new font files found, font cache will be re-built
+INFO  Caller+0	 at org.apache.pdfbox.pdmodel.font.FileSystemFontProvider.loadDiskCache(FileSystemFontProvider.java:668)
+ [玉门关-PLS(1)#1] 195 new font files found, font cache will be re-built
+10:25:29.526 [cachedLow-thread-1] INFO org.apache.pdfbox.pdmodel.font.FileSystemFontProvider -- Building on-disk font cache, this may take a while
+INFO  Caller+0	 at org.apache.pdfbox.pdmodel.font.FileSystemFontProvider.<init>(FileSystemFontProvider.java:370)
+ [玉门关-PLS(1)#1] Building on-disk font cache, this may take a while
+10:25:33.833 [cachedLow-thread-1] WARN org.apache.pdfbox.pdmodel.font.FileSystemFontProvider -- Could not write to font cache
+java.io.FileNotFoundException: C:\Users\MECHREVO\.pdfbox.cache (拒绝访问。)
+	at java.base/java.io.FileOutputStream.open0(Native Method)
+	at java.base/java.io.FileOutputStream.open(Unknown Source)
+	at java.base/java.io.FileOutputStream.<init>(Unknown Source)
+	at java.base/java.io.FileOutputStream.<init>(Unknown Source)
+	at org.apache.pdfbox.pdmodel.font.FileSystemFontProvider.saveDiskCache(FileSystemFontProvider.java:435)
+	at org.apache.pdfbox.pdmodel.font.FileSystemFontProvider.<init>(FileSystemFontProvider.java:372)
+	at org.apache.pdfbox.pdmodel.font.FontMapperImpl$DefaultFontProvider.<clinit>(FontMapperImpl.java:139)
+	at org.apache.pdfbox.pdmodel.font.FontMapperImpl.getProvider(FontMapperImpl.java:158)
+	at org.apache.pdfbox.pdmodel.font.FontMapperImpl.findFont(FontMapperImpl.java:410)
+	at org.apache.pdfbox.pdmodel.font.FontMapperImpl.getCIDFont(FontMapperImpl.java:503)
+	at org.apache.pdfbox.pdmodel.font.PDCIDFontType2.findFontOrSubstitute(PDCIDFontType2.java:161)
+	at org.apache.pdfbox.pdmodel.font.PDCIDFontType2.<init>(PDCIDFontType2.java:146)
+	at org.apache.pdfbox.pdmodel.font.PDCIDFontType2.<init>(PDCIDFontType2.java:72)
+	at org.apache.pdfbox.pdmodel.font.PDFontFactory.createDescendantFont(PDFontFactory.java:385)
+	at org.apache.pdfbox.pdmodel.font.PDType0Font.<init>(PDType0Font.java:97)
+	at org.apache.pdfbox.pdmodel.font.PDFontFactory.createFont(PDFontFactory.java:173)
+	at org.apache.pdfbox.pdmodel.PDResources.getFont(PDResources.java:170)
+	at org.apache.pdfbox.contentstream.operator.text.SetFontAndSize.process(SetFontAndSize.java:72)
+	at org.apache.pdfbox.contentstream.PDFStreamEngine.processOperator(PDFStreamEngine.java:926)
+	at org.apache.pdfbox.contentstream.PDFStreamEngine.processStreamOperators(PDFStreamEngine.java:559)
+	at org.apache.pdfbox.contentstream.PDFStreamEngine.processStream(PDFStreamEngine.java:517)
+	at org.apache.pdfbox.contentstream.PDFStreamEngine.showForm(PDFStreamEngine.java:189)
+	at org.apache.pdfbox.rendering.PageDrawer.showForm(PageDrawer.java:1656)
+	at org.apache.pdfbox.contentstream.operator.graphics.DrawObject.process(DrawObject.java:96)
+	at org.apache.pdfbox.contentstream.PDFStreamEngine.processOperator(PDFStreamEngine.java:926)
+	at org.apache.pdfbox.contentstream.PDFStreamEngine.processStreamOperators(PDFStreamEngine.java:559)
+	at org.apache.pdfbox.contentstream.PDFStreamEngine.processStream(PDFStreamEngine.java:517)
+	at org.apache.pdfbox.contentstream.PDFStreamEngine.processPage(PDFStreamEngine.java:158)
+	at org.apache.pdfbox.rendering.PageDrawer.drawPage(PageDrawer.java:287)
+	at org.apache.pdfbox.rendering.PDFRenderer.renderImage(PDFRenderer.java:348)
+	at org.apache.pdfbox.rendering.PDFRenderer.renderImage(PDFRenderer.java:262)
+	at org.apache.pdfbox.rendering.PDFRenderer.renderImageWithDPI(PDFRenderer.java:245)
+	at org.audiveris.omr.image.ImageLoading$PdfboxLoader.getImage(ImageLoading.java:342)
+	at org.audiveris.omr.sheet.SheetStub.loadGrayImage(SheetStub.java:1277)
+	at org.audiveris.omr.step.LoadStep.doit(LoadStep.java:69)
+	at org.audiveris.omr.step.OmrStep.doit(OmrStep.java:138)
+	at org.audiveris.omr.sheet.SheetStub.lambda$doOneStep$0(SheetStub.java:503)
+	at java.base/java.util.concurrent.FutureTask.run(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+WARN  Caller+0	 at org.apache.pdfbox.pdmodel.font.FileSystemFontProvider.saveDiskCache(FileSystemFontProvider.java:445)
+ [玉门关-PLS(1)#1] Could not write to font cache
+java.io.FileNotFoundException: C:\Users\MECHREVO\.pdfbox.cache (拒绝访问。)
+	at java.base/java.io.FileOutputStream.open0(Native Method)
+	at java.base/java.io.FileOutputStream.open(Unknown Source)
+	at java.base/java.io.FileOutputStream.<init>(Unknown Source)
+	at java.base/java.io.FileOutputStream.<init>(Unknown Source)
+	at org.apache.pdfbox.pdmodel.font.FileSystemFontProvider.saveDiskCache(FileSystemFontProvider.java:435)
+	at org.apache.pdfbox.pdmodel.font.FileSystemFontProvider.<init>(FileSystemFontProvider.java:372)
+	at org.apache.pdfbox.pdmodel.font.FontMapperImpl$DefaultFontProvider.<clinit>(FontMapperImpl.java:139)
+	at org.apache.pdfbox.pdmodel.font.FontMapperImpl.getProvider(FontMapperImpl.java:158)
+	at org.apache.pdfbox.pdmodel.font.FontMapperImpl.findFont(FontMapperImpl.java:410)
+	at org.apache.pdfbox.pdmodel.font.FontMapperImpl.getCIDFont(FontMapperImpl.java:503)
+	at org.apache.pdfbox.pdmodel.font.PDCIDFontType2.findFontOrSubstitute(PDCIDFontType2.java:161)
+	at org.apache.pdfbox.pdmodel.font.PDCIDFontType2.<init>(PDCIDFontType2.java:146)
+	at org.apache.pdfbox.pdmodel.font.PDCIDFontType2.<init>(PDCIDFontType2.java:72)
+	at org.apache.pdfbox.pdmodel.font.PDFontFactory.createDescendantFont(PDFontFactory.java:385)
+	at org.apache.pdfbox.pdmodel.font.PDType0Font.<init>(PDType0Font.java:97)
+	at org.apache.pdfbox.pdmodel.font.PDFontFactory.createFont(PDFontFactory.java:173)
+	at org.apache.pdfbox.pdmodel.PDResources.getFont(PDResources.java:170)
+	at org.apache.pdfbox.contentstream.operator.text.SetFontAndSize.process(SetFontAndSize.java:72)
+	at org.apache.pdfbox.contentstream.PDFStreamEngine.processOperator(PDFStreamEngine.java:926)
+	at org.apache.pdfbox.contentstream.PDFStreamEngine.processStreamOperators(PDFStreamEngine.java:559)
+	at org.apache.pdfbox.contentstream.PDFStreamEngine.processStream(PDFStreamEngine.java:517)
+	at org.apache.pdfbox.contentstream.PDFStreamEngine.showForm(PDFStreamEngine.java:189)
+	at org.apache.pdfbox.rendering.PageDrawer.showForm(PageDrawer.java:1656)
+	at org.apache.pdfbox.contentstream.operator.graphics.DrawObject.process(DrawObject.java:96)
+	at org.apache.pdfbox.contentstream.PDFStreamEngine.processOperator(PDFStreamEngine.java:926)
+	at org.apache.pdfbox.contentstream.PDFStreamEngine.processStreamOperators(PDFStreamEngine.java:559)
+	at org.apache.pdfbox.contentstream.PDFStreamEngine.processStream(PDFStreamEngine.java:517)
+	at org.apache.pdfbox.contentstream.PDFStreamEngine.processPage(PDFStreamEngine.java:158)
+	at org.apache.pdfbox.rendering.PageDrawer.drawPage(PageDrawer.java:287)
+	at org.apache.pdfbox.rendering.PDFRenderer.renderImage(PDFRenderer.java:348)
+	at org.apache.pdfbox.rendering.PDFRenderer.renderImage(PDFRenderer.java:262)
+	at org.apache.pdfbox.rendering.PDFRenderer.renderImageWithDPI(PDFRenderer.java:245)
+	at org.audiveris.omr.image.ImageLoading$PdfboxLoader.getImage(ImageLoading.java:342)
+	at org.audiveris.omr.sheet.SheetStub.loadGrayImage(SheetStub.java:1277)
+	at org.audiveris.omr.step.LoadStep.doit(LoadStep.java:69)
+	at org.audiveris.omr.step.OmrStep.doit(OmrStep.java:138)
+	at org.audiveris.omr.sheet.SheetStub.lambda$doOneStep$0(SheetStub.java:503)
+	at java.base/java.util.concurrent.FutureTask.run(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+10:25:33.836 [cachedLow-thread-1] WARN org.apache.pdfbox.pdmodel.font.FileSystemFontProvider -- Installed fonts information will have to be reloaded for each start
+WARN  Caller+0	 at org.apache.pdfbox.pdmodel.font.FileSystemFontProvider.saveDiskCache(FileSystemFontProvider.java:446)
+ [玉门关-PLS(1)#1] Installed fonts information will have to be reloaded for each start
+10:25:33.837 [cachedLow-thread-1] WARN org.apache.pdfbox.pdmodel.font.FileSystemFontProvider -- You can assign a directory to the 'pdfbox.fontcache' property
+WARN  Caller+0	 at org.apache.pdfbox.pdmodel.font.FileSystemFontProvider.saveDiskCache(FileSystemFontProvider.java:447)
+ [玉门关-PLS(1)#1] You can assign a directory to the 'pdfbox.fontcache' property
+10:25:33.838 [cachedLow-thread-1] INFO org.apache.pdfbox.pdmodel.font.FileSystemFontProvider -- Finished building on-disk font cache, found 218 fonts
+INFO  Caller+0	 at org.apache.pdfbox.pdmodel.font.FileSystemFontProvider.<init>(FileSystemFontProvider.java:373)
+ [玉门关-PLS(1)#1] Finished building on-disk font cache, found 218 fonts
+10:25:34.306 [cachedLow-thread-1] INFO org.audiveris.omr.sheet.SheetStub -- Loaded image #1 3305x4677 from D:\demo\ChoirSinger\玉门关-PLS(1).pdf
+INFO  Caller+0	 at org.audiveris.omr.sheet.SheetStub.loadGrayImage(SheetStub.java:1278)
+ [玉门关-PLS(1)#1] Loaded image #1 3305x4677 from D:\demo\ChoirSinger\玉门关-PLS(1).pdf
+10:25:34.318 [main] INFO org.audiveris.omr.step.ui.StepMonitoring -- BINARY
+INFO  Caller+0	 at org.audiveris.omr.step.ui.StepMonitoring.notifyMsg(StepMonitoring.java:98)
+ [玉门关-PLS(1)#1] BINARY
+10:25:37.435 [main] INFO org.audiveris.omr.step.ui.StepMonitoring -- SCALE
+INFO  Caller+0	 at org.audiveris.omr.step.ui.StepMonitoring.notifyMsg(StepMonitoring.java:98)
+ [玉门关-PLS(1)#1] SCALE
+10:25:37.516 [cachedLow-thread-1] INFO org.audiveris.omr.sheet.ScaleBuilder -- Beam  guessed height: 13 -- 0.25 of [10..21] range
+INFO  Caller+0	 at org.audiveris.omr.sheet.ScaleBuilder.computeBeamKeys(ScaleBuilder.java:254)
+ [玉门关-PLS(1)#1] Beam  guessed height: 13 -- 0.25 of [10..21] range
+10:25:37.520 [cachedLow-thread-1] INFO org.audiveris.omr.sheet.ScaleBuilder -- Beam measured height: 16 -- 0.55 of [10..21] range at 137% of needed quorum
+INFO  Caller+0	 at org.audiveris.omr.sheet.ScaleBuilder.computeBeamKeys(ScaleBuilder.java:271)
+ [玉门关-PLS(1)#1] Beam measured height: 16 -- 0.55 of [10..21] range at 137% of needed quorum
+10:25:37.522 [cachedLow-thread-1] INFO org.audiveris.omr.sheet.ScaleBuilder -- Normalized black jitter: 9.09 %
+INFO  Caller+0	 at org.audiveris.omr.sheet.ScaleBuilder.doRetrieveScale(ScaleBuilder.java:401)
+ [玉门关-PLS(1)#1] Normalized black jitter: 9.09 %
+10:25:37.522 [cachedLow-thread-1] INFO org.audiveris.omr.step.ScaleStep -- Scale{ interline(22,22,23) line(2,2,4) beam(16)}
+INFO  Caller+0	 at org.audiveris.omr.step.ScaleStep.doit(ScaleStep.java:65)
+ [玉门关-PLS(1)#1] Scale{ interline(22,22,23) line(2,2,4) beam(16)}
+10:25:37.524 [main] INFO org.audiveris.omr.step.ui.StepMonitoring -- GRID
+INFO  Caller+0	 at org.audiveris.omr.step.ui.StepMonitoring.notifyMsg(StepMonitoring.java:98)
+ [玉门关-PLS(1)#1] GRID
+10:25:39.252 [cachedLow-thread-1] INFO org.audiveris.omr.sheet.grid.LinesRetriever -- Global slope: 0.00000
+INFO  Caller+0	 at org.audiveris.omr.sheet.grid.LinesRetriever.retrieveLines(LinesRetriever.java:1508)
+ [玉门关-PLS(1)#1] Global slope: 0.00000
+10:25:39.410 [cachedLow-thread-1] INFO org.audiveris.omr.sheet.grid.ClustersRetriever -- Retrieved raw line clusters: 8 of sizes [5] with interline(22,22,23)
+INFO  Caller+0	 at org.audiveris.omr.sheet.grid.ClustersRetriever.buildInfo(ClustersRetriever.java:326)
+ [玉门关-PLS(1)#1] Retrieved raw line clusters: 8 of sizes [5] with interline(22,22,23)
+10:25:40.436 [cachedLow-thread-1] INFO org.audiveris.omr.sheet.grid.PeakGraph -- Systems: #1[1, 2, 3, 4] #2[5, 6, 7, 8]
+INFO  Caller+0	 at org.audiveris.omr.sheet.grid.PeakGraph.buildSystems(PeakGraph.java:310)
+ [玉门关-PLS(1)#1] Systems: #1[1, 2, 3, 4] #2[5, 6, 7, 8]
+10:25:40.670 [cachedLow-thread-1] INFO org.audiveris.omr.sheet.grid.BarsRetriever -- System#1
+INFO  Caller+0	 at org.audiveris.omr.sheet.grid.BarsRetriever.dumpGroups(BarsRetriever.java:1305)
+ [玉门关-PLS(1)#1] System#1
+10:25:40.671 [cachedLow-thread-1] INFO org.audiveris.omr.sheet.grid.BarsRetriever --    PartGroup{bracket number:1 barline:false staves:1-4}
+INFO  Caller+0	 at org.audiveris.omr.sheet.grid.BarsRetriever.dumpGroups(BarsRetriever.java:1308)
+ [玉门关-PLS(1)#1]    PartGroup{bracket number:1 barline:false staves:1-4}
+10:25:40.672 [cachedLow-thread-1] INFO org.audiveris.omr.sheet.grid.BarsRetriever -- System#2
+INFO  Caller+0	 at org.audiveris.omr.sheet.grid.BarsRetriever.dumpGroups(BarsRetriever.java:1305)
+ [玉门关-PLS(1)#1] System#2
+10:25:40.673 [cachedLow-thread-1] INFO org.audiveris.omr.sheet.grid.BarsRetriever --    PartGroup{bracket number:1 barline:false staves:5-8}
+INFO  Caller+0	 at org.audiveris.omr.sheet.grid.BarsRetriever.dumpGroups(BarsRetriever.java:1308)
+ [玉门关-PLS(1)#1]    PartGroup{bracket number:1 barline:false staves:5-8}
+10:25:42.077 [cachedLow-thread-1] INFO org.audiveris.omr.sheet.SystemManager -- Indentation detected for system #1
+INFO  Caller+0	 at org.audiveris.omr.sheet.SystemManager.allocatePages(SystemManager.java:134)
+ [玉门关-PLS(1)#1] Indentation detected for system #1
+10:25:42.089 [cachedLow-thread-1] INFO org.audiveris.omr.sheet.SystemManager -- 4 parts along 2 systems
+INFO  Caller+0	 at org.audiveris.omr.sheet.SystemManager.reportResults(SystemManager.java:800)
+ [玉门关-PLS(1)#1] 4 parts along 2 systems
+10:25:42.097 [cachedLow-thread-1] INFO org.audiveris.omr.sheet.Book -- Created scores: [{Score 1}]
+INFO  Caller+0	 at org.audiveris.omr.sheet.Book.createScores(Book.java:543)
+ [玉门关-PLS(1)#1] Created scores: [{Score 1}]
+10:25:42.100 [main] INFO org.audiveris.omr.step.ui.StepMonitoring -- HEADERS
+INFO  Caller+0	 at org.audiveris.omr.step.ui.StepMonitoring.notifyMsg(StepMonitoring.java:98)
+ [玉门关-PLS(1)#1] HEADERS
+10:25:42.176 [cachedLow-thread-1] WARN org.audiveris.omr.classifier.BasicClassifier -- Load error on jar:file:/D:/demo/ChoirSinger/tools/audiveris/Audiveris/app/audiveris.jar!/res/basic-classifier.zip java.nio.file.AccessDeniedException: C:\Users\MECHREVO\AppData\Local\Temp\AbstractClassifier-18247893097614150062.tmp
+java.nio.file.AccessDeniedException: C:\Users\MECHREVO\AppData\Local\Temp\AbstractClassifier-18247893097614150062.tmp
+	at java.base/sun.nio.fs.WindowsException.translateToIOException(Unknown Source)
+	at java.base/sun.nio.fs.WindowsException.rethrowAsIOException(Unknown Source)
+	at java.base/sun.nio.fs.WindowsException.rethrowAsIOException(Unknown Source)
+	at java.base/sun.nio.fs.WindowsFileSystemProvider.newByteChannel(Unknown Source)
+	at java.base/java.nio.file.Files.newByteChannel(Unknown Source)
+	at java.base/java.nio.file.Files.createFile(Unknown Source)
+	at java.base/java.nio.file.TempFileHelper.create(Unknown Source)
+	at java.base/java.nio.file.TempFileHelper.createTempFile(Unknown Source)
+	at java.base/java.nio.file.Files.createTempFile(Unknown Source)
+	at org.audiveris.omr.classifier.BasicClassifier.load(BasicClassifier.java:336)
+	at org.audiveris.omr.classifier.BasicClassifier.<init>(BasicClassifier.java:127)
+	at org.audiveris.omr.classifier.BasicClassifier$LazySingleton.<clinit>(BasicClassifier.java:780)
+	at org.audiveris.omr.classifier.BasicClassifier.getInstance(BasicClassifier.java:670)
+	at org.audiveris.omr.classifier.ShapeClassifier.getInstance(ShapeClassifier.java:80)
+	at org.audiveris.omr.sheet.clef.ClefBuilder.<init>(ClefBuilder.java:157)
+	at org.audiveris.omr.sheet.clef.ClefBuilder$Column.retrieveClefs(ClefBuilder.java:648)
+	at org.audiveris.omr.sheet.header.HeaderBuilder.processHeader(HeaderBuilder.java:275)
+	at org.audiveris.omr.sheet.header.HeadersStep.doSystem(HeadersStep.java:63)
+	at org.audiveris.omr.sheet.header.HeadersStep.doSystem(HeadersStep.java:37)
+	at org.audiveris.omr.step.AbstractSystemStep.lambda$doitPerSystem$0(AbstractSystemStep.java:158)
+	at org.audiveris.omr.step.AbstractSystemStep.doitPerSystem(AbstractSystemStep.java:178)
+	at org.audiveris.omr.step.AbstractSystemStep.doit(AbstractSystemStep.java:125)
+	at org.audiveris.omr.step.OmrStep.doit(OmrStep.java:138)
+	at org.audiveris.omr.sheet.SheetStub.lambda$doOneStep$0(SheetStub.java:503)
+	at java.base/java.util.concurrent.FutureTask.run(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+WARN  Caller+0	 at org.audiveris.omr.classifier.BasicClassifier.load(BasicClassifier.java:363)
+ [玉门关-PLS(1)#1] Load error on jar:file:/D:/demo/ChoirSinger/tools/audiveris/Audiveris/app/audiveris.jar!/res/basic-classifier.zip java.nio.file.AccessDeniedException: C:\Users\MECHREVO\AppData\Local\Temp\AbstractClassifier-18247893097614150062.tmp
+java.nio.file.AccessDeniedException: C:\Users\MECHREVO\AppData\Local\Temp\AbstractClassifier-18247893097614150062.tmp
+	at java.base/sun.nio.fs.WindowsException.translateToIOException(Unknown Source)
+	at java.base/sun.nio.fs.WindowsException.rethrowAsIOException(Unknown Source)
+	at java.base/sun.nio.fs.WindowsException.rethrowAsIOException(Unknown Source)
+	at java.base/sun.nio.fs.WindowsFileSystemProvider.newByteChannel(Unknown Source)
+	at java.base/java.nio.file.Files.newByteChannel(Unknown Source)
+	at java.base/java.nio.file.Files.createFile(Unknown Source)
+	at java.base/java.nio.file.TempFileHelper.create(Unknown Source)
+	at java.base/java.nio.file.TempFileHelper.createTempFile(Unknown Source)
+	at java.base/java.nio.file.Files.createTempFile(Unknown Source)
+	at org.audiveris.omr.classifier.BasicClassifier.load(BasicClassifier.java:336)
+	at org.audiveris.omr.classifier.BasicClassifier.<init>(BasicClassifier.java:127)
+	at org.audiveris.omr.classifier.BasicClassifier$LazySingleton.<clinit>(BasicClassifier.java:780)
+	at org.audiveris.omr.classifier.BasicClassifier.getInstance(BasicClassifier.java:670)
+	at org.audiveris.omr.classifier.ShapeClassifier.getInstance(ShapeClassifier.java:80)
+	at org.audiveris.omr.sheet.clef.ClefBuilder.<init>(ClefBuilder.java:157)
+	at org.audiveris.omr.sheet.clef.ClefBuilder$Column.retrieveClefs(ClefBuilder.java:648)
+	at org.audiveris.omr.sheet.header.HeaderBuilder.processHeader(HeaderBuilder.java:275)
+	at org.audiveris.omr.sheet.header.HeadersStep.doSystem(HeadersStep.java:63)
+	at org.audiveris.omr.sheet.header.HeadersStep.doSystem(HeadersStep.java:37)
+	at org.audiveris.omr.step.AbstractSystemStep.lambda$doitPerSystem$0(AbstractSystemStep.java:158)
+	at org.audiveris.omr.step.AbstractSystemStep.doitPerSystem(AbstractSystemStep.java:178)
+	at org.audiveris.omr.step.AbstractSystemStep.doit(AbstractSystemStep.java:125)
+	at org.audiveris.omr.step.OmrStep.doit(OmrStep.java:138)
+	at org.audiveris.omr.sheet.SheetStub.lambda$doOneStep$0(SheetStub.java:503)
+	at java.base/java.util.concurrent.FutureTask.run(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+10:25:42.180 [cachedLow-thread-1] INFO org.audiveris.omr.classifier.BasicClassifier -- Creating a brand new Basic Classifier
+INFO  Caller+0	 at org.audiveris.omr.classifier.BasicClassifier.createModel(BasicClassifier.java:156)
+ [玉门关-PLS(1)#1] Creating a brand new Basic Classifier
+10:25:42.204 [cachedLow-thread-1] INFO org.audiveris.omr.math.NeuralNetwork -- Initial complexity, hiddenW2: 1366.0 outputW2: 1880.9
+INFO  Caller+0	 at org.audiveris.omr.math.NeuralNetwork.<init>(NeuralNetwork.java:195)
+ [玉门关-PLS(1)#1] Initial complexity, hiddenW2: 1366.0 outputW2: 1880.9
+10:25:42.621 [main] WARN org.audiveris.omr.sheet.Book -- Error processing stub java.lang.RuntimeException: java.lang.NullPointerException: Cannot read field "means" because "this.network.norms" is null
+java.util.concurrent.ExecutionException: java.lang.RuntimeException: java.lang.NullPointerException: Cannot read field "means" because "this.network.norms" is null
+	at java.base/java.util.concurrent.FutureTask.report(Unknown Source)
+	at java.base/java.util.concurrent.FutureTask.get(Unknown Source)
+	at org.audiveris.omr.sheet.SheetStub.doOneStep(SheetStub.java:519)
+	at org.audiveris.omr.sheet.SheetStub.reachStep(SheetStub.java:1405)
+	at org.audiveris.omr.sheet.Book.reachBookStep(Book.java:2035)
+	at org.audiveris.omr.sheet.Book.transcribe(Book.java:2626)
+	at org.audiveris.omr.sheet.Book.export(Book.java:593)
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:927)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+Caused by: java.lang.RuntimeException: java.lang.NullPointerException: Cannot read field "means" because "this.network.norms" is null
+	at org.audiveris.omr.step.AbstractSystemStep.doitPerSystem(AbstractSystemStep.java:185)
+	at org.audiveris.omr.step.AbstractSystemStep.doit(AbstractSystemStep.java:125)
+	at org.audiveris.omr.step.OmrStep.doit(OmrStep.java:138)
+	at org.audiveris.omr.sheet.SheetStub.lambda$doOneStep$0(SheetStub.java:503)
+	at java.base/java.util.concurrent.FutureTask.run(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.lang.NullPointerException: Cannot read field "means" because "this.network.norms" is null
+	at org.audiveris.omr.classifier.BasicClassifier.normalize(BasicClassifier.java:446)
+	at org.audiveris.omr.classifier.BasicClassifier.getNaturalEvaluations(BasicClassifier.java:234)
+	at org.audiveris.omr.classifier.AbstractClassifier.getSortedEvaluations(AbstractClassifier.java:251)
+	at org.audiveris.omr.classifier.AbstractClassifier.evaluate(AbstractClassifier.java:143)
+	at org.audiveris.omr.classifier.AbstractClassifier.evaluate(AbstractClassifier.java:114)
+	at org.audiveris.omr.sheet.clef.ClefBuilder$ClefAdapter.evaluateGlyph(ClefBuilder.java:565)
+	at org.audiveris.omr.glyph.GlyphCluster.process(GlyphCluster.java:161)
+	at org.audiveris.omr.glyph.GlyphCluster.decompose(GlyphCluster.java:102)
+	at org.audiveris.omr.sheet.clef.ClefBuilder.getBestMap(ClefBuilder.java:251)
+	at org.audiveris.omr.sheet.clef.ClefBuilder.findClefs(ClefBuilder.java:213)
+	at org.audiveris.omr.sheet.clef.ClefBuilder$Column.retrieveClefs(ClefBuilder.java:651)
+	at org.audiveris.omr.sheet.header.HeaderBuilder.processHeader(HeaderBuilder.java:275)
+	at org.audiveris.omr.sheet.header.HeadersStep.doSystem(HeadersStep.java:63)
+	at org.audiveris.omr.sheet.header.HeadersStep.doSystem(HeadersStep.java:37)
+	at org.audiveris.omr.step.AbstractSystemStep.lambda$doitPerSystem$0(AbstractSystemStep.java:158)
+	at org.audiveris.omr.step.AbstractSystemStep.doitPerSystem(AbstractSystemStep.java:178)
+	... 7 common frames omitted
+WARN  Caller+0	 at org.audiveris.omr.sheet.Book.reachBookStep(Book.java:2044)
+ [玉门关-PLS(1)#1] Error processing stub java.lang.RuntimeException: java.lang.NullPointerException: Cannot read field "means" because "this.network.norms" is null
+java.util.concurrent.ExecutionException: java.lang.RuntimeException: java.lang.NullPointerException: Cannot read field "means" because "this.network.norms" is null
+	at java.base/java.util.concurrent.FutureTask.report(Unknown Source)
+	at java.base/java.util.concurrent.FutureTask.get(Unknown Source)
+	at org.audiveris.omr.sheet.SheetStub.doOneStep(SheetStub.java:519)
+	at org.audiveris.omr.sheet.SheetStub.reachStep(SheetStub.java:1405)
+	at org.audiveris.omr.sheet.Book.reachBookStep(Book.java:2035)
+	at org.audiveris.omr.sheet.Book.transcribe(Book.java:2626)
+	at org.audiveris.omr.sheet.Book.export(Book.java:593)
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:927)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+Caused by: java.lang.RuntimeException: java.lang.NullPointerException: Cannot read field "means" because "this.network.norms" is null
+	at org.audiveris.omr.step.AbstractSystemStep.doitPerSystem(AbstractSystemStep.java:185)
+	at org.audiveris.omr.step.AbstractSystemStep.doit(AbstractSystemStep.java:125)
+	at org.audiveris.omr.step.OmrStep.doit(OmrStep.java:138)
+	at org.audiveris.omr.sheet.SheetStub.lambda$doOneStep$0(SheetStub.java:503)
+	at java.base/java.util.concurrent.FutureTask.run(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.lang.NullPointerException: Cannot read field "means" because "this.network.norms" is null
+	at org.audiveris.omr.classifier.BasicClassifier.normalize(BasicClassifier.java:446)
+	at org.audiveris.omr.classifier.BasicClassifier.getNaturalEvaluations(BasicClassifier.java:234)
+	at org.audiveris.omr.classifier.AbstractClassifier.getSortedEvaluations(AbstractClassifier.java:251)
+	at org.audiveris.omr.classifier.AbstractClassifier.evaluate(AbstractClassifier.java:143)
+	at org.audiveris.omr.classifier.AbstractClassifier.evaluate(AbstractClassifier.java:114)
+	at org.audiveris.omr.sheet.clef.ClefBuilder$ClefAdapter.evaluateGlyph(ClefBuilder.java:565)
+	at org.audiveris.omr.glyph.GlyphCluster.process(GlyphCluster.java:161)
+	at org.audiveris.omr.glyph.GlyphCluster.decompose(GlyphCluster.java:102)
+	at org.audiveris.omr.sheet.clef.ClefBuilder.getBestMap(ClefBuilder.java:251)
+	at org.audiveris.omr.sheet.clef.ClefBuilder.findClefs(ClefBuilder.java:213)
+	at org.audiveris.omr.sheet.clef.ClefBuilder$Column.retrieveClefs(ClefBuilder.java:651)
+	at org.audiveris.omr.sheet.header.HeaderBuilder.processHeader(HeaderBuilder.java:275)
+	at org.audiveris.omr.sheet.header.HeadersStep.doSystem(HeadersStep.java:63)
+	at org.audiveris.omr.sheet.header.HeadersStep.doSystem(HeadersStep.java:37)
+	at org.audiveris.omr.step.AbstractSystemStep.lambda$doitPerSystem$0(AbstractSystemStep.java:158)
+	at org.audiveris.omr.step.AbstractSystemStep.doitPerSystem(AbstractSystemStep.java:178)
+	... 7 common frames omitted
+10:25:42.624 [main] INFO org.audiveris.omr.sheet.Book -- Book{玉门关-PLS(1)} storing
+INFO  Caller+0	 at org.audiveris.omr.sheet.Book.swapAllSheets(Book.java:2584)
+ [玉门关-PLS(1)#1] Book{玉门关-PLS(1)} storing
+10:25:42.625 [main] WARN org.audiveris.omr.sheet.Book -- Bookpath not defined
+WARN  Caller+0	 at org.audiveris.omr.sheet.Book.store(Book.java:2428)
+ [玉门关-PLS(1)#1] Bookpath not defined
+10:25:42.626 [main] INFO org.audiveris.omr.sheet.SheetStub -- Stub#1 storing
+INFO  Caller+0	 at org.audiveris.omr.sheet.SheetStub.swapSheet(SheetStub.java:1650)
+ [玉门关-PLS(1)#1] Stub#1 storing
+10:25:42.637 [main] WARN org.audiveris.omr.sheet.SheetStub -- Error swapping sheet
+java.nio.file.ReadOnlyFileSystemException: null
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.checkWritable(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.deleteFile(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipPath.delete(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystemProvider.delete(Unknown Source)
+	at java.base/java.nio.file.spi.FileSystemProvider.deleteIfExists(Unknown Source)
+	at java.base/java.nio.file.Files.deleteIfExists(Unknown Source)
+	at org.audiveris.omr.sheet.Book.storeBookInfo(Book.java:2560)
+	at org.audiveris.omr.sheet.SheetStub.storeSheet(SheetStub.java:1627)
+	at org.audiveris.omr.sheet.SheetStub.swapSheet(SheetStub.java:1651)
+	at org.audiveris.omr.sheet.Book.swapAllSheets(Book.java:2596)
+	at org.audiveris.omr.sheet.Book.reachBookStep(Book.java:2049)
+	at org.audiveris.omr.sheet.Book.transcribe(Book.java:2626)
+	at org.audiveris.omr.sheet.Book.export(Book.java:593)
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:927)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+WARN  Caller+0	 at org.audiveris.omr.sheet.SheetStub.swapSheet(SheetStub.java:1673)
+ [玉门关-PLS(1)#1] Error swapping sheet
+java.nio.file.ReadOnlyFileSystemException: null
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.checkWritable(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.deleteFile(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipPath.delete(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystemProvider.delete(Unknown Source)
+	at java.base/java.nio.file.spi.FileSystemProvider.deleteIfExists(Unknown Source)
+	at java.base/java.nio.file.Files.deleteIfExists(Unknown Source)
+	at org.audiveris.omr.sheet.Book.storeBookInfo(Book.java:2560)
+	at org.audiveris.omr.sheet.SheetStub.storeSheet(SheetStub.java:1627)
+	at org.audiveris.omr.sheet.SheetStub.swapSheet(SheetStub.java:1651)
+	at org.audiveris.omr.sheet.Book.swapAllSheets(Book.java:2596)
+	at org.audiveris.omr.sheet.Book.reachBookStep(Book.java:2049)
+	at org.audiveris.omr.sheet.Book.transcribe(Book.java:2626)
+	at org.audiveris.omr.sheet.Book.export(Book.java:593)
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:927)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+10:25:42.638 [main] INFO org.audiveris.omr.sheet.Book -- End of Stub#1
+INFO  Caller+0	 at org.audiveris.omr.sheet.Book.reachBookStep(Book.java:2050)
+ [玉门关-PLS(1)#1] End of Stub#1
+10:25:42.639 [main] INFO org.audiveris.omr.sheet.Book -- End of Book{玉门关-PLS(1)}
+INFO  Caller+0	 at org.audiveris.omr.sheet.Book.reachBookStep(Book.java:2057)
+ [玉门关-PLS(1)] End of Book{玉门关-PLS(1)}
+10:25:42.640 [main] INFO org.audiveris.omr.sheet.Book -- Could not export since transcription did not complete successfully
+INFO  Caller+0	 at org.audiveris.omr.sheet.Book.export(Book.java:596)
+ [玉门关-PLS(1)] Could not export since transcription did not complete successfully
+10:25:42.641 [main] WARN org.audiveris.omr.CLI -- Exception occurred java.lang.Exception: Error in export
+java.lang.Exception: Error in export
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:930)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+WARN  Caller+0	 at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:956)
+ [玉门关-PLS(1)] Exception occurred java.lang.Exception: Error in export
+java.lang.Exception: Error in export
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:930)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+10:25:42.733 [main] WARN org.audiveris.omr.sheet.Book -- Error storing Book{玉门关-PLS(1)} to D:\demo\ChoirSinger\tmp\pdfs\aud-400\玉门关-PLS(1).omr ex:java.nio.file.ReadOnlyFileSystemException
+java.nio.file.ReadOnlyFileSystemException: null
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.checkWritable(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.deleteFile(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipPath.delete(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystemProvider.delete(Unknown Source)
+	at java.base/java.nio.file.spi.FileSystemProvider.deleteIfExists(Unknown Source)
+	at java.base/java.nio.file.Files.deleteIfExists(Unknown Source)
+	at org.audiveris.omr.sheet.Book.storeBookInfo(Book.java:2560)
+	at org.audiveris.omr.sheet.Book.store(Book.java:2476)
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:965)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+WARN  Caller+0	 at org.audiveris.omr.sheet.Book.store(Book.java:2528)
+ [玉门关-PLS(1)] Error storing Book{玉门关-PLS(1)} to D:\demo\ChoirSinger\tmp\pdfs\aud-400\玉门关-PLS(1).omr ex:java.nio.file.ReadOnlyFileSystemException
+java.nio.file.ReadOnlyFileSystemException: null
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.checkWritable(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.deleteFile(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipPath.delete(Unknown Source)
+	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystemProvider.delete(Unknown Source)
+	at java.base/java.nio.file.spi.FileSystemProvider.deleteIfExists(Unknown Source)
+	at java.base/java.nio.file.Files.deleteIfExists(Unknown Source)
+	at org.audiveris.omr.sheet.Book.storeBookInfo(Book.java:2560)
+	at org.audiveris.omr.sheet.Book.store(Book.java:2476)
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:965)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+10:25:42.737 [main] INFO org.audiveris.omr.score.Score -- Closing {Score 1}
+INFO  Caller+0	 at org.audiveris.omr.score.Score.close(Score.java:181)
+ [玉门关-PLS(1)] Closing {Score 1}
+10:25:42.799 [main] WARN org.audiveris.omr.Main -- Exception on 玉门关-PLS(1), java.lang.Exception: Error in export
+java.lang.Exception: Error in export
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:930)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+WARN  Caller+0	 at org.audiveris.omr.Main.runBatchTasks(Main.java:373)
+ [] Exception on 玉门关-PLS(1), java.lang.Exception: Error in export
+java.lang.Exception: Error in export
+	at org.audiveris.omr.CLI$ProcessingTask.processBook(CLI.java:930)
+	at org.audiveris.omr.CLI$CliTask.call(CLI.java:513)
+	at org.audiveris.omr.Main.runBatchTasks(Main.java:370)
+	at org.audiveris.omr.Main.main(Main.java:272)
+	at Audiveris.main(Audiveris.java:50)
+10:25:42.816 [main] WARN org.audiveris.omr.Main -- Exit forced. Failure
+WARN  Caller+0	 at org.audiveris.omr.Main.main(Main.java:307)
+ [] Exit forced. Failure

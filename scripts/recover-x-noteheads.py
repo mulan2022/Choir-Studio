@@ -58,7 +58,7 @@ def staves_in(image: Image.Image) -> list[list[int]]:
 def systems_in(staves: list[list[int]]) -> list[list[list[int]]]:
     systems = []
     for staff in staves:
-        if not systems or staff[0] - systems[-1][-1][-1] > 65:
+        if not systems or staff[0] - systems[-1][-1][-1] > 100:
             systems.append([staff])
         else:
             systems[-1].append(staff)
@@ -69,9 +69,10 @@ def barlines_in(image: Image.Image, staves: list[list[int]]) -> list[int]:
     gray = image.convert('L')
     width, _ = gray.size
     found = []
+    need = max(8, round((staves[0][-1] - staves[0][0]) * 0.75))
     for x in range(int(width * .12), int(width * .95)):
         counts = [sum(gray.getpixel((x, y)) < 125 for y in range(staff[0], staff[-1] + 1)) for staff in staves]
-        if min(counts) >= 15:
+        if min(counts) >= need:
             found.append(x)
     groups = []
     for x in found:
@@ -111,7 +112,7 @@ def measure_label(page: ET.Element, staff_y: float, sx: float, sy: float, left: 
             continue
         x = float(word.get('xMin')) * sx
         y = float(word.get('yMax')) * sy
-        if left - 8 <= x <= left + 35 and staff_y - 30 <= y <= staff_y - 3:
+        if left - 45 <= x <= left + 35 and staff_y - 30 <= y <= staff_y - 3:
             return int(text)
     return None
 
@@ -253,18 +254,61 @@ def recover(pdf: Path, mxl: Path, output: Path) -> int:
                 continue
             glyphs = cross_words(page, sx, sy)
             systems = systems_in(staves)
-            for system_index, group in enumerate(systems):
-                bars = barlines_in(image, group)
-                if len(bars) < 2:
-                    continue
-                label = measure_label(page, group[0][0], sx, sy, bars[0])
-                page_bars = len(bars) - 1
-                if label and label + page_bars - 1 <= len(measures[0]):
-                    first_measure = label - 1
-                elif len(pages) == 1 and len(group) == len(parts) and sum(len(barlines_in(image, system)) - 1 for system in systems) == len(measures[0]):
-                    first_measure = sum(len(barlines_in(image, system)) - 1 for system in systems[:system_index])
+            # Oversized groups: when a page packs several SATB systems close
+            # enough to merge into one group, split into chunks of len(parts).
+            split_systems = []
+            part_count = len(parts)
+            for group in systems:
+                if len(group) > part_count and len(group) % part_count == 0:
+                    split_systems.extend(group[i:i + part_count] for i in range(0, len(group), part_count))
                 else:
+                    split_systems.append(group)
+            systems = split_systems
+            # Gather per-system bars and printed measure labels.
+            infos = []
+            for group in systems:
+                bars = barlines_in(image, group)
+                label = None
+                if len(bars) >= 2:
+                    label = measure_label(page, group[0][0], sx, sy, bars[0])
+                infos.append({'group': group, 'bars': bars, 'label': label, 'page_bars': len(bars) - 1})
+            # Resolve first_measure per system. Printed labels anchor their
+            # system; unlabeled systems infer from labeled neighbors on the
+            # same page (backward fill, then forward fill).
+            for inf in infos:
+                inf['first'] = None
+                if inf['label'] and 1 <= inf['label'] <= len(measures[0]):
+                    inf['first'] = inf['label'] - 1
+            first_labeled = next((i for i, inf in enumerate(infos) if inf['first'] is not None), None)
+            if first_labeled is not None:
+                for i in range(first_labeled - 1, -1, -1):
+                    if infos[i]['page_bars'] < 1:
+                        continue
+                    candidate = infos[i + 1]['first'] - infos[i]['page_bars']
+                    infos[i]['first'] = candidate if candidate >= 0 else None
+                running = None
+                for i, inf in enumerate(infos):
+                    if inf['first'] is not None:
+                        running = inf['first'] + inf['page_bars']
+                    elif running is not None and inf['page_bars'] >= 1:
+                        inf['first'] = running
+                        running += inf['page_bars']
+            elif len(pages) == 1:
+                # Single-page score without printed numbers: trust cumulative bars.
+                running = 0
+                for inf in infos:
+                    if inf['page_bars'] < 1:
+                        continue
+                    if len(inf['group']) == part_count:
+                        inf['first'] = running
+                    running += inf['page_bars']
+            for system_index, inf in enumerate(infos):
+                group = inf['group']
+                bars = inf['bars']
+                first_measure = inf['first']
+                if first_measure is None or len(bars) < 2:
                     continue
+                page_bars = inf['page_bars']
                 if len(group) == len(parts):
                     part_indices = list(range(len(parts)))
                 elif 4 <= len(group) < len(parts):
@@ -324,7 +368,11 @@ def recover(pdf: Path, mxl: Path, output: Path) -> int:
                         if not 0 <= slot < slots_count or abs(x - (columns[0] + slot * step)) > 6:
                             continue
                         part_index = part_indices[staff_index]
-                        clef, octave_change, fifths = settings[part_index][measure_index]
+                        part_measures = measures[part_index]
+                        if measure_index >= len(part_measures):
+                            continue
+                        part_settings_list = settings[part_index]
+                        clef, octave_change, fifths = part_settings_list[min(measure_index, len(part_settings_list) - 1)]
                         # Audiveris sometimes omits the small "8" below a
                         # tenor G clef. The printed SATB staff order resolves it.
                         if clef == 'G' and ((len(group) == 4 and staff_index == 2) or (len(group) == 8 and staff_index in (4, 5))):
@@ -333,9 +381,12 @@ def recover(pdf: Path, mxl: Path, output: Path) -> int:
                         if pitch not in recovered[part_index][slot]:
                             recovered[part_index][slot].append(pitch)
                     for part_index, slots in recovered.items():
-                        measure = measures[part_index][measure_index]
+                        part_measures = measures[part_index]
+                        if measure_index >= len(part_measures):
+                            continue
+                        measure = part_measures[measure_index]
                         divisions = 2
-                        for previous in reversed(measures[part_index][:measure_index + 1]):
+                        for previous in reversed(part_measures[:measure_index + 1]):
                             node = previous.find('./attributes/divisions')
                             if node is not None:
                                 divisions = int(node.text)

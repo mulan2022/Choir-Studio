@@ -30,3 +30,8 @@ diagnostic-homr/
 diagnostic-xnotes/
 __pycache__/
 *.pyc
+
+# Local experiment scratch (may contain copyrighted score derivatives)
+_probe/
+tmp/
+tmp_omr/

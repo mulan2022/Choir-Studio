@@ -40,6 +40,7 @@ app.innerHTML = `
         <div class="score-edit-layout"><div class="score-paper" id="score-paper"><div id="score-view"></div></div>
           <aside class="editor-panel" id="editor-panel" aria-label="乐谱编辑器">
             <div class="editor-panel-head"><strong>修改乐谱</strong><span id="editor-state">点击谱面上的音符</span></div>
+            <div class="editor-issues" id="editor-issues" hidden><strong>需要校对的小节</strong><div class="editor-issue-list" id="editor-issue-list"></div></div>
             <p class="editor-help">单击选中音符；选中后直接在五线谱上点你想放的音高，虚线音符是预览。Enter 确认，Esc 取消。Ctrl 点选增减，Shift 点选连续音符。</p>
             <div class="editor-selection" id="editor-selection">尚未选中音符</div>
             <div class="editor-group-title-row"><strong class="editor-group-title">音高</strong><span class="editor-group-hint">点谱面拾取</span></div>
@@ -493,6 +494,8 @@ async function loadXML(xml, onStage = null, fallbackTitle = '', preserveEditor =
     osmd.cursor.reset();
     osmd.cursor.show();
     if (editorMode) osmd.cursor.hide();
+  renderIssueChips();
+  setTimeout(markIssueMeasures, 0);
     lastCursorPosition = '';
     syncScoreCursor(player.currentSeconds(), false);
     updateScorePageStatus();
@@ -615,6 +618,9 @@ function setEditorMode(active) {
   if (active) player.pause();
   if (osmd?.cursor) active ? osmd.cursor.hide() : osmd.cursor.show();
   renderEditorSelection();
+  renderIssueChips();
+  if (active) setTimeout(markIssueMeasures, 0);
+  else clearIssueMarks();
 }
 
 function noteLabel(record) {
@@ -645,6 +651,104 @@ function pendingPitchInfo(record) {
 function clearEditorMarks() {
   document.querySelectorAll('.editor-selection-mark, .pitch-mark').forEach(node => node.remove());
 }
+
+// --- measures the OMR could not line up with the printed bar --------------
+function clearIssueMarks() {
+  document.querySelectorAll('.measure-issue-mark, .measure-issue-layer').forEach(node => node.remove());
+}
+
+// OSMD keeps every page in one scroll container and numbers the pages in model
+// order, which matches the SVG order in #score-view. Each graphical measure
+// carries its own page-relative position and size in OSMD units.
+function eachGraphicMeasure(visit) {
+  const pages = osmd?.GraphicSheet?.MusicPages || [];
+  const svgs = [...document.querySelectorAll('#score-view svg')];
+  pages.forEach((page, pageIndex) => {
+    const svg = svgs[pageIndex] || null;
+    for (const system of page.musicSystems || []) {
+      for (const staffLine of system.staffLines || []) {
+        for (const measure of staffLine.measures || []) {
+          visit(measure, Number(measure.MeasureNumber), svg, pageIndex);
+        }
+      }
+    }
+  });
+}
+
+function measureBox(measure) {
+  const shape = measure?.PositionAndShape;
+  if (!shape?.absolutePosition || !shape?.size) return null;
+  const x = shape.absolutePosition.x * SCORE_UNIT;
+  const y = shape.absolutePosition.y * SCORE_UNIT;
+  const width = shape.size.width * SCORE_UNIT;
+  const height = Math.max(shape.size.height, 1) * SCORE_UNIT;
+  if (!Number.isFinite(x) || !Number.isFinite(y) || width <= 0) return null;
+  return { x, y, width, height };
+}
+
+function markIssueMeasures() {
+  clearIssueMarks();
+  const numbers = new Set((score?.measureIssues || []).map(Number));
+  if (!editorMode || !numbers.size || !osmd) return;
+  const layers = new Map();
+  eachGraphicMeasure((measure, number, svg) => {
+    if (!numbers.has(number) || !svg) return;
+    const box = measureBox(measure);
+    if (!box) return;
+    if (!layers.has(svg)) {
+      const layer = svgNode('g', { class: 'measure-issue-layer' });
+      svg.append(layer);
+      layers.set(svg, layer);
+    }
+    const pad = 2;
+    layers.get(svg).append(svgNode('rect', {
+      class: 'measure-issue-mark',
+      x: box.x - pad,
+      y: box.y - pad,
+      width: box.width + pad * 2,
+      height: box.height + pad * 2,
+      rx: 4,
+    }));
+  });
+}
+
+function renderIssueChips() {
+  const box = $('editor-issues');
+  const list = $('editor-issue-list');
+  if (!box || !list) return;
+  const numbers = score?.measureIssues || [];
+  box.hidden = !editorMode || !numbers.length;
+  list.innerHTML = numbers.slice(0, 60).map(number => `<button type="button" data-measure="${number}">${number}</button>`).join('');
+  if (numbers.length > 60) list.insertAdjacentHTML('beforeend', `<span class="editor-issue-more">…共 ${numbers.length} 个</span>`);
+}
+
+function focusMeasure(number) {
+  const paper = $('score-paper');
+  if (!paper || !osmd) return;
+  let target = null;
+  let targetSvg = null;
+  eachGraphicMeasure((measure, measureNumber, svg) => {
+    if (target || measureNumber !== number || !svg) return;
+    target = measureBox(measure);
+    targetSvg = svg;
+  });
+  if (!target || !targetSvg) return;
+  const paperRect = paper.getBoundingClientRect();
+  const svgRect = targetSvg.getBoundingClientRect();
+  const scale = svgRect.height / (targetSvg.viewBox.baseVal.height || 1);
+  paper.scrollTo({
+    top: Math.max(0, paper.scrollTop + svgRect.top - paperRect.top + target.y * scale - paper.clientHeight * 0.3),
+    left: 0,
+    behavior: 'smooth',
+  });
+  const marks = [...document.querySelectorAll('.measure-issue-mark')];
+  const position = (score?.measureIssues || []).indexOf(number);
+  if (marks[position]) {
+    marks[position].classList.add('flash');
+    setTimeout(() => marks[position]?.classList.remove('flash'), 1200);
+  }
+}
+
 
 function drawEditorMarks(first, pending) {
   for (const id of selectedIds) {
@@ -892,6 +996,11 @@ $('add-tie').addEventListener('click', () => applyEditorChange(() => editor.chan
 $('remove-tie').addEventListener('click', () => applyEditorChange(() => editor.changeTie(selectedIds[0], selectedIds[1], true)));
 $('edit-undo').addEventListener('click', () => applyEditorChange(() => editor.undo()));
 $('edit-redo').addEventListener('click', () => applyEditorChange(() => editor.redo()));
+$('editor-issue-list').addEventListener('click', event => {
+  const button = event.target.closest('button[data-measure]');
+  if (!button) return;
+  focusMeasure(Number(button.dataset.measure));
+});
 $('edit-download').addEventListener('click', () => {
   if (!editor || !score) return;
   const blob = new Blob([editor.serialize()], { type: 'application/vnd.recordare.musicxml+xml' });
@@ -1041,7 +1150,8 @@ try {
 
 // Dev-only hook so the smoke scripts can assert on the real mixer state.
 if (import.meta.env.DEV) {
-  window.choirDebug = () => ({
+  window.choirOsmd = () => osmd;
+window.choirDebug = () => ({
     mode: player.mode,
     tempo: player.tempoScale,
     exporting: player.exporting,

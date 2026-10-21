@@ -130,3 +130,14 @@
 /* Page limit under the upload box: recognise just the first pages first. */
 .page-limit{display:flex;align-items:center;gap:8px;margin-top:13px;font-size:11px;color:#a9c3b9}
 .page-limit input{width:64px;background:#1d4046;color:#e6eee7;border:1px solid #47696b;border-radius:7px;padding:6px 7px;font-size:11px}
+
+/* Measures the OMR could not line up with the printed bar. */
+.measure-issue-mark{fill:#f3b23c;fill-opacity:.16;stroke:#d98a1c;stroke-width:2;stroke-dasharray:7 5}
+.measure-issue-mark.flash{fill-opacity:.4}
+.measure-issue-label{fill:#b3701a;font-size:11px;font-weight:700;font-family:'DM Sans','Noto Sans SC',sans-serif}
+.editor-issues{margin-top:14px;border:1px solid #f0d8a8;background:#fdf6e6;border-radius:10px;padding:10px 12px}
+.editor-issues strong{display:block;font-size:11px;color:#8a6412;margin-bottom:7px}
+.editor-issue-list{display:flex;flex-wrap:wrap;gap:5px}
+.editor-issue-list button{border:1px solid #e2b463;background:#fff;color:#8a6412;border-radius:6px;padding:2px 7px;font-size:11px;font-variant-numeric:tabular-nums}
+.editor-issue-list button:hover{background:#f7e3b6}
+.editor-issue-more{font-size:10px;color:#a08136}

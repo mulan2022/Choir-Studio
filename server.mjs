@@ -135,6 +135,28 @@ function runAudiveris(binary, input, output, options = {}) {
   });
 }
 
+// Repairs the meter and bar lengths of a recognised score (scripts/repair-measures.py).
+async function runMeasureRepair(selected, output) {
+  const extension = path.extname(selected).toLowerCase();
+  if (!['.mxl', '.musicxml', '.xml'].includes(extension)) return null;
+  const target = path.join(output, `repaired${extension === '.xml' ? '.musicxml' : extension}`);
+  await new Promise((resolve, reject) => {
+    const child = spawn(process.env.PYTHON || 'python', [path.join(root, 'scripts', 'repair-measures.py'), selected, target], { windowsHide: true, cwd: root });
+    let log = '';
+    const append = data => { log = (log + data.toString()).slice(-4000); };
+    child.stdout.on('data', append);
+    child.stderr.on('data', append);
+    const timer = setTimeout(() => { child.kill(); reject(new Error('小节校正超时。')); }, 600000);
+    child.on('error', error => { clearTimeout(timer); reject(error); });
+    child.on('close', code => {
+      clearTimeout(timer);
+      if (code === 0) resolve(log);
+      else reject(new Error(log.trim().split(/\r?\n/).slice(-2).join(' ') || `退出码 ${code}`));
+    });
+  });
+  return await exists(target) ? target : null;
+}
+
 async function recoverCrossNoteheads(pdf, selected, output) {
   if (path.extname(pdf).toLowerCase() !== '.pdf' || path.extname(selected).toLowerCase() !== '.mxl') return { file: selected, count: 0 };
   const target = path.join(output, 'cross-noteheads.mxl');
@@ -271,6 +293,14 @@ async function processJob(job, bin, input, temp, key) {
   }
   if (!selected) throw new Error(failures.join('；') || '没有生成 MusicXML。');
   job.stage = '正在整理 MusicXML';
+  // Fix the meter and bar lengths before adding the breath noteheads: the
+  // cross-notehead pass lines measures up with the printed bar numbers, so it
+  // wants a score whose measure count already matches the page.
+  job.stage = '正在校正拍号与小节长度';
+  try {
+    const repaired = await runMeasureRepair(selected, output);
+    if (repaired) { selected = repaired; job.repaired = true; }
+  } catch (error) { console.warn(`小节校正失败，使用原始识谱结果：${error.message}`); }
   if (path.extname(input).toLowerCase() === '.pdf') {
     job.stage = '正在检查叉形符头与气音';
     try {

@@ -20,6 +20,7 @@ app.innerHTML = `
         <div class="upload-icon">↥</div><strong>放入你的乐谱</strong><span>点击选择，或拖放到这里</span><small>MusicXML / MXL / PDF / 图片</small>
       </div>
       <input id="file-input" type="file" accept=".musicxml,.mxl,.xml,.pdf,.png,.jpg,.jpeg,.tif,.tiff" hidden />
+      <div class="page-limit"><label for="max-pages">最多识别</label><input id="max-pages" type="number" min="1" max="999" placeholder="全部" aria-label="最多识别页数"><span>页</span></div>
       <button class="sample-button" id="sample-button"><span>✦</span> 先听四声部示例 <span class="button-arrow">↗</span></button>
       <div class="side-note"><span class="note-icon">i</span><p>人声版按谱面音高唱“doo”，叉形符头也用同一音色；当前不朗读歌词。PDF／图片由本机 Audiveris 识别，请对照原谱校对。</p></div>
       <div class="sidebar-bottom">谱面在此设备上处理 · 无需上传到服务器</div>
@@ -373,10 +374,16 @@ function showStandaloneNotice(reason) {
   if (note) note.innerHTML = `${reason}，PDF／图片暂时无法识别。要识谱请在本机运行 <strong>npm run dev</strong>；线上可直接上传 MusicXML，或用下面的示例谱试听。`;
 }
 
+function maxPages() {
+  const value = Number($('max-pages')?.value);
+  return Number.isFinite(value) && value >= 1 ? Math.floor(value) : 0;
+}
+
 function submitRecognition(file, ext) {
   return new Promise((resolve, reject) => {
     const request = new XMLHttpRequest();
-    request.open('POST', `/api/recognize-jobs?ext=${encodeURIComponent(ext)}`);
+    const limit = maxPages();
+    request.open('POST', `/api/recognize-jobs?ext=${encodeURIComponent(ext)}${limit ? `&pages=${limit}` : ''}`);
     request.timeout = 600000;
     request.upload.onprogress = event => {
       if (event.lengthComputable) importProgress('正在传送到本机识谱服务', `已传送 ${(event.loaded / 1024 / 1024).toFixed(1)} / ${(event.total / 1024 / 1024).toFixed(1)} MB`, event.loaded / event.total * 100);

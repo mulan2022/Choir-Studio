@@ -175,8 +175,13 @@ function sendJson(res, status, value) {
 async function createJob(req, res, url) {
   const ext = (url.searchParams.get('ext') || '').toLowerCase();
   if (!allowed.has(ext)) throw Object.assign(new Error('仅支持 PDF、PNG、JPG、TIFF 扫描谱。'), { status: 400 });
+  // Recognising the first pages of a long score is a quick way to judge the
+  // result before committing to a full run.
+  const pageLimit = Math.max(0, Math.min(999, Number(url.searchParams.get('pages')) || 0));
   const body = await readUpload(req);
-  const key = recognitionKey(ext, body);
+  // A partial run must not touch the cache, or a later full upload of the same
+  // file would silently get the truncated score back.
+  const key = pageLimit ? `partial-${pageLimit}-${recognitionKey(ext, body)}` : recognitionKey(ext, body);
   const cachedJob = activeJobs.get(key);
   if (cachedJob?.state === 'working') { sendJson(res, 202, { id: cachedJob.id }); return; }
   const cached = await readCachedResult(key);
@@ -193,7 +198,7 @@ async function createJob(req, res, url) {
   const input = path.join(temp, `score.${ext}`);
   await fs.writeFile(input, body);
   const id = randomUUID();
-  const job = { id, state: 'working', stage: '正在分析文件', startedAt: Date.now(), page: 0, pagesDone: 0, totalPages: 0, firstPage: 1, lastPage: 1, detected: false, step: '', body: null, cached: false, error: '' };
+  const job = { id, pageLimit, state: 'working', stage: '正在分析文件', startedAt: Date.now(), page: 0, pagesDone: 0, totalPages: 0, firstPage: 1, lastPage: 1, detected: false, step: '', body: null, cached: false, error: '' };
   jobs.set(id, job);
   activeJobs.set(key, job);
   sendJson(res, 202, { id });
@@ -229,6 +234,10 @@ async function processJob(job, bin, input, temp, key) {
     sheets = `${pdf.firstPage}-${pdf.lastPage}`;
     job.stage = pdf.detected ? `找到第 ${pdf.firstPage}–${pdf.lastPage} 页五线谱，开始识谱` : '未能自动定位五线谱页，尝试识别全部页面';
   } else { job.firstPage = 1; job.lastPage = 1; job.totalPages = 1; job.stage = '开始识谱'; }
+  if (job.pageLimit && job.lastPage - job.firstPage + 1 > job.pageLimit) {
+    job.lastPage = job.firstPage + job.pageLimit - 1;
+    job.stage = `只识别前 ${job.pageLimit} 页（共 ${job.totalPages} 页）`;
+  }
   const count = job.lastPage - job.firstPage + 1;
   const timeout = Math.min(6 * 60 * 60 * 1000, Math.max(600000, count * 300000));
   const onProgress = offset => ({ page, step, stage }) => {

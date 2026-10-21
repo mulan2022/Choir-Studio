@@ -126,3 +126,7 @@
 .pitch-ghost-halo{fill:#ffffff;fill-opacity:.78}
 
 .mix-actions button.active{color:#2f7f66;text-decoration:underline}
+
+/* Page limit under the upload box: recognise just the first pages first. */
+.page-limit{display:flex;align-items:center;gap:8px;margin-top:13px;font-size:11px;color:#a9c3b9}
+.page-limit input{width:64px;background:#1d4046;color:#e6eee7;border:1px solid #47696b;border-radius:7px;padding:6px 7px;font-size:11px}

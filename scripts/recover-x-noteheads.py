@@ -231,8 +231,12 @@ def recover(pdf: Path, mxl: Path, output: Path) -> int:
     if not parts:
         return 0
     measures = [part.findall('measure') for part in parts]
-    if len({len(items) for items in measures}) != 1:
+    # OMR does not always emit the same number of measures for every part
+    # (trailing or repeated bars get dropped), so align from measure one and
+    # stop at the shortest part instead of refusing to work.
+    if any(not items for items in measures):
         return 0
+    measure_limit = min(len(items) for items in measures)
     settings = [part_settings(items) for items in measures]
     with TemporaryDirectory(prefix='choir-x-') as temp_name:
         temp = Path(temp_name)
@@ -241,6 +245,7 @@ def recover(pdf: Path, mxl: Path, output: Path) -> int:
         document = ET.parse(html).getroot()
         pages = document.findall('.//{*}page')
         total = 0
+        first_music_page = None
         for page_index, page in enumerate(pages, 1):
             if not any('¿' in ''.join(word.itertext()) or '×' in ''.join(word.itertext()) for word in page.findall('.//{*}word')):
                 continue
@@ -252,6 +257,8 @@ def recover(pdf: Path, mxl: Path, output: Path) -> int:
             staves = staves_in(image)
             if not staves:
                 continue
+            if first_music_page is None:
+                first_music_page = page_index
             glyphs = cross_words(page, sx, sy)
             systems = systems_in(staves)
             # Oversized groups: when a page packs several SATB systems close
@@ -277,7 +284,7 @@ def recover(pdf: Path, mxl: Path, output: Path) -> int:
             # same page (backward fill, then forward fill).
             for inf in infos:
                 inf['first'] = None
-                if inf['label'] and 1 <= inf['label'] <= len(measures[0]):
+                if inf['label'] and 1 <= inf['label'] <= measure_limit:
                     inf['first'] = inf['label'] - 1
             first_labeled = next((i for i, inf in enumerate(infos) if inf['first'] is not None), None)
             if first_labeled is not None:
@@ -293,7 +300,7 @@ def recover(pdf: Path, mxl: Path, output: Path) -> int:
                     elif running is not None and inf['page_bars'] >= 1:
                         inf['first'] = running
                         running += inf['page_bars']
-            elif len(pages) == 1:
+            elif len(pages) == 1 or page_index == first_music_page:
                 # Single-page score without printed numbers: trust cumulative bars.
                 running = 0
                 for inf in infos:
@@ -319,7 +326,7 @@ def recover(pdf: Path, mxl: Path, output: Path) -> int:
                     preceding = parts[:first_visible]
                     if any(measures[part_index][measure_index].find('.//pitch') is not None
                            for part_index in range(first_visible)
-                           for measure_index in range(first_measure, min(first_measure + page_bars, len(measures[0])))):
+                           for measure_index in range(first_measure, min(first_measure + page_bars, measure_limit))):
                         continue
                     part_indices = list(range(first_visible, len(parts)))
                 else:
@@ -342,7 +349,14 @@ def recover(pdf: Path, mxl: Path, output: Path) -> int:
                             staff_index = min(range(len(group)), key=lambda i: abs(group[i][2] - y))
                             if abs(group[staff_index][2] - y) <= 24:
                                 items.append((x, y, staff_index))
-                    if len(items) < 2:
+                    if not items:
+                        continue
+                    measure_index = first_measure + bar_index
+                    if measure_index >= measure_limit:
+                        continue
+                    beats = measure_beats(measures[0][:measure_index + 1])
+                    slots_count = round(beats * 2)
+                    if slots_count < 1:
                         continue
                     column_groups = []
                     for x in sorted(x for x, _, _ in items):
@@ -352,20 +366,31 @@ def recover(pdf: Path, mxl: Path, output: Path) -> int:
                             column_groups[-1].append(x)
                     columns = [median(group) for group in column_groups]
                     differences = [b - a for a, b in zip(columns, columns[1:]) if 8 <= b - a <= 25]
-                    if not differences and system_step is None or columns[0] - left > (right - left) * .23:
-                        continue
                     step = median(differences) if len(differences) >= 2 else system_step
-                    if not 10 <= step <= 25:
-                        continue
-                    measure_index = first_measure + bar_index
-                    if measure_index >= len(measures[0]):
-                        continue
-                    beats = measure_beats(measures[0][:measure_index + 1])
-                    slots_count = round(beats * 2)
+                    if step is not None and not 10 <= step <= 25:
+                        step = None
+                    if step is None:
+                        # Sparse bar (a lone breath note, or spacing that gives no
+                        # grid): fall back to the bar's own eighth-note grid so a
+                        # single x still lands on the right beat.
+                        step = (right - left) / slots_count
+                        origin = left
+                        tolerant = True
+                    else:
+                        origin = columns[0]
+                        tolerant = False
+                        # The column grid has to line up with the barline: a
+                        # cluster that starts an arbitrary distance into the bar
+                        # usually means the detected spacing is wrong.
+                        offset = (origin - left) % step
+                        if min(offset, step - offset) > 4:
+                            continue
                     recovered: dict[int, dict[int, list[tuple[str, int, int]]]] = defaultdict(lambda: defaultdict(list))
                     for x, y, staff_index in items:
-                        slot = round((x - columns[0]) / step)
-                        if not 0 <= slot < slots_count or abs(x - (columns[0] + slot * step)) > 6:
+                        slot = round((x - origin) / step)
+                        if not 0 <= slot < slots_count:
+                            continue
+                        if not tolerant and abs(x - (origin + slot * step)) > 6:
                             continue
                         part_index = part_indices[staff_index]
                         part_measures = measures[part_index]

@@ -1,3 +1,4 @@
+import { editorPanel, editorToolbar } from './editor-panel.js';
 import { OpenSheetMusicDisplay } from 'opensheetmusicdisplay';
 import { ChoirPlayer } from './audio.js';
 import { beatToSeconds, parseScore, readScoreFile } from './score.js';
@@ -36,46 +37,10 @@ app.innerHTML = `
       <div class="empty-state" id="empty-state"><div class="staff-illustration"><span>♩</span><span>♪</span><span>♬</span></div><h3>让每一条旋律都清晰可闻</h3><p>从左侧放入乐谱，就能切换声部、速度与音色。</p><button id="empty-sample">打开示例乐谱 <span>→</span></button></div>
       <div class="loaded" id="loaded" hidden>
         <div class="view-tabs" role="tablist" aria-label="乐谱视图"><button id="practice-tab" class="active" role="tab" aria-selected="true">练习播放</button><button id="edit-tab" role="tab" aria-selected="false">编辑乐谱</button></div>
+        ${editorToolbar}
         <div class="section-row"><div><span class="section-index">01</span><h3 id="score-section-title">乐谱预览</h3></div><div class="score-follow-controls"><span id="score-page-status">第 1 页</span><button id="follow-score" class="active" type="button" aria-pressed="true">● 跟随播放</button></div></div>
         <div class="score-edit-layout"><div class="score-paper" id="score-paper"><div id="score-view"></div></div>
-          <aside class="editor-panel" id="editor-panel" aria-label="乐谱编辑器">
-            <div class="editor-panel-head"><strong>修改乐谱</strong><span id="editor-state">点击谱面上的音符</span></div>
-            <div class="editor-issues" id="editor-issues" hidden><strong>需要校对的小节</strong><div class="editor-issue-list" id="editor-issue-list"></div></div>
-            <p class="editor-help">单击选中音符；选中后直接在五线谱上点你想放的音高，虚线音符是预览。Enter 确认，Esc 取消。Ctrl 点选增减，Shift 点选连续音符。</p>
-            <div class="editor-selection" id="editor-selection">尚未选中音符</div>
-            <div class="editor-group-title-row"><strong class="editor-group-title">音高</strong><span class="editor-group-hint">点谱面拾取</span></div>
-            <div class="pitch-compare">
-              <div class="pitch-slot current"><span class="pitch-name" id="pitch-current">—</span><span class="pitch-caption">当前</span></div>
-              <span class="pitch-arrow" aria-hidden="true">→</span>
-              <div class="pitch-slot target" id="pitch-target-slot"><span class="pitch-name" id="pitch-target">—</span><span class="pitch-caption">待确认</span></div>
-            </div>
-            <div class="pitch-actions">
-              <button class="editor-chip" id="pitch-flat" type="button" aria-label="降半音" title="降半音">♭</button>
-              <button class="editor-chip" id="pitch-sharp" type="button" aria-label="升半音" title="升半音">♯</button>
-              <button class="editor-primary" id="apply-pitch" type="button">确认音高</button>
-              <button class="editor-secondary" id="cancel-pitch" type="button">取消</button>
-            </div>
-            <div class="editor-group-title-row"><strong class="editor-group-title">时值</strong><span class="editor-group-hint">点一下即应用</span></div>
-            <div class="rhythm-field">
-              <button class="rhythm-trigger" id="rhythm-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
-                <span class="rhythm-trigger-glyph" id="rhythm-trigger-glyph"></span>
-                <span class="rhythm-trigger-label" id="rhythm-trigger-label">选择时值</span>
-                <span class="rhythm-caret" aria-hidden="true">⌄</span>
-              </button>
-              <div class="rhythm-menu" id="rhythm-menu" role="listbox" aria-label="时值" hidden></div>
-            </div>
-            <div class="editor-divider"></div>
-            <strong class="editor-group-title" id="editor-measure-title">小节拍号</strong>
-            <div class="editor-meter"><input id="edit-beats" type="number" min="1" max="12" aria-label="每小节拍数"><span>/</span><select id="edit-beat-type" aria-label="拍号单位"><option>2</option><option>4</option><option>8</option><option>16</option></select></div>
-            <button class="editor-secondary" id="apply-meter" type="button">修改本小节拍号</button>
-            <div class="editor-divider"></div>
-            <strong class="editor-group-title">延音线</strong><p class="editor-help">选中同声部、同音高的两个相邻音符，可跨小节或跨谱行。</p>
-            <div class="editor-button-row"><button class="editor-secondary" id="add-tie" type="button">连接延音线</button><button class="editor-secondary" id="remove-tie" type="button">取消延音线</button></div>
-            <div class="editor-divider"></div>
-            <div class="editor-button-row"><button class="editor-secondary" id="edit-undo" type="button">↶ 撤销</button><button class="editor-secondary" id="edit-redo" type="button">↷ 重做</button></div>
-            <button class="editor-download" id="edit-download" type="button">下载修改后的 MusicXML</button>
-            <p class="editor-message" id="editor-message" role="status"></p>
-          </aside></div>
+          ${editorPanel}</div>
         <div class="section-row timeline-heading"><div><span class="section-index">02</span><h3>实际发声轨道</h3></div><span class="hint">点击轨道定位播放 · 彩色块代表实际唱出的音</span></div>
         <div class="timeline-panel">
           <div class="timeline-info"><span>实际播放音符 · 延音线已连接</span><span class="wave-caption">实时总波形 <canvas id="live-wave" width="150" height="34" aria-label="实时音频波形"></canvas></span></div>
@@ -83,7 +48,7 @@ app.innerHTML = `
           <p class="timeline-help">每一行对应一个声部；延音线连接的音符显示为连续长条，跨小节持续发声。竖线跟随播放，点击轨道可跳到该位置。</p>
         </div>
         <div class="section-row mixer-heading"><div><span class="section-index">03</span><h3>声部混音台</h3></div><span class="hint">点亮想听的声部，独奏可快速定位旋律</span></div>
-        <div class="mix-toolbar"><div class="mode-switch" role="group" aria-label="音色模式"><button data-mode="voice" class="active">◉ 人声版</button><button data-mode="piano">♫ 纯音乐版</button></div><div class="mix-actions"><button id="all-tracks">全部开启</button><button id="none-tracks">全部静音</button><button id="export-audio" title="按当前声部开关、每个声部的音量、音色和速度导出 WAV">导出音频</button></div></div>
+        <div class="mix-toolbar"><div class="mode-switch" role="group" aria-label="音色模式"><button data-mode="voice" class="active">◉ 人声版</button><button data-mode="piano">♫ 纯音乐版</button></div><div class="mix-actions"><button id="all-tracks">全部开启</button><button id="none-tracks">全部静音</button><label class="export-format" for="export-format">格式 <select id="export-format" aria-label="导出音频格式"><option value="mp3">MP3 · 小文件</option><option value="wav">WAV · 高音质</option></select></label><button id="export-audio" title="按当前声部、音量、音色和速度导出音频">导出音频</button></div></div>
         <div class="tracks" id="tracks"></div>
         <div class="expression-note"><span>✳</span><div><strong>当前为音高校对播放</strong><p>按识别出的音高和节奏播放，支持延音线连接。跳音、颤音、滑音及力度变化暂未启用；识谱结果仍需对照原谱校对。</p></div></div>
       </div>
@@ -114,6 +79,12 @@ let toastTimer;
 let importTimer;
 let editor = null;
 let editorMode = false;
+let editScope = 'measures';
+let noteTool = 'select';
+let selectedMeasures = [];
+let measureAnchor = null;
+let pickingScorePitch = false;
+let pitchOctaveShift = 0;
 let selectedIds = [];
 let selectionAnchor = null;
 let selectedMeasure = null;
@@ -441,6 +412,12 @@ async function loadXML(xml, onStage = null, fallbackTitle = '', preserveEditor =
     selectedIds = [];
     selectionAnchor = null;
     selectedMeasure = null;
+    selectedMeasures = [];
+    measureAnchor = null;
+    pickingScorePitch = false;
+    pitchOctaveShift = 0;
+    $('meter-start').value = '';
+    $('meter-end').value = '';
     pendingPitch = null;
   }
   if (parsed.title === '未命名乐谱' && fallbackTitle) parsed.title = fallbackTitle;
@@ -491,6 +468,7 @@ async function loadXML(xml, onStage = null, fallbackTitle = '', preserveEditor =
     if (onStage) await nextPaint();
     osmd.render();
     indexGraphicNotes();
+    drawMeasureNumbers();
     osmd.cursor.reset();
     osmd.cursor.show();
     if (editorMode) osmd.cursor.hide();
@@ -608,7 +586,9 @@ function pitchLineHit(page, point) {
 
 function setEditorMode(active) {
   editorMode = active;
+  if (active && selectedMeasure === null && score?.measures) { selectedMeasure = 0; selectedMeasures = [0]; measureAnchor = 0; }
   if (!active) pendingPitch = null;
+  document.body.classList.toggle('editing-score', active);
   $('loaded').classList.toggle('editor-mode', active);
   $('practice-tab').classList.toggle('active', !active);
   $('edit-tab').classList.toggle('active', active);
@@ -621,6 +601,49 @@ function setEditorMode(active) {
   renderIssueChips();
   if (active) setTimeout(markIssueMeasures, 0);
   else clearIssueMarks();
+}
+
+function setEditScope(scope) {
+  if (editorBusy) return;
+  editScope = scope;
+  pendingPitch = null;
+  pickingScorePitch = false;
+  selectedIds = [];
+  selectionAnchor = null;
+  if (scope === 'measures' && !selectedMeasures.length && selectedMeasure !== null) selectedMeasures = [selectedMeasure];
+  setRhythmMenu(false);
+  renderEditorSelection();
+}
+
+function selectMeasure(index, event = {}) {
+  if (!Number.isInteger(index) || index < 0 || index >= editor.measureStarts.length) return;
+  if (event.shiftKey && measureAnchor !== null) {
+    const start = Math.min(measureAnchor, index), end = Math.max(measureAnchor, index);
+    const range = Array.from({ length: end - start + 1 }, (_, i) => start + i);
+    selectedMeasures = event.ctrlKey || event.metaKey ? [...new Set([...selectedMeasures, ...range])] : range;
+  } else if (event.ctrlKey || event.metaKey) {
+    selectedMeasures = selectedMeasures.includes(index) ? selectedMeasures.filter(value => value !== index) : [...selectedMeasures, index];
+    measureAnchor = index;
+  } else { selectedMeasures = [index]; measureAnchor = index; }
+  selectedMeasures.sort((a, b) => a - b);
+  selectedMeasure = selectedMeasures.includes(index) ? index : selectedMeasures.at(-1) ?? null;
+  selectedIds = [];
+  selectionAnchor = null;
+  pendingPitch = null;
+  syncMeterRange();
+  renderEditorSelection();
+}
+
+function measureSelectionLabel() {
+  if (!selectedMeasures.length) return '点击谱面选择小节';
+  const ranges = [];
+  let start = selectedMeasures[0], end = start;
+  for (const index of [...selectedMeasures.slice(1), Infinity]) {
+    if (index === end + 1) { end = index; continue; }
+    ranges.push(start === end ? String(start + 1) : `${start + 1}–${end + 1}`);
+    start = end = index;
+  }
+  return `第 ${ranges.join('、')} 小节${selectedMeasures.length > 1 ? ` · 共 ${selectedMeasures.length} 小节` : ''}`;
 }
 
 function noteLabel(record) {
@@ -649,7 +672,7 @@ function pendingPitchInfo(record) {
 }
 
 function clearEditorMarks() {
-  document.querySelectorAll('.editor-selection-mark, .pitch-mark').forEach(node => node.remove());
+  document.querySelectorAll('.editor-selection-mark, .measure-selection-mark, .pitch-mark').forEach(node => node.remove());
 }
 
 // --- measures the OMR could not line up with the printed bar --------------
@@ -686,6 +709,38 @@ function measureBox(measure) {
   return { x, y, width, height };
 }
 
+function drawMeasureNumbers() {
+  document.querySelectorAll('.measure-number-badge').forEach(node => node.remove());
+  const seen = new Set();
+  eachGraphicMeasure((measure, number, svg, pageIndex) => {
+    const key = `${pageIndex}:${number}`;
+    if (!svg || seen.has(key)) return;
+    const box = measureBox(measure);
+    if (!box) return;
+    seen.add(key);
+    const group = svgNode('g', { class: 'measure-number-badge', 'data-measure-index': number - 1, role: 'button', tabindex: '0', 'aria-label': `选择第 ${number} 小节`, transform: `translate(${box.x + 3},${Math.max(2, box.y - 24)})` });
+    const rowStart = measure.ParentStaffLine?.Measures?.[0] === measure;
+    const label = rowStart ? `第 ${number} 小节` : String(number);
+    group.append(svgNode('rect', { x: 0, y: 0, width: (rowStart ? 45 : 16) + String(number).length * 7, height: 19, rx: 5 }));
+    const text = svgNode('text', { x: 7, y: 13 });
+    text.textContent = label;
+    group.append(text);
+    svg.append(group);
+  });
+}
+
+function drawMeasureSelection() {
+  if (!editorMode) { document.querySelectorAll('.measure-number-badge.selected').forEach(badge => badge.classList.remove('selected')); return; }
+  const selected = new Set(editScope === 'measures' ? selectedMeasures : selectedMeasure === null ? [] : [selectedMeasure]);
+  eachGraphicMeasure((measure, number, svg) => {
+    if (!svg || !selected.has(number - 1)) return;
+    const box = measureBox(measure);
+    if (!box) return;
+    svg.append(svgNode('rect', { class: `measure-selection-mark ${editScope === 'notes' ? 'note-context' : ''}`, 'data-measure-index': number - 1, x: box.x - 2, y: box.y - 3, width: box.width + 4, height: box.height + 6, rx: 5 }));
+  });
+  document.querySelectorAll('.measure-number-badge').forEach(badge => badge.classList.toggle('selected', selected.has(Number(badge.dataset.measureIndex))));
+}
+
 function markIssueMeasures() {
   clearIssueMarks();
   const numbers = new Set((score?.measureIssues || []).map(Number));
@@ -718,6 +773,7 @@ function renderIssueChips() {
   if (!box || !list) return;
   const numbers = score?.measureIssues || [];
   box.hidden = !editorMode || !numbers.length;
+  $('editor-issue-count').textContent = `${numbers.length} 处`;
   list.innerHTML = numbers.slice(0, 60).map(number => `<button type="button" data-measure="${number}">${number}</button>`).join('');
   if (numbers.length > 60) list.insertAdjacentHTML('beforeend', `<span class="editor-issue-more">…共 ${numbers.length} 个</span>`);
 }
@@ -751,6 +807,7 @@ function focusMeasure(number) {
 
 
 function drawEditorMarks(first, pending) {
+  if (!editorMode || editScope !== 'notes' || noteTool !== 'select') return;
   for (const id of selectedIds) {
     const item = graphicById.get(id);
     if (!item) continue;
@@ -782,54 +839,196 @@ function drawEditorMarks(first, pending) {
 }
 
 function updatePitchPanel(first, pending) {
-  $('pitch-current').textContent = currentPitchName(first) || '—';
-  $('pitch-target').textContent = pending ? pending.name : '—';
-  $('pitch-target-slot').classList.toggle('ready', !!pending);
-  const editable = !!first?.pitched && !editorBusy;
+  const inserting = noteTool === 'insert';
+  $('pitch-current').textContent = inserting ? '新音符' : currentPitchName(first) || '—';
+  $('pitch-target').textContent = inserting ? pitchName(Number($('insert-pitch').value)) : pending ? pending.name : '—';
+  $('pitch-target-slot').classList.toggle('ready', inserting || !!pending);
+  const editable = editScope === 'notes' && (inserting || selectedIds.length === 1 && !!first?.pitched) && !editorBusy;
   $('pitch-flat').disabled = !editable;
   $('pitch-sharp').disabled = !editable;
+  $('pitch-staff').setAttribute('aria-disabled', String(!editable));
   $('cancel-pitch').disabled = !pending || editorBusy;
+  $('apply-pitch').hidden = inserting;
+  $('cancel-pitch').hidden = inserting;
   $('apply-pitch').disabled = !pending || !pending.playable || editorBusy;
   $('apply-pitch').textContent = pending && !pending.playable ? '超出可用音域' : '确认音高';
+  $('pick-score-pitch').hidden = inserting;
+  $('pick-score-pitch').disabled = !editable;
+  $('pick-score-pitch').classList.toggle('active', pickingScorePitch);
+  $('pick-score-pitch').setAttribute('aria-pressed', String(pickingScorePitch));
+  $('pick-score-pitch').textContent = pickingScorePitch ? '⌖ 请在原谱同一谱表上点选 · Esc 退出' : '⌖ 在原谱上点选音高';
+  renderPitchStaff(first, pending);
+}
+
+function renderPitchStaff(first, pending) {
+  const svg = $('pitch-staff');
+  const inserting = noteTool === 'insert';
+  const midi = inserting ? Number($('insert-pitch').value) : pending?.midi ?? first?.midi ?? 60;
+  const reference = inserting ? midi : first?.midi ?? 60;
+  const bass = reference < 60;
+  const base = (bass ? diatonicOf('G', 2) : diatonicOf('E', 4)) + pitchOctaveShift * 7;
+  const names = ['C','C','D','D','E','F','F','G','G','A','A','B'];
+  const d = inserting ? diatonicOf(names[midi % 12], Math.floor(midi / 12) - 1) : pending?.diatonic ?? (first ? diatonicOf(first.step, first.octave) : diatonicOf('C', 4));
+  const y = 98 - (d - base) * 6;
+  svg.dataset.base = String(base);
+  svg.setAttribute('aria-valuenow', String(midi));
+  svg.setAttribute('aria-valuetext', inserting ? pitchName(midi) : pending?.name || currentPitchName(first) || '尚未选择音符');
+  svg.innerHTML = `<rect width="280" height="142" rx="10" fill="transparent"/>${[50,62,74,86,98].map(line => `<line x1="18" y1="${line}" x2="264" y2="${line}" stroke="#b8cfc2"/>`).join('')}<text x="27" y="${bass ? 83 : 100}" class="picker-clef">${bass ? '𝄢' : '𝄞'}</text>`;
+  if (y >= 8 && y <= 134 && (inserting || first)) {
+    for (let line = 110; line <= y + 1; line += 12) svg.append(svgNode('line', { x1: 142, y1: line, x2: 178, y2: line, class: 'picker-ledger' }));
+    for (let line = 38; line >= y - 1; line -= 12) svg.append(svgNode('line', { x1: 142, y1: line, x2: 178, y2: line, class: 'picker-ledger' }));
+    svg.append(svgNode('ellipse', { cx: 160, cy: y, rx: 9, ry: 6, transform: `rotate(-18 160 ${y})`, class: `picker-note ${pending ? 'pending' : ''}` }));
+    svg.append(svgNode('line', { x1: 168, y1: y - 2, x2: 168, y2: Math.max(5, y - 29), class: 'picker-stem' }));
+    const alter = inserting ? [1,3,6,8,10].includes(midi % 12) ? 1 : 0 : pending?.alter ?? first?.alter ?? 0;
+    if (alter) { const accidental = svgNode('text', { x: 130, y: y + 6, class: 'picker-accidental' }); accidental.textContent = alter > 0 ? '♯'.repeat(Math.min(2, alter)) : '♭'.repeat(Math.min(2, -alter)); svg.append(accidental); }
+  }
+  $('pitch-staff-caption').textContent = `${bass ? '低音' : '高音'}谱表${pitchOctaveShift ? ` · ${pitchOctaveShift > 0 ? '+' : ''}${pitchOctaveShift} 八度` : ''}`;
+}
+
+function pickStaffPitch(diatonic) {
+  if (editScope !== 'notes' || editorBusy) return;
+  if (noteTool === 'insert') {
+    const { step, octave } = stepOfDiatonic(diatonic);
+    const slot = $('insert-slot').value ? JSON.parse($('insert-slot').value) : null;
+    const alter = slot ? keyAlter(step, editor.keyFifths(slot.partIndex, selectedMeasure)) : 0;
+    const midi = midiOf(step, alter, octave);
+    if (isPlayableMidi(midi)) $('insert-pitch').value = String(midi);
+  } else if (selectedIds.length === 1) pendingPitch = { diatonic, shift: 0 };
+  renderEditorSelection();
 }
 
 function updateRhythmPanel(first) {
   const duration = first ? first.durationUnits / first.divisions : null;
   const match = duration === null ? null : RHYTHM_OPTIONS.find(option => Math.abs(option.beats - duration) < 0.0005);
-  $('rhythm-trigger-glyph').innerHTML = match ? noteGlyph(match.type, match.dots, { size: 24 }) : '';
-  $('rhythm-trigger-label').textContent = match ? `${match.label} · ${match.beats} 拍` : duration !== null ? `当前时值 · ${+duration.toFixed(4)} 拍（自定义）` : '选择时值';
-  $('rhythm-trigger').disabled = !first || editorBusy;
+  const triplet = first?.node.querySelector('time-modification actual-notes')?.textContent === '3' && first?.node.querySelector('time-modification normal-notes')?.textContent === '2';
+  const written = triplet ? RHYTHM_OPTIONS.find(option => option.type === first.node.querySelector('type')?.textContent && option.dots === first.node.querySelectorAll('dot').length) : null;
+  $('rhythm-trigger-glyph').innerHTML = (written || match) ? noteGlyph((written || match).type, (written || match).dots, { size: 24 }) : '';
+  $('rhythm-trigger-label').textContent = triplet ? `${written?.label || '音符'}三连音 · 实际 ${+duration.toFixed(4)} 拍` : match ? `${match.label} · ${match.beats} 拍` : duration !== null ? `当前时值 · ${+duration.toFixed(4)} 拍（自定义）` : '选择时值';
+  const disabled = !first || selectedIds.length !== 1 || editorBusy || triplet || editScope !== 'notes';
+  $('rhythm-trigger').disabled = disabled;
+  $('rhythm-help').textContent = triplet ? '先移除三连音再改单个时值' : selectedIds.length > 1 ? '节奏修改请单选一个音符' : '点图标应用 · 自动平衡拍数';
+  for (const button of $('rhythm-palette').querySelectorAll('button')) {
+    button.disabled = disabled;
+    button.setAttribute('aria-pressed', String(!triplet && Number(button.dataset.beats) === duration));
+  }
   if (!first) setRhythmMenu(false);
   for (const option of $('rhythm-menu').querySelectorAll('.rhythm-option')) {
     option.setAttribute('aria-selected', String(!!match && Math.abs(Number(option.dataset.beats) - match.beats) < 1e-6));
   }
 }
 
+function updateInsertPanel() {
+  const measureSelect = $('insert-measure');
+  const slotSelect = $('insert-slot');
+  const durationSelect = $('insert-duration');
+  const startSelect = $('insert-start');
+  const count = editor?.measureStarts.length || 0;
+  if (selectedMeasure !== null && selectedMeasure >= count) selectedMeasure = count ? count - 1 : null;
+  if (measureSelect.options.length !== count) measureSelect.replaceChildren(...Array.from({ length: count }, (_, index) => new Option(`第 ${index + 1} 小节`, String(index))));
+  measureSelect.value = selectedMeasure === null ? '' : String(selectedMeasure);
+  measureSelect.disabled = !count || editorBusy;
+  $('insert-before').disabled = !selectedMeasures.length || editorBusy || editScope !== 'measures';
+  $('insert-after').disabled = !selectedMeasures.length || editorBusy || editScope !== 'measures';
+  const slots = selectedMeasure === null ? [] : editor.restSlots(selectedMeasure);
+  const oldSlot = slotSelect.value;
+  slotSelect.replaceChildren(...slots.map(slot => {
+    const track = score?.tracks.find(item => item.partId === editor.partIds[slot.partIndex] && item.id.endsWith(`:${slot.staff}`));
+    return new Option(`${track?.label || `声部 ${slot.partIndex + 1}`} · 声部 ${slot.voice}`, JSON.stringify(slot));
+  }));
+  if (slots.some(slot => JSON.stringify(slot) === oldSlot)) slotSelect.value = oldSlot;
+  slotSelect.disabled = !slots.length || editorBusy;
+  const slot = slotSelect.value ? JSON.parse(slotSelect.value) : null;
+  const oldDuration = durationSelect.value;
+  const durations = slot ? RHYTHM_OPTIONS.filter(option => editor.restPositions(selectedMeasure, slot, option.beats).length) : [];
+  durationSelect.replaceChildren(...durations.map(option => new Option(`${option.label} · ${option.beats} 拍`, String(option.beats))));
+  if (durations.some(option => String(option.beats) === oldDuration)) durationSelect.value = oldDuration;
+  else if (durations.some(option => option.beats === 1)) durationSelect.value = '1';
+  else if (durations.length) durationSelect.value = String(durations.find(option => option.beats < 1)?.beats || durations.at(-1).beats);
+  durationSelect.disabled = !durations.length || editorBusy;
+  const oldStart = startSelect.value;
+  const beats = Number(durationSelect.value);
+  const positions = slot && Number.isFinite(beats) ? editor.restPositions(selectedMeasure, slot, beats) : [];
+  const meter = selectedMeasure === null ? null : editor.meterAt(selectedMeasure);
+  startSelect.replaceChildren(...positions.map(position => new Option(`第 ${+(1 + position * meter.beatType / 4).toFixed(3)} 拍`, String(position))));
+  if (positions.some(position => String(position) === oldStart)) startSelect.value = oldStart;
+  startSelect.disabled = !positions.length || editorBusy;
+  $('insert-pitch').disabled = !positions.length || editorBusy;
+  $('insert-note').disabled = !positions.length || editorBusy || editScope !== 'notes';
+  $('insert-hint').textContent = !meter ? '先选择一个小节。' : !slots.length ? '本小节没有可用的休止符；可先插入一个新小节。' : `${meter.beats}/${meter.beatType} 拍 · 只能放在当前声部的空拍内。`;
+  for (const button of $('insert-rhythm-palette').querySelectorAll('button')) {
+    button.disabled = editorBusy || !durations.some(option => option.beats === Number(button.dataset.beats));
+    button.setAttribute('aria-pressed', String(Number(button.dataset.beats) === beats));
+  }
+}
+
 function renderEditorSelection() {
   clearEditorMarks();
   if (!editor) return;
+  selectedMeasures = selectedMeasures.filter(index => index < editor.measureStarts.length);
+  if (selectedMeasure !== null && selectedMeasure >= editor.measureStarts.length) selectedMeasure = editor.measureStarts.length ? editor.measureStarts.length - 1 : null;
+  selectedIds = selectedIds.filter(id => editor.get(id)?.pitched);
+  if (!selectedIds.length) selectionAnchor = null;
   const first = editor.get(selectedIds[0]);
   const pending = pendingPitchInfo(first);
-  $('editor-selection').textContent = selectedIds.length === 1 && first ? noteLabel(first) : selectedIds.length ? `已选择 ${selectedIds.length} 个音符` : selectedMeasure !== null ? `第 ${selectedMeasure + 1} 小节` : '尚未选中音符';
-  $('editor-state').textContent = editorBusy ? '正在更新谱面…' : selectedIds.length ? `${selectedIds.length} 个音符` : selectedMeasure !== null ? `第 ${selectedMeasure + 1} 小节` : '点击谱面上的音符';
+  const bars = editScope === 'measures';
+  $('measure-tools').hidden = !bars;
+  $('note-tools').hidden = bars;
+  $('note-edit-tools').hidden = noteTool !== 'select';
+  $('note-rhythm-card').hidden = noteTool !== 'select';
+  $('note-insert-tools').hidden = noteTool !== 'insert';
+  for (const [id, active] of [['mode-measures', bars], ['mode-notes', !bars], ['note-select-tool', noteTool === 'select'], ['note-insert-tool', noteTool === 'insert']]) {
+    $(id).classList.toggle('active', active);
+    $(id).setAttribute('aria-pressed', String(active));
+    $(id).disabled = editorBusy;
+  }
+  $('score-paper').dataset.editScope = editScope;
+  $('score-paper').classList.toggle('picking-pitch', pickingScorePitch);
+  $('editor-panel-title').textContent = bars ? '小节设置' : noteTool === 'insert' ? '添加音符' : '音符设置';
+  $('editor-mode-hint').textContent = bars ? '单击选小节 · Shift 连选 · Ctrl / ⌘ 点选' : noteTool === 'insert' ? '点击休止符定位 · 选择音高与节奏 · 插入' : '单击选音符 · Shift 连选 · Ctrl / ⌘ 点选 · Del 删除';
+  $('editor-selection').textContent = bars ? measureSelectionLabel() : noteTool === 'insert' ? selectedMeasure !== null ? `第 ${selectedMeasure + 1} 小节 · 选择空拍写入音符` : '点击谱面选择写入位置' : selectedIds.length === 1 && first ? noteLabel(first) : selectedIds.length ? `已选择 ${selectedIds.length} 个音符` : selectedMeasure !== null ? `第 ${selectedMeasure + 1} 小节 · 点击音符开始编辑` : '点击谱面上的音符';
+  $('editor-state').textContent = editorBusy ? '正在更新…' : bars ? `${selectedMeasures.length} 小节` : noteTool === 'insert' ? '保留拍数' : `${selectedIds.length} 音符`;
+  updateInsertPanel();
   updatePitchPanel(first, pending);
   updateRhythmPanel(first);
+  if (selectedMeasure !== null && !$('meter-start').value) {
+    $('meter-start').value = String(selectedMeasure + 1);
+    $('meter-end').value = String(selectedMeasure + 1);
+  }
+  for (const id of ['meter-start', 'meter-end']) $(id).max = String(editor.measureStarts.length);
   if (selectedMeasure !== null) {
     const meter = editor.meterAt(selectedMeasure);
-    $('editor-measure-title').textContent = `第 ${selectedMeasure + 1} 小节拍号`;
+    $('editor-measure-title').textContent = '拍号';
     $('edit-beats').value = String(meter.beats);
     $('edit-beat-type').value = String(meter.beatType);
   }
   drawEditorMarks(first, pending);
-  $('apply-meter').disabled = selectedMeasure === null || editorBusy;
+  drawMeasureSelection();
+  $('apply-meter').disabled = !selectedMeasures.length || editorBusy || !bars;
+  $('apply-meter').textContent = selectedMeasures.length ? `应用到 ${selectedMeasures.length} 个小节` : '先选择小节';
+  $('add-triplet').disabled = selectedIds.length !== 3 || editorBusy;
+  $('remove-triplet').disabled = !first?.node.querySelector('time-modification') || editorBusy;
   $('add-tie').disabled = selectedIds.length !== 2 || editorBusy;
   $('remove-tie').disabled = selectedIds.length !== 2 || editorBusy;
   $('edit-undo').disabled = !editor.undoStack.length || editorBusy;
   $('edit-redo').disabled = !editor.redoStack.length || editorBusy;
+  $('delete-notes').disabled = !selectedIds.length || editorBusy || bars;
+  $('delete-notes').innerHTML = `删除${selectedIds.length > 1 ? ` ${selectedIds.length} 个` : '所选'}音符 <span>Del</span>`;
+  updateMeterPresets();
+}
+
+function syncMeterRange(index = null) {
+  $('meter-start').value = index !== null ? String(index + 1) : selectedMeasures.length ? String(selectedMeasures[0] + 1) : '';
+  $('meter-end').value = index !== null ? String(index + 1) : selectedMeasures.length ? String(selectedMeasures.at(-1) + 1) : '';
+}
+
+function updateMeterPresets() {
+  for (const button of document.querySelectorAll('[data-meter]')) button.setAttribute('aria-pressed', String(button.dataset.meter === `${$('edit-beats').value}/${$('edit-beat-type').value}`));
 }
 
 function buildRhythmMenu() {
   $('rhythm-menu').innerHTML = RHYTHM_OPTIONS.map(option => `<button class="rhythm-option" type="button" role="option" data-beats="${option.beats}" aria-selected="false"><span class="rhythm-option-glyph">${noteGlyph(option.type, option.dots, { size: 22 })}</span><span class="rhythm-option-name">${option.label}</span><span class="rhythm-option-beats">${option.beats} 拍</span></button>`).join('');
+  const common = RHYTHM_OPTIONS.filter(option => !option.dots && [4,2,1,0.5,0.25,0.125].includes(option.beats));
+  for (const id of ['rhythm-palette', 'insert-rhythm-palette']) $(id).innerHTML = common.map(option => `<button type="button" data-beats="${option.beats}" aria-label="${option.label}，${option.beats} 拍" title="${option.label} · ${option.beats} 拍" aria-pressed="false">${noteGlyph(option.type, option.dots, { size: 34 })}<span>${option.beats >= 1 ? option.beats : `1/${1 / option.beats}`} 拍</span></button>`).join('');
 }
 
 function setRhythmMenu(open) {
@@ -839,8 +1038,14 @@ function setRhythmMenu(open) {
 }
 
 function nudgePendingPitch(delta) {
+  if (noteTool === 'insert' && editScope === 'notes') {
+    const midi = Number($('insert-pitch').value) + delta;
+    if (isPlayableMidi(midi)) $('insert-pitch').value = String(midi);
+    renderEditorSelection();
+    return;
+  }
   const first = editor?.get(selectedIds[0]);
-  if (!first?.pitched || editorBusy) return;
+  if (!first?.pitched || selectedIds.length !== 1 || editorBusy || editScope !== 'notes') return;
   if (!pendingPitch) {
     // 从音符当前的实际音高起步（不是从调号），第一次按 ♯/♭ 就是升／降半音。
     const fifths = editor.keyFifths(first.partIndex, first.measureIndex);
@@ -851,6 +1056,7 @@ function nudgePendingPitch(delta) {
 }
 
 function selectRecord(record, event) {
+  if (!record.pitched) return;
   if (event.shiftKey && selectionAnchor && editor.get(selectionAnchor)) {
     const anchor = editor.get(selectionAnchor);
     if (record.partIndex === anchor.partIndex && record.staff === anchor.staff && record.voice === anchor.voice) {
@@ -862,7 +1068,11 @@ function selectRecord(record, event) {
     selectionAnchor = record.id;
   } else { selectedIds = [record.id]; selectionAnchor = record.id; }
   selectedMeasure = record.measureIndex;
+  selectedMeasures = [selectedMeasure];
+  syncMeterRange(selectedMeasure);
   pendingPitch = null;
+  pickingScorePitch = false;
+  pitchOctaveShift = 0;
   renderEditorSelection();
 }
 
@@ -904,7 +1114,9 @@ async function applyEditorChange(change) {
     renderTracks();
     renderTimeline();
     paper.scrollTo({ ...scroll, behavior: 'auto' });
-    $('editor-message').textContent = '已更新。可试听或下载修改后的 MusicXML。';
+    $('editor-message').textContent = editor.lastEditWarnings?.length
+      ? `已更新。${[...new Set(editor.lastEditWarnings)].join(' ')}`
+      : '已更新。可试听或下载修改后的 MusicXML。';
   } catch (error) {
     $('editor-message').textContent = `更新失败：${error.message}`;
     toast(error.message);
@@ -912,10 +1124,59 @@ async function applyEditorChange(change) {
 }
 
 buildRhythmMenu();
+$('insert-pitch').replaceChildren(...Array.from({ length: 88 }, (_, index) => new Option(pitchName(index + 21), String(index + 21))));
+$('insert-pitch').value = '60';
 $('practice-tab').addEventListener('click', () => setEditorMode(false));
 $('edit-tab').addEventListener('click', () => setEditorMode(true));
+$('mode-measures').addEventListener('click', () => setEditScope('measures'));
+$('mode-notes').addEventListener('click', () => setEditScope('notes'));
+for (const [id, tool] of [['note-select-tool', 'select'], ['note-insert-tool', 'insert']]) $(id).addEventListener('click', () => {
+  noteTool = tool;
+  pendingPitch = null;
+  pickingScorePitch = false;
+  pitchOctaveShift = 0;
+  if (tool === 'insert') selectedIds = [];
+  renderEditorSelection();
+});
+$('pitch-staff').addEventListener('click', event => {
+  if ($('pitch-staff').getAttribute('aria-disabled') === 'true') return;
+  const point = $('pitch-staff').createSVGPoint();
+  point.x = event.clientX; point.y = event.clientY;
+  const local = point.matrixTransform($('pitch-staff').getScreenCTM().inverse());
+  pickStaffPitch(Number($('pitch-staff').dataset.base) + Math.round((98 - local.y) / 6));
+});
+for (const [id, delta] of [['pitch-octave-down', -1], ['pitch-octave-up', 1]]) $(id).addEventListener('click', () => {
+  pitchOctaveShift = Math.max(-3, Math.min(3, pitchOctaveShift + delta));
+  updatePitchPanel(editor?.get(selectedIds[0]), pendingPitchInfo(editor?.get(selectedIds[0])));
+});
+$('pick-score-pitch').addEventListener('click', () => { pickingScorePitch = !pickingScorePitch; renderEditorSelection(); });
+$('select-all-measures').addEventListener('click', () => {
+  selectedMeasures = Array.from({ length: editor.measureStarts.length }, (_, index) => index);
+  selectedMeasure = 0; measureAnchor = 0;
+  syncMeterRange(); renderEditorSelection();
+});
+$('select-measure-range').addEventListener('click', () => {
+  const start = Number($('meter-start').value) - 1, end = Number($('meter-end').value) - 1;
+  if (!Number.isInteger(start) || !Number.isInteger(end) || start < 0 || end < start || end >= editor.measureStarts.length) { toast('请输入有效的小节起止范围。'); return; }
+  selectedMeasures = Array.from({ length: end - start + 1 }, (_, i) => start + i);
+  selectedMeasure = start; measureAnchor = start;
+  selectedIds = []; pendingPitch = null;
+  renderEditorSelection(); focusMeasure(start + 1);
+});
+for (const button of document.querySelectorAll('[data-meter]')) button.addEventListener('click', () => {
+  [$('edit-beats').value, $('edit-beat-type').value] = button.dataset.meter.split('/');
+  updateMeterPresets();
+});
+for (const id of ['edit-beats', 'edit-beat-type']) $(id).addEventListener('input', updateMeterPresets);
 $('score-view').addEventListener('click', event => {
   if (!editorMode || editorBusy || !osmd) return;
+  const badge = event.target.closest('.measure-number-badge');
+  if (badge) {
+    const index = Number(badge.dataset.measureIndex);
+    if (editScope === 'measures') selectMeasure(index, event);
+    else { selectedMeasure = index; selectedMeasures = [index]; selectedIds = []; pendingPitch = null; renderEditorSelection(); }
+    return;
+  }
   const svg = event.target.closest('svg');
   if (!svg) return;
   const pageIndex = Array.from($('score-view').querySelectorAll('svg')).indexOf(svg);
@@ -925,20 +1186,41 @@ $('score-view').addEventListener('click', event => {
   svgPoint.x = event.clientX; svgPoint.y = event.clientY;
   const local = svgPoint.matrixTransform(svg.getScreenCTM().inverse());
   const point = osmd.GraphicSheet.svgToOsmd({ x: local.x, y: local.y });
+  if (editScope === 'measures') {
+    const measure = nearestMeasure(page, point);
+    if (measure !== null) selectMeasure(measure, event);
+    return;
+  }
   const note = osmd.GraphicSheet.GetNearestNote(point, { x: 1.9, y: 1.9 }, page);
   const center = note?.PositionAndShape?.AbsolutePosition;
   const hitNote = note && center && Math.hypot(center.x - point.x, center.y - point.y) < 1.9 ? editor.findFromSource(note.sourceNote) : null;
+  if (noteTool === 'insert') {
+    const index = hitNote?.measureIndex ?? nearestMeasure(page, point);
+    if (index === null) return;
+    selectedMeasure = index;
+    selectedMeasures = [index];
+    selectedIds = []; pendingPitch = null;
+    updateInsertPanel();
+    if (hitNote?.rest) {
+      const slot = JSON.stringify({ partIndex: hitNote.partIndex, voice: hitNote.voice, staff: hitNote.staff });
+      if ([...$('insert-slot').options].some(option => option.value === slot)) {
+        $('insert-slot').value = slot;
+        updateInsertPanel();
+        if ([...$('insert-start').options].some(option => Number(option.value) === hitNote.startBeats)) $('insert-start').value = String(hitNote.startBeats);
+      }
+    }
+    renderEditorSelection();
+    return;
+  }
   const modifierClick = event.ctrlKey || event.metaKey || event.shiftKey;
   const single = selectedIds.length === 1 ? editor.get(selectedIds[0]) : null;
   // 点到的就是当前这个音时，不要重新选中它——用户是在给它挑音高。
-  if (hitNote && (modifierClick || !single || hitNote.id !== single.id)) { selectRecord(hitNote, event); return; }
+  if (hitNote?.pitched && (!pickingScorePitch || modifierClick)) { selectRecord(hitNote, event); return; }
   // 选中音符后，点谱表现在只做「预览音高」，不直接写盘面。
-  const hit = single?.pitched ? pitchLineHit(page, point) : null;
+  const hit = pickingScorePitch && single?.pitched ? pitchLineHit(page, point) : null;
   const map = hit ? staffLineMap(hit.line) : null;
   if (single && hit && map && graphicStaffLine.get(single.id) === hit.line) {
     pendingPitch = { diatonic: map.toDiatonic(point.y), shift: 0 };
-    const measureIndex = Number(hit.measure?.parentSourceMeasure?.MeasureNumber) - 1;
-    if (Number.isInteger(measureIndex) && measureIndex >= 0 && measureIndex < score.measures) selectedMeasure = measureIndex;
     renderEditorSelection();
     $('editor-message').textContent = '虚线是预览；Enter 或「确认音高」写入谱面，Esc 取消。';
     return;
@@ -946,16 +1228,20 @@ $('score-view').addEventListener('click', event => {
   const measure = nearestMeasure(page, point);
   if (measure !== null && measure >= 0 && measure < score.measures) {
     selectedMeasure = measure;
+    selectedMeasures = [measure];
+    syncMeterRange(selectedMeasure);
     if (!event.ctrlKey && !event.metaKey && !event.shiftKey) { selectedIds = []; pendingPitch = null; }
     renderEditorSelection();
   }
 });
 $('apply-pitch').addEventListener('click', () => {
+  if (editScope !== 'notes' || noteTool !== 'select' || selectedIds.length !== 1) return;
   const first = editor?.get(selectedIds[0]);
   const pending = pendingPitchInfo(first);
   if (!first || !pending?.playable) return;
   const midi = pending.midi;
   pendingPitch = null;
+  pickingScorePitch = false;
   applyEditorChange(() => editor.changePitch(first.id, midi));
 });
 $('cancel-pitch').addEventListener('click', () => { pendingPitch = null; renderEditorSelection(); });
@@ -971,13 +1257,31 @@ $('rhythm-menu').addEventListener('click', event => {
   const beats = Number(option.dataset.beats);
   applyEditorChange(() => editor.changeRhythm(first.id, beats));
 });
+for (const id of ['rhythm-palette', 'insert-rhythm-palette']) $(id).addEventListener('click', event => {
+  const button = event.target.closest('button[data-beats]');
+  if (!button || button.disabled || editorBusy || editScope !== 'notes') return;
+  if (id === 'insert-rhythm-palette') { $('insert-duration').value = button.dataset.beats; updateInsertPanel(); }
+  else if (selectedIds.length === 1) applyEditorChange(() => editor.changeRhythm(selectedIds[0], Number(button.dataset.beats)));
+});
 document.addEventListener('click', event => { if (!event.target.closest?.('.rhythm-field')) setRhythmMenu(false); });
 document.addEventListener('keydown', event => {
   if (!editorMode || editorBusy || !editor) return;
   if (/^(INPUT|SELECT|TEXTAREA)$/.test(event.target?.tagName || '')) return;
+  if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'z') {
+    event.preventDefault(); $(event.shiftKey ? 'edit-redo' : 'edit-undo').click(); return;
+  }
+  if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'a' && editScope === 'measures') {
+    event.preventDefault(); $('select-all-measures').click(); return;
+  }
+  const badge = event.target.closest?.('.measure-number-badge');
+  if (badge && ['Enter', ' '].includes(event.key)) {
+    event.preventDefault();
+    if (editScope === 'measures') selectMeasure(Number(badge.dataset.measureIndex), event);
+    return;
+  }
   if (event.key === 'Escape') {
     if (!$('rhythm-menu').hidden) { setRhythmMenu(false); event.preventDefault(); return; }
-    if (pendingPitch) { pendingPitch = null; renderEditorSelection(); event.preventDefault(); }
+    if (pendingPitch || pickingScorePitch) { pendingPitch = null; pickingScorePitch = false; renderEditorSelection(); event.preventDefault(); }
     return;
   }
   if (event.key === 'Enter' && pendingPitch && !$('apply-pitch').disabled) {
@@ -986,12 +1290,55 @@ document.addEventListener('keydown', event => {
     return;
   }
   if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
-    if (!editor.get(selectedIds[0])?.pitched) return;
+    if (editScope !== 'notes' || noteTool !== 'insert' && !editor.get(selectedIds[0])?.pitched) return;
     nudgePendingPitch(event.key === 'ArrowUp' ? 1 : -1);
     event.preventDefault();
   }
+  if (event.key === 'Delete' && editScope === 'notes' && noteTool === 'select' && selectedIds.length) { event.preventDefault(); $('delete-notes').click(); }
 });
-$('apply-meter').addEventListener('click', () => applyEditorChange(() => editor.changeMeter(selectedMeasure, Number($('edit-beats').value), Number($('edit-beat-type').value))));
+$('apply-meter').addEventListener('click', () => { if (editScope === 'measures') applyEditorChange(() => editor.changeMeters(selectedMeasures, Number($('edit-beats').value), Number($('edit-beat-type').value))); });
+$('add-triplet').addEventListener('click', () => applyEditorChange(() => editor.changeTriplet(selectedIds)));
+$('remove-triplet').addEventListener('click', () => applyEditorChange(() => editor.changeTriplet(selectedIds, true)));
+$('insert-measure').addEventListener('change', () => {
+  selectedMeasure = Number($('insert-measure').value);
+  selectedMeasures = [selectedMeasure];
+  syncMeterRange(selectedMeasure);
+  selectedIds = [];
+  selectionAnchor = null;
+  pendingPitch = null;
+  renderEditorSelection();
+  focusMeasure(selectedMeasure + 1);
+});
+$('insert-slot').addEventListener('change', updateInsertPanel);
+$('insert-duration').addEventListener('change', updateInsertPanel);
+$('insert-pitch').addEventListener('change', () => updatePitchPanel(null, null));
+for (const [id, offset] of [['insert-before', 0], ['insert-after', 1]]) {
+  $(id).addEventListener('click', () => applyEditorChange(() => {
+    if (editScope !== 'measures' || !selectedMeasures.length) return null;
+    const index = (offset ? selectedMeasures.at(-1) : selectedMeasures[0]) + offset;
+    const xml = editor.insertMeasure(index);
+    selectedMeasure = index;
+    selectedMeasures = [index]; measureAnchor = index;
+    syncMeterRange(index);
+    selectedIds = [];
+    selectionAnchor = null;
+    return xml;
+  }));
+}
+$('insert-note').addEventListener('click', () => applyEditorChange(() => {
+  if (editScope !== 'notes') return null;
+  const slot = JSON.parse($('insert-slot').value);
+  const xml = editor.insertNote(selectedMeasure, slot, Number($('insert-start').value), Number($('insert-pitch').value), Number($('insert-duration').value));
+  selectedIds = editor.lastInsertedNoteId ? [editor.lastInsertedNoteId] : [];
+  selectionAnchor = selectedIds[0] || null;
+  return xml;
+}));
+$('delete-notes').addEventListener('click', () => applyEditorChange(() => {
+  if (editScope !== 'notes' || noteTool !== 'select') return null;
+  const xml = editor.deleteNotes(selectedIds);
+  selectedIds = []; selectionAnchor = null;
+  return xml;
+}));
 $('add-tie').addEventListener('click', () => applyEditorChange(() => editor.changeTie(selectedIds[0], selectedIds[1])));
 $('remove-tie').addEventListener('click', () => applyEditorChange(() => editor.changeTie(selectedIds[0], selectedIds[1], true)));
 $('edit-undo').addEventListener('click', () => applyEditorChange(() => editor.undo()));
@@ -999,6 +1346,7 @@ $('edit-redo').addEventListener('click', () => applyEditorChange(() => editor.re
 $('editor-issue-list').addEventListener('click', event => {
   const button = event.target.closest('button[data-measure]');
   if (!button) return;
+  if (editScope === 'measures') selectMeasure(Number(button.dataset.measure) - 1, event);
   focusMeasure(Number(button.dataset.measure));
 });
 $('edit-download').addEventListener('click', () => {
@@ -1075,20 +1423,25 @@ $('export-audio').addEventListener('click', async () => {
   if (!score) { toast('先打开一份乐谱。'); return; }
   const enabled = score.tracks.filter(t => t.enabled);
   if (!enabled.length) { toast('至少开启一个声部再导出。'); return; }
+  const formatSelect = $('export-format');
+  const format = formatSelect.value;
 
   exportingAudio = true;
+  formatSelect.disabled = true;
   button.textContent = '取消导出';
   button.classList.add('active');
   const bar = $('soundfont-progress');
   try {
-    const result = await player.exportAudio({ onProgress: (fraction, elapsed, total) => {
+    const result = await player.exportAudio({ format, onProgress: (fraction, elapsed, total, phase) => {
       if (!Number.isFinite(fraction)) return;
       bar.hidden = false;
       bar.value = Math.round(fraction * 100);
-      $('status').textContent = `导出音频 ${Math.round(fraction * 100)}% · ${formatTime(elapsed)} / ${formatTime(total)}`;
+      $('status').textContent = phase === 'encoding'
+        ? `正在压缩 MP3 ${Math.round(fraction * 100)}%`
+        : `导出音频 ${Math.round(fraction * 100)}% · ${formatTime(elapsed)} / ${formatTime(total)}`;
     } });
     const suffix = `${player.mode === 'piano' ? 'piano' : 'voices'}-${enabled.map(track => track.role).join('')}`;
-    const name = `${(score.title || 'choir').replace(/[\\/:*?"<>|]/g, '_')}-${suffix}.wav`;
+    const name = `${(score.title || 'choir').replace(/[\\/:*?"<>|]/g, '_')}-${suffix}.${format}`;
     const url = URL.createObjectURL(result.blob);
     const link = document.createElement('a');
     link.href = url;
@@ -1103,6 +1456,7 @@ $('export-audio').addEventListener('click', async () => {
     $('status').textContent = cancelled ? '已取消导出' : '导出失败';
   } finally {
     exportingAudio = false;
+    formatSelect.disabled = false;
     button.textContent = '导出音频';
     button.classList.remove('active');
     bar.hidden = true;

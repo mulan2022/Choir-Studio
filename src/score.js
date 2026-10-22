@@ -136,7 +136,9 @@ export function parseScore(xml) {
           furthest = Math.max(furthest, cursor);
         }
       }
-      (measureReadings[mi] ||= []).push({ expected, furthest, implicit: measure.getAttribute('implicit') === 'yes' || measure.getAttribute('number') === '0' });
+      const notes = children(measure, 'note');
+      const wholeRest = notes.length === 1 && direct(notes[0], 'rest')?.getAttribute('measure') === 'yes';
+      (measureReadings[mi] ||= []).push({ expected, furthest, wholeRest, implicit: measure.getAttribute('implicit') === 'yes' || measure.getAttribute('number') === '0' });
     });
   }
 
@@ -148,17 +150,20 @@ export function parseScore(xml) {
     for (const { expected } of readings) lengths.set(expected, (lengths.get(expected) || 0) + 1);
     const expected = Array.from(lengths).sort((a, b) => b[1] - a[1])[0]?.[0] || 4;
     const occupiedCounts = new Map();
-    for (const { furthest } of readings) {
-      if (furthest <= 0) continue;
+    for (const { furthest, wholeRest } of readings) {
+      if (furthest <= 0 || wholeRest) continue;
       const occupied = Math.round(furthest * 1000) / 1000;
       occupiedCounts.set(occupied, (occupiedCounts.get(occupied) || 0) + 1);
     }
     const [occupied = expected, agreement = 0] = Array.from(occupiedCounts)
       .sort((a, b) => b[1] - a[1] || Math.abs(a[0] - expected) - Math.abs(b[0] - expected))[0] || [];
-    const hasConsensus = agreement >= Math.ceil(readings.length / 2);
+    const hasConsensus = !occupiedCounts.size || agreement > readings.filter(reading => !reading.wholeRest && reading.furthest > 0).length / 2;
     const implicit = readings.every(reading => reading.implicit);
-    measureLengths[mi] = implicit && hasConsensus ? occupied : expected;
-    if (Math.abs(occupied - expected) > 0.01 || !hasConsensus) measureIssues.push(mi + 1);
+    const validPickup = implicit && hasConsensus && occupied < expected - 0.01 && readings.every(reading =>
+      reading.wholeRest || reading.furthest <= 0 || Math.abs(reading.furthest - occupied) <= 0.01);
+    measureLengths[mi] = validPickup ? occupied : expected;
+    const partMismatch = readings.some(reading => reading.furthest > 0 && Math.abs(reading.furthest - expected) > 0.01 && !reading.wholeRest);
+    if (!validPickup && (partMismatch || !hasConsensus)) measureIssues.push(mi + 1);
   }
 
   const starts = [];
@@ -172,18 +177,32 @@ export function parseScore(xml) {
     if (!byPart.has(id)) byPart.set(id, []);
     byPart.get(id).push({ ...note, beat: starts[note.measure] + note.local });
   }
-  const closedSATB = byPart.size === 4 && new Set(Array.from(byPart.values(), notes => notes[0].partId)).size <= 2;
-  const genericVoiceGroups = Array.from(byPart, ([id, notes]) => ({ id, notes, name: partDefs.get(notes[0].partId)?.name || '' }))
+  // Keep silent staves editable after their last pitched note is deleted.
+  const trackInfo = new Map();
+  for (const part of children(root, 'part')) {
+    const partId = part.getAttribute('id');
+    const staves = new Set(['1']);
+    for (const note of part.getElementsByTagName('note')) staves.add(value(note, 'staff', '1'));
+    for (const count of part.getElementsByTagName('staves')) for (let staff = 1; staff <= Number(count.textContent); staff++) staves.add(String(staff));
+    for (const staff of staves) {
+      const id = `${partId}:${staff}`;
+      trackInfo.set(id, { partId, staff });
+      if (!byPart.has(id)) byPart.set(id, []);
+    }
+  }
+  const closedSATB = byPart.size === 4 && new Set(Array.from(trackInfo.values(), item => item.partId)).size <= 2;
+  const genericVoiceGroups = Array.from(byPart, ([id, notes]) => ({ id, notes, name: partDefs.get(trackInfo.get(id).partId)?.name || '' }))
     .filter(group => /^voice$/i.test(group.name) && group.notes.length >= 20)
-    .sort((a, b) => (partDefs.get(a.notes[0].partId)?.index ?? 999) - (partDefs.get(b.notes[0].partId)?.index ?? 999));
+      .sort((a, b) => (partDefs.get(trackInfo.get(a.id).partId)?.index ?? 999) - (partDefs.get(trackInfo.get(b.id).partId)?.index ?? 999));
   const inferredRoles = new Map(genericVoiceGroups.length >= 4 ? genericVoiceGroups.slice(0, 4).map((group, i) => [group.id, partLabel('', i)]) : []);
-  const tracks = Array.from(byPart, ([id, notes], i) => {
-    const partId = notes[0].partId;
+  const tracks = Array.from(trackInfo, ([id, info], i) => {
+    const notes = byPart.get(id);
+    const { partId, staff } = info;
     const def = partDefs.get(partId) || { name: `声部 ${i + 1}`, index: i };
     const role = inferredRoles.get(id) || (closedSATB ? partLabel('', i) : /^voice$/i.test(def.name) ? { role: 'V', title: '附加人声', color: '#8e9b87', program: 1 } : partLabel(def.name, def.index));
     const samePartTracks = Array.from(byPart.keys()).filter(k => k.startsWith(`${partId}:`));
-    const label = inferredRoles.has(id) ? `${role.title}（推测）` : /^voice$/i.test(def.name) ? `附加人声 ${def.index + 1}` : samePartTracks.length > 1 ? `${def.name} · ${notes[0].staff} 谱表` : def.name;
-    const directions = rawDirections.filter(d => d.partId === partId && (!d.staff || d.staff === notes[0].staff)).map(d => ({ ...d, beat: starts[d.measure] + d.local })).sort((a, b) => a.beat - b.beat);
+    const label = inferredRoles.has(id) ? `${role.title}（推测）` : /^voice$/i.test(def.name) ? `附加人声 ${def.index + 1}` : samePartTracks.length > 1 ? `${def.name} · ${staff} 谱表` : def.name;
+    const directions = rawDirections.filter(d => d.partId === partId && (!d.staff || d.staff === staff)).map(d => ({ ...d, beat: starts[d.measure] + d.local })).sort((a, b) => a.beat - b.beat);
     notes.sort((a, b) => a.beat - b.beat || a.midi - b.midi);
     return { id, partId, label, ...role, notes, directions, enabled: true, volume: 0.85, channel: i >= 9 ? i + 1 : i };
   });

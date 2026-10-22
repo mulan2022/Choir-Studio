@@ -1,0 +1,103 @@
+import assert from 'node:assert/strict';
+import { readFile, mkdir } from 'node:fs/promises';
+import { chromium } from 'playwright-core';
+
+const note = (units, type = 'eighth', triplet = false, edge = '', extra = '') => `<note>${extra}<pitch><step>C</step><octave>4</octave></pitch><duration>${units}</duration><voice>1</voice><type>${type}</type>${triplet ? '<time-modification><actual-notes>3</actual-notes><normal-notes>2</normal-notes></time-modification>' : ''}${edge ? `<notations><tuplet type="${edge}"/></notations>` : ''}</note>`;
+const group = (type = 'eighth', units = 16) => note(units, type, true, 'start') + note(units, type, true) + note(units, type, true, 'stop');
+const score = notes => `<?xml version="1.0" encoding="utf-8"?><!DOCTYPE score-partwise PUBLIC "-//Recordare//DTD MusicXML 4.0 Partwise//EN" "http://www.musicxml.org/dtds/partwise.dtd"><score-partwise version="4.0"><part-list><score-part id="P"><part-name>Correction test</part-name></score-part></part-list><part id="P"><measure number="1"><attributes><divisions>48</divisions><time><beats>4</beats><beat-type>4</beat-type></time><clef><sign>G</sign><line>2</line></clef></attributes>${notes}</measure></part></score-partwise>`;
+const malformed = score(group() + note(16, 'eighth', true, 'stop') + note(24).repeat(4));
+const fractional = score(group() + note(96, 'half') + note(16, 'eighth', true, 'start'));
+const locked = score(group('quarter', 32));
+const adjacent = score(group() + group());
+const mixed = score(note(32, 'quarter', true, 'start') + note(16, 'eighth', true, 'stop'));
+const chord = score(note(16, 'eighth', true, 'start') + note(16, 'eighth', true, '', '<chord/>') + note(16, 'eighth', true) + note(16, 'eighth', true, 'stop') + '<backup><duration>48</duration></backup><note><pitch><step>G</step><octave>3</octave></pitch><duration>192</duration><voice>2</voice><type>whole</type></note>');
+const real = process.argv[2] ? await readFile(process.argv[2], 'utf8') : null;
+const browser = await chromium.launch({ channel: 'msedge', headless: true });
+try {
+  const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+  const errors = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.goto('http://127.0.0.1:5187/');
+  const result = await page.evaluate(async fixtures => {
+    const { ScoreEditor } = await import('/src/editor.js');
+    const { parseScore } = await import('/src/score.js');
+    const duration = e => e.records.filter(r => r.pitched && r.voice === '1').map(r => r.durationUnits / r.divisions);
+    const a = new ScoreEditor(fixtures.malformed);
+    a.changeTriplet(['0:0:3'], true); // Duplicate stop at the malformed fourth note.
+    const restored = { values: duration(a), marks: a.doc.querySelectorAll('time-modification').length, issues: parseScore(a.serialize()).measureIssues };
+    a.undo(); const undoMarks = a.doc.querySelectorAll('time-modification').length;
+    a.redo(); const redoMarks = a.doc.querySelectorAll('time-modification').length;
+    const b = new ScoreEditor(fixtures.fractional);
+    b.changeTriplet(['0:0:0'], true);
+    const fraction = { values: duration(b), warnings: [...b.lastEditWarnings], issues: parseScore(b.serialize()).measureIssues };
+    b.changeTriplet(['0:0:4'], true);
+    const resolved = parseScore(b.serialize()).measureIssues;
+    const c = new ScoreEditor(fixtures.locked);
+    c.changeMeter(0, 1, 4);
+    const meterFirst = { beats: c.meterAt(0).beats, values: duration(c), warnings: [...c.lastEditWarnings] };
+    c.changeTriplet(['0:0:0'], true);
+    const removeNext = { values: duration(c), warnings: [...c.lastEditWarnings] };
+    c.changeMeter(0, 3, 4);
+    const finish = parseScore(c.serialize()).measureIssues;
+    const d = new ScoreEditor(fixtures.adjacent);
+    d.changeTriplet(['0:0:4'], true);
+    const adjacentMarks = d.doc.querySelectorAll('time-modification').length;
+    const e = new ScoreEditor(fixtures.mixed);
+    e.changeTriplet(['0:0:1'], true);
+    const mixedValues = duration(e);
+    const f = new ScoreEditor(fixtures.chord);
+    f.changeTriplet(['0:0:1'], true);
+    const polyphony = { values: duration(f), backup: Number(f.doc.querySelector('backup duration').textContent), voice2Start: f.records.find(r => r.voice === '2').startBeats, marks: f.doc.querySelectorAll('time-modification').length, issues: parseScore(f.serialize()).measureIssues };
+    let actual = null;
+    if (fixtures.real) {
+      const r = new ScoreEditor(fixtures.real);
+      r.changeTriplet(['2:2:1'], true);
+      r.changeTriplet(['3:2:1'], true);
+      r.changeTriplet(['3:0:1'], true);
+      actual = { values: r.records.filter(n => n.measureIndex === 2 && n.partIndex === 2).map(n => n.durationUnits / n.divisions), marks: r.doc.querySelectorAll('time-modification').length, issues: parseScore(r.serialize()).measureIssues };
+    }
+    return { restored, undoMarks, redoMarks, fraction, resolved, meterFirst, removeNext, finish, adjacentMarks, mixedValues, polyphony, actual };
+  }, { malformed, fractional, locked, adjacent, mixed, chord, real });
+  assert.deepEqual(result.restored, { values: Array(8).fill(0.5), marks: 0, issues: [] });
+  assert.equal(result.undoMarks, 4); assert.equal(result.redoMarks, 0);
+  assert.match(result.fraction.warnings.join(), /少 1\/6 拍/);
+  assert.deepEqual(result.fraction.issues, [1]); assert.deepEqual(result.resolved, []);
+  assert.equal(result.meterFirst.beats, 1);
+  assert.deepEqual(result.meterFirst.values, Array(3).fill(2 / 3));
+  assert.match(result.meterFirst.warnings.join(), /多 1 拍/);
+  assert.deepEqual(result.removeNext.values, [1, 1, 1]);
+  assert.match(result.removeNext.warnings.join(), /多 2 拍/);
+  assert.deepEqual(result.finish, []);
+  assert.equal(result.adjacentMarks, 3);
+  assert.deepEqual(result.mixedValues, [1, 0.5]);
+  assert.deepEqual(result.polyphony, { values: [0.5, 0.5, 0.5, 0.5], backup: 192, voice2Start: 0, marks: 0, issues: [] });
+  if (real) assert.deepEqual(result.actual, { values: Array(8).fill(0.5), marks: 0, issues: [] });
+
+  // Exercise the same correction through actual controls, including export.
+  await page.locator('#file-input').setInputFiles({ name: 'correction.musicxml', mimeType: 'application/xml', buffer: Buffer.from(locked) });
+  await page.locator('#loaded').waitFor({ state: 'visible' });
+  await page.locator('#score-view .vf-stavenote .vf-notehead').first().waitFor();
+  await page.locator('#edit-tab').click();
+  await page.locator('#edit-beats').fill('1');
+  await page.locator('#apply-meter').click();
+  const ready = () => page.waitForFunction(() => document.querySelector('#editor-message')?.textContent.includes('已更新') && !document.querySelector('#mode-measures').disabled);
+  await ready();
+  assert.match(await page.locator('#editor-message').textContent(), /多 1 拍/);
+  await page.locator('#mode-notes').click();
+  await page.locator('#score-view .vf-stavenote .vf-notehead').first().click({ force: true });
+  await page.locator('#remove-triplet').click(); await ready();
+  assert.match(await page.locator('#editor-message').textContent(), /多 2 拍/);
+  await page.locator('#mode-measures').click();
+  await page.locator('#edit-beats').fill('3');
+  await page.locator('#apply-meter').click(); await ready();
+  assert.doesNotMatch(await page.locator('#editor-message').textContent(), /仍多|仍少/);
+  const downloaded = page.waitForEvent('download');
+  await page.locator('#edit-download').click();
+  const xml = await readFile(await (await downloaded).path(), 'utf8');
+  assert.doesNotMatch(xml, /time-modification/);
+  assert.match(xml, /<beats>3<\/beats>/);
+  await mkdir('.cache/editor-ui', { recursive: true });
+  await page.screenshot({ path: '.cache/editor-ui/tuplet-correction.png' });
+  assert.deepEqual(errors, []);
+  console.log('Tuplet correction passed:', JSON.stringify(result));
+} finally { await browser.close(); }

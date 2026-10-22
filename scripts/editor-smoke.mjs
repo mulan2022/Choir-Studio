@@ -5,7 +5,7 @@ try {
   const page = await browser.newPage({ viewport: { width: 1500, height: 1000 } });
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
-  await page.goto('http://127.0.0.1:5173/');
+  await page.goto(process.env.TEST_URL || 'http://127.0.0.1:5187/');
   const core = await page.evaluate(async () => {
     const { ScoreEditor } = await import('/src/editor.js');
     const { parseScore } = await import('/src/score.js');
@@ -36,18 +36,20 @@ try {
     const chordDurations = [poly.get('0:0:0'), poly.get('0:0:1')].map(record => record.durationUnits / record.divisions);
     poly.changeMeter(0, 3, 4);
     const polyIssue = parseScore(poly.serialize()).measureIssues;
-    const backup = Number(poly.doc.querySelector('backup duration')?.textContent);
+    const backup = Number(poly.doc.querySelector('backup duration')?.textContent) / poly.divisionsAt(0, 0);
     return { pitch, rhythm, issueAfterRhythm, restored, meters, issueAfterMeter, tied: !!tied, joined, chordDurations, polyIssue, backup };
   });
-  if (core.pitch !== 69 || core.rhythm[0] !== 2 || core.rhythm.reduce((a, b) => a + b, 0) !== 4 || core.restored !== 1 || core.meters[0].beats !== 3 || core.meters[1].beats !== 4 || !core.tied || !core.joined || core.issueAfterRhythm.length || core.issueAfterMeter.length || core.chordDurations.some(value => value !== 2) || core.polyIssue.length || core.backup !== 48) throw new Error(`Core editor failed: ${JSON.stringify(core)}`);
+  if (core.pitch !== 69 || core.rhythm[0] !== 2 || core.rhythm.reduce((a, b) => a + b, 0) !== 4 || core.restored !== 1 || core.meters[0].beats !== 3 || core.meters[1].beats !== 4 || !core.tied || !core.joined || core.issueAfterRhythm.length || core.issueAfterMeter.length || core.chordDurations.some(value => value !== 2) || core.polyIssue.length || core.backup !== 3) throw new Error(`Core editor failed: ${JSON.stringify(core)}`);
   await page.locator('#sample-button').click();
   await page.waitForSelector('#score-view svg');
   await page.locator('#edit-tab').click();
+  await page.locator('#mode-notes').click();
   const notehead = page.locator('#score-view svg .vf-stavenote .vf-notehead').first();
   await notehead.click({ force: true });
   const selected = await page.locator('#editor-selection').textContent();
   if (!selected.includes('第 1 小节')) throw new Error(`Score click did not select note: ${selected}`);
   // 选中音符后点谱面更高处（-15 px ≈ 高三个音级），应当只出现虚线预览。
+  await page.locator('#pick-score-pitch').click();
   const ghostTarget = await page.locator('#score-view svg .editor-selection-mark').first().evaluate(mark => {
     const svg = mark.ownerSVGElement;
     const point = svg.createSVGPoint();
@@ -84,7 +86,7 @@ try {
   });
   await page.mouse.click(blank.x, blank.y);
   const barSelected = await page.locator('#editor-selection').textContent();
-  if (barSelected !== '第 1 小节') throw new Error(`Bar selection failed: ${barSelected}`);
+  if (!barSelected.includes('第 1 小节')) throw new Error(`Bar selection failed: ${barSelected}`);
   await page.locator('#file-input').setInputFiles('diagnostic-xnotes/page-40-recovered.mxl');
   await page.waitForFunction(() => document.querySelector('#score-meta')?.textContent?.includes('叉形符头'), { timeout: 60000 });
   await page.waitForFunction(() => document.querySelector('#import-progress')?.hidden && !!document.querySelector('#score-view svg .vf-notehead'), { timeout: 60000 });
@@ -93,9 +95,9 @@ try {
   for (let i = 0; i < Math.min(20, await recoveredHeads.count()); i++) {
     await recoveredHeads.nth(i).click({ force: true });
     mxlSelected = await page.locator('#editor-selection').textContent();
-    if (mxlSelected.includes('·')) break;
+    if (await page.locator('#pitch-current').textContent() !== '—') break;
   }
-  if (!mxlSelected.includes('·')) throw new Error(`MXL score click failed: ${mxlSelected}`);
+  if (await page.locator('#pitch-current').textContent() === '—') throw new Error(`MXL score click failed: ${mxlSelected}`);
   const downloadPromise = page.waitForEvent('download');
   await page.locator('#edit-download').click();
   const download = await downloadPromise;

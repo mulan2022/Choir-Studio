@@ -24,10 +24,8 @@ function encodeWav(left, right, sampleRate) {
   view.setUint16(34, 16, true);
   writeAscii(36, 'data');
   view.setUint32(40, bytes, true);
-  // Peak-normalise to -1 dBFS: the analyser tap sits well below full scale
-  // (the synthesizer spreads its mix over 17 stereo outputs), and a consistent
-  // level matters more than the raw absolute one. Relative part balance is
-  // untouched because the same factor scales the whole file.
+  // Peak-normalise to -1 dBFS. Relative part balance is untouched because
+  // the same factor scales the whole file.
   let peak = 0;
   for (let i = 0; i < frames; i++) peak = Math.max(peak, Math.abs(left[i]), Math.abs(right[i]));
   const gain = peak > 0.0001 ? 0.89 / peak : 1;
@@ -45,7 +43,6 @@ function encodeWav(left, right, sampleRate) {
 // instead of ~70 MB. Point VITE_SOUNDFONT_URL at a CDN to move it off the site.
 const SOUNDFONT_URL = import.meta.env.VITE_SOUNDFONT_URL || `${import.meta.env.BASE_URL}soundfonts/choir-practice-lite.sf2`;
 const PROCESSOR_URL = `${import.meta.env.BASE_URL}spessasynth_processor.min.js`;
-const RECORDER_URL = `${import.meta.env.BASE_URL}choir-recorder-worklet.js`;
 // Room for the last release and a little reverb tail after the final note.
 const EXPORT_TAIL_SECONDS = 1.8;
 const SOUNDFONT_CACHE = 'choirsinger-soundfont-v1';
@@ -75,13 +72,13 @@ function rememberBank(url, buffer) {
   writeCachedBank(url, snapshot);
 }
 
-async function fetchSoundBank(url, onProgress) {
+async function fetchSoundBank(url, onProgress, signal) {
   const cached = await readCachedBank(url);
   if (cached) {
     onProgress?.({ loaded: cached.byteLength, total: cached.byteLength, cached: true });
     return cached;
   }
-  const response = await fetch(url);
+  const response = await fetch(url, { signal });
   if (!response.ok) throw new Error(`合唱音色下载失败（HTTP ${response.status}）。`);
   let header = Number(response.headers.get('content-length')) || 0;
   if (!response.body) {
@@ -132,11 +129,7 @@ export class ChoirPlayer {
     this.starting = false;
     this.pendingMidiUntil = 0;
     this.exporting = false;
-    this.exportTimer = null;
-    this.exportTotal = 0;
     this.exportCancel = false;
-    this.recorderReady = false;
-    this.monitorMuted = false;
   }
 
   async initialize() {
@@ -221,7 +214,7 @@ export class ChoirPlayer {
   }
 
   pause(updatePosition = true) {
-    if (this.exporting) { this.exportCancel = true; this.stopExportSampling(); }
+    if (this.exporting) this.cancelExport();
     this.playVersion++;
     this.starting = false;
     if (updatePosition && this.playing) this.position = this.secondsToBeat(this.currentSeconds());
@@ -258,7 +251,7 @@ export class ChoirPlayer {
       const gain = this.masterGain.gain;
       gain.cancelScheduledValues(this.context.currentTime);
       gain.setValueAtTime(0, this.context.currentTime);
-      if (!this.monitorMuted) gain.linearRampToValueAtTime(1, this.startTime + 0.015);
+      gain.linearRampToValueAtTime(1, this.startTime + 0.015);
     }
     this.events = this.buildEvents().filter(e => e.seconds >= this.offsetSeconds - 0.001);
     for (const track of this.score.tracks.filter(t => t.enabled)) {
@@ -304,81 +297,117 @@ export class ChoirPlayer {
     }
     const elapsed = this.currentSeconds();
     this.onProgress(elapsed, this.duration);
-    if (this.exporting) {
-      const live = this.offsetSeconds + (this.context.currentTime - this.startTime);
-      if (live >= this.exportTotal) this.stopExportSampling();
-      return;
-    }
     if (elapsed >= this.duration) { this.pause(false); this.position = 0; this.onProgress(0, this.duration); }
   }
 
-  // Renders what you currently hear — enabled parts only, at their mixer
-  // volumes, in the selected voice/piano mode and tempo — by playing it into a
-  // recorder worklet and writing the result as a WAV file.
-  async exportAudio({ onProgress } = {}) {
+  // Use the same performance events as playback, but render them in a worker
+  // without waiting for the audio clock. This keeps export independent of UI
+  // rendering and of the speaker volume.
+  exportEvents() {
+    const events = [];
+    const add = (seconds, type, ...args) => events.push({ seconds, type, args });
+    for (const track of this.score.tracks) {
+      add(0, 'programChange', track.channel, this.mode === 'piano' ? 21 : track.program);
+      add(0, 'pitchWheelRange', track.channel, 12);
+      add(0, 'controllerChange', track.channel, 7, Math.round(track.volume * 127));
+      add(0, 'controllerChange', track.channel, 11, this.expressivePlayback ? expressionAt(track, 0) : 100);
+    }
+    for (const event of this.buildEvents()) {
+      const collector = Object.fromEntries(['noteOn', 'noteOff', 'controllerChange', 'pitchWheel']
+        .map(type => [type, (...args) => add(event.seconds, type, ...args.slice(0, -1))]));
+      event.send(collector, event.seconds);
+    }
+    return events.sort((a, b) => a.seconds - b.seconds);
+  }
+
+  renderOffline(bank, events, sampleRate, seconds, onProgress) {
+    return new Promise((resolve, reject) => {
+      const worker = new Worker(new URL('./offline-render-worker.js', import.meta.url), { type: 'module' });
+      this.renderWorker = worker;
+      this.renderReject = reject;
+      const finish = () => {
+        worker.terminate();
+        if (this.renderWorker === worker) this.renderWorker = null;
+        this.renderReject = null;
+      };
+      worker.onmessage = event => {
+        const message = event.data || {};
+        if (message.type === 'progress') onProgress?.(message.fraction, message.seconds, seconds);
+        else if (message.type === 'done') { finish(); resolve(message); }
+        else if (message.type === 'error') { finish(); reject(new Error(message.message)); }
+      };
+      worker.onerror = event => { finish(); reject(new Error(event.message || '离线渲染失败。')); };
+      worker.postMessage({ bank, events, sampleRate, seconds }, [bank]);
+    });
+  }
+
+  async exportAudio({ format = 'mp3', onProgress } = {}) {
     if (!this.score) throw new Error('先打开一份乐谱再导出。');
     if (this.exporting) throw new Error('已经在导出了。');
-    await this.initialize();
-    if (!this.recorderReady) {
-      await this.context.audioWorklet.addModule(RECORDER_URL);
-      this.recorderReady = true;
-    }
-    await this.context.resume();
-    const recorder = new AudioWorkletNode(this.context, 'choir-recorder');
-    this.recorder = recorder;
+    if (format !== 'mp3' && format !== 'wav') throw new Error('不支持的音频格式。');
+    this.pause(false);
     this.exportCancel = false;
-    const result = new Promise((resolve, reject) => {
-      recorder.port.onmessage = event => {
-        const data = event.data || {};
-        if (data.type !== 'done') return;
-        if (this.exportCancel) { reject(new Error('导出已取消。')); return; }
-        resolve({ blob: encodeWav(data.left, data.right, data.sampleRate), seconds: data.left.length / data.sampleRate, sampleRate: data.sampleRate });
-      };
-    });
-    // Tap the mix before the monitor gain so the file is independent of the
-    // speaker level, then mute the monitor for the duration of the render.
-    this.analyser.disconnect();
-    this.analyser.connect(recorder);
-    recorder.connect(this.masterGain);
-    this.monitorMuted = true;
-    this.exportTotal = this.duration + EXPORT_TAIL_SECONDS;
     this.exporting = true;
+    this.exportAbort = new AbortController();
     try {
-      recorder.port.postMessage({ type: 'start' });
-      this.exportTimer = setInterval(() => {
-        const live = this.offsetSeconds + (this.context.currentTime - this.startTime);
-        onProgress?.(clamp(live / this.exportTotal, 0, 1), clamp(live, 0, this.exportTotal), this.exportTotal);
-      }, 250);
-      await this.play(0);
-      return await result;
+      const seconds = this.duration + EXPORT_TAIL_SECONDS;
+      const sampleRate = 48000;
+      const events = this.exportEvents();
+      const bank = await fetchSoundBank(SOUNDFONT_URL, progress => this.onDownload?.(progress), this.exportAbort.signal);
+      if (this.exportCancel) throw new Error('导出已取消。');
+      const data = await this.renderOffline(bank, events, sampleRate, seconds, onProgress);
+      if (this.exportCancel) throw new Error('导出已取消。');
+      const blob = format === 'wav'
+        ? encodeWav(data.left, data.right, data.sampleRate)
+        : await this.encodeMp3(data, fraction => onProgress?.(fraction, data.seconds, data.seconds, 'encoding'));
+      if (this.exportCancel) throw new Error('导出已取消。');
+      return { blob, seconds: data.seconds, sampleRate: data.sampleRate };
+    } catch (error) {
+      if (this.exportCancel) throw new Error('导出已取消。');
+      throw error;
     } finally {
-      clearInterval(this.exportTimer);
-      this.exportTimer = null;
       this.exporting = false;
-      this.monitorMuted = false;
-      this.recorder = null;
-      this.analyser.disconnect(recorder);
-      this.analyser.connect(this.masterGain);
-      this.masterGain.gain.cancelScheduledValues(this.context.currentTime);
-      this.masterGain.gain.setValueAtTime(0, this.context.currentTime);
-      this.onProgress(this.currentSeconds(), this.duration);
+      this.exportAbort = null;
     }
   }
 
   cancelExport() {
     if (!this.exporting) return;
     this.exportCancel = true;
-    this.stopExportSampling();
+    this.exportAbort?.abort();
+    if (this.renderWorker) {
+      this.renderWorker.terminate();
+      this.renderWorker = null;
+      this.renderReject?.(new Error('导出已取消。'));
+      this.renderReject = null;
+    }
+    if (this.encoderWorker) {
+      this.encoderWorker.terminate();
+      this.encoderWorker = null;
+      this.encoderReject?.(new Error('导出已取消。'));
+      this.encoderReject = null;
+    }
   }
 
-  stopExportSampling() {
-    this.playVersion++;
-    this.starting = false;
-    this.playing = false;
-    clearInterval(this.timer);
-    this.timer = null;
-    this.synth?.stopAll(true);
-    this.recorder?.port.postMessage({ type: 'stop' });
+  encodeMp3(data, onProgress) {
+    return new Promise((resolve, reject) => {
+      const worker = new Worker(new URL('./mp3-worker.js', import.meta.url), { type: 'module' });
+      this.encoderWorker = worker;
+      this.encoderReject = reject;
+      const finish = () => {
+        worker.terminate();
+        if (this.encoderWorker === worker) this.encoderWorker = null;
+        this.encoderReject = null;
+      };
+      worker.onmessage = event => {
+        const message = event.data || {};
+        if (message.type === 'progress') onProgress?.(message.fraction);
+        else if (message.type === 'done') { finish(); resolve(message.blob); }
+        else if (message.type === 'error') { finish(); reject(new Error(message.message)); }
+      };
+      worker.onerror = event => { finish(); reject(new Error(event.message || 'MP3 编码失败。')); };
+      worker.postMessage({ left: data.left, right: data.right, sampleRate: data.sampleRate }, [data.left.buffer, data.right.buffer]);
+    });
   }
 
   buildEvents() {

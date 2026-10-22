@@ -1,14 +1,7 @@
-"""Repair time signatures and measure lengths in a recognised score.
+"""Reconcile printed time signatures with consecutive measures of note evidence.
 
-Audiveris occasionally reads a stray glyph as a time-signature change. On
-《玉门关》 that produced "66 个待校对小节" while the music itself was fine.
-
-Two evidence-based passes, no OCR guessing:
-
-  1. A meter change is kept only if the following measures really fit the new
-     meter. If they fit the *previous* meter instead, the change is dropped.
-  2. Whatever still does not fit is split at the barline (a merged pair of
-     measures) or padded with rests; anything left is reported.
+Clear printed changes are anchors. Missing changes are inferred only from a
+stable run of bars; unresolved disagreements stay visible for manual review.
 
     python scripts/repair-measures.py in.mxl out.musicxml [--report]
 """
@@ -17,6 +10,7 @@ from __future__ import annotations
 import argparse
 import sys
 import zipfile
+from collections import Counter
 from pathlib import Path
 import xml.etree.ElementTree as ET
 
@@ -104,6 +98,131 @@ def measure_beats(measure: ET.Element, divisions: int) -> float:
     return total
 
 
+def observation(measure: ET.Element, divisions: int) -> tuple[float, bool] | None:
+    """Vote using actual durations; never reinterpret tuplets to fit a meter."""
+    notes = [node for node in measure if node.tag == 'note' and node.find('chord') is None]
+    if not notes:
+        return None
+    if all(node.find('pitch') is None and node.find('unpitched') is None for node in notes):
+        # A single three-beat whole-measure rest is useful meter evidence; a
+        # four-beat one is too often Audiveris's generic placeholder.
+        if len(notes) != 1 or notes[0].find('rest') is None:
+            return None
+        rest_beats = int(notes[0].findtext('duration', '0') or 0) / divisions
+        if abs(rest_beats - 4) <= TOLERANCE or abs(rest_beats * 4 - round(rest_beats * 4)) > 0.08:
+            return None
+        return round(rest_beats * 4) / 4, False
+    timed = events(measure, divisions)
+    # In polyphonic Audiveris output a four-beat whole rest can share a bar
+    # with three beats of pitched music. It is a placeholder, not a 4/4 vote.
+    pitched = any(node.find('pitch') is not None or node.find('unpitched') is not None for node in notes)
+    useful = [item for item in timed if item['note'] and not item['chord']
+              and not (pitched and item['el'].find('rest') is not None
+                       and item['el'].findtext('type') == 'whole'
+                       and abs(item['end'] - item['start'] - 4) <= TOLERANCE)]
+    actual = max((item['end'] for item in useful), default=0)
+    if actual <= 0 or abs(actual * 4 - round(actual * 4)) > 0.08:
+        return None
+    return round(actual * 4) / 4, False
+
+
+def repair_fingering_tuplets(root: ET.Element, report: list[str]) -> int:
+    """Reject a narrow, corroborated fingering/tuplet ambiguity in OMR output.
+
+    Requires a dense fingering passage, uniform written rhythm, and a matching
+    part in the same bar (regular notes or independently dense fingerings). Mere duration mismatch is not evidence.
+    Explicit brackets and mixed rhythms are left for manual review.
+    """
+    parts = [part.findall('measure') for part in root.findall('part')]
+    repaired = 0
+    for measures in parts:
+        for index, measure in enumerate(measures):
+            if any(node.tag in {'backup', 'forward'} for node in measure):
+                continue
+            notes = measure.findall('note')
+            if len(notes) < 6 or any(n.find('pitch') is None or n.find('chord') is not None or n.find('grace') is not None or n.findall('dot') for n in notes):
+                continue
+            kind = notes[0].findtext('type')
+            nominal = {'quarter': 1, 'eighth': 0.5, '16th': 0.25}.get(kind)
+            if nominal is None or any(n.findtext('type') != kind for n in notes):
+                continue
+            marked = [n for n in notes if n.find('time-modification') is not None]
+            if len(marked) not in {3, 4} or any(n.findtext('./time-modification/actual-notes') != '3' or n.findtext('./time-modification/normal-notes') != '2' for n in marked):
+                continue
+            if any(t.get('bracket') == 'yes' for n in marked for t in n.findall('./notations/tuplet')):
+                continue
+            if len(measure.findall('.//fingering')) < 3:
+                continue
+            divisions = divisions_at(measures, index)
+            expected = meter_at(measures, index)
+            if abs(len(notes) * nominal - expected) > TOLERANCE:
+                continue
+            if any(abs(int(n.findtext('duration', '0')) / divisions - nominal * (2 / 3 if n in marked else 1)) > TOLERANCE for n in notes):
+                continue
+            corroborated = False
+            for other in parts:
+                if other is measures or index >= len(other):
+                    continue
+                peers = other[index].findall('note')
+                peer_divisions = divisions_at(other, index)
+                peer_fingering = len(other[index].findall('.//fingering')) >= 3
+                def matching_peer(n):
+                    modification = n.find('time-modification')
+                    ratio = 1
+                    if modification is not None:
+                        if not peer_fingering or modification.findtext('actual-notes') != '3' or modification.findtext('normal-notes') != '2' or any(t.get('bracket') == 'yes' for t in n.findall('./notations/tuplet')):
+                            return False
+                        ratio = 2 / 3
+                    return (n.find('pitch') is not None and n.find('chord') is None and n.findtext('type') == kind
+                            and not n.findall('dot') and abs(int(n.findtext('duration', '0')) / peer_divisions - nominal * ratio) <= TOLERANCE)
+                if len(peers) == len(notes) and not any(n.tag in {'backup', 'forward'} for n in other[index]) and all(matching_peer(n) for n in peers):
+                    corroborated = True
+                    break
+            if not corroborated:
+                continue
+            units = nominal * divisions
+            if units != int(units):
+                continue
+            for note in marked:
+                note.find('duration').text = str(int(units))
+                note.remove(note.find('time-modification'))
+                for notations in note.findall('notations'):
+                    for tuplet in notations.findall('tuplet'):
+                        notations.remove(tuplet)
+                    if not len(notations):
+                        note.remove(notations)
+            repaired += 1
+            report.append(f'第 {index + 1} 小节：指法数字与三连音混淆，依据指法序列及另一声部的相同节奏还原')
+    return repaired
+
+
+def adjust_generic_whole_rests(measure: ET.Element, divisions: int, expected: float) -> int:
+    """Fit Audiveris's four-beat whole rests without moving another voice."""
+    if expected >= 4 - TOLERANCE:
+        return 0
+    target = int(round(expected * divisions))
+    nodes = list(measure)
+    adjusted = 0
+    for index, node in enumerate(nodes):
+        if node.tag != 'note' or node.find('rest') is None or node.findtext('type') != 'whole':
+            continue
+        if int(node.findtext('duration', '0') or 0) != 4 * divisions:
+            continue
+        start = max((position for position in range(index) if nodes[position].tag == 'backup'), default=-1) + 1
+        stop = next((position for position in range(index + 1, len(nodes)) if nodes[position].tag == 'backup'), len(nodes))
+        timed = [other for other in nodes[start:stop] if other.tag in {'note', 'forward'}]
+        if timed != [node]:
+            continue
+        following_backup = nodes[stop] if stop < len(nodes) else None
+        if following_backup is not None and int(following_backup.findtext('duration', '0') or 0) != 4 * divisions:
+            continue
+        node.find('duration').text = str(target)
+        if following_backup is not None:
+            following_backup.find('duration').text = str(target)
+        adjusted += 1
+    return adjusted
+
+
 def lengths(measures: list[list[ET.Element]], index: int) -> float:
     return max((measure_beats(items[index], divisions_at(items, index)) for items in measures), default=0.0)
 
@@ -118,20 +237,24 @@ def fix_meters(root: ET.Element, report: list[str]) -> int:
     fixed = 0
     for index in range(count):
         claims = set()
+        claim_count = 0
         for items in measures:
             time = items[index].find('./attributes/time')
             if time is not None:
                 claims.add(meter_of(time))
+                claim_count += 1
         if len(claims) != 1:
             continue
         candidate = length_of(*next(iter(claims)))
         if abs(candidate - current) <= 1e-6:
             continue
         window = range(index, min(index + EVIDENCE, count))
-        actual = [lengths(measures, j) for j in window]
-        fits_old = all(abs(value - current) <= 0.34 for value in actual)
-        fits_new = all(abs(value - candidate) <= 0.34 for value in actual)
-        if fits_old and not fits_new:
+        actual = [reading[0] for j in window for items in measures
+                  if (reading := observation(items[j], divisions_at(items, j))) is not None]
+        enough_evidence = len(actual) >= len(window)
+        fits_old = enough_evidence and all(abs(value - current) <= 0.34 for value in actual)
+        fits_new = enough_evidence and all(abs(value - candidate) <= 0.34 for value in actual)
+        if fits_old and not fits_new and claim_count < 2:
             for items in measures:
                 attributes = items[index].find('attributes')
                 time = attributes.find('time') if attributes is not None else None
@@ -165,12 +288,14 @@ def align_meters(root: ET.Element, report: list[str]) -> int:
                 claims[part_index] = meter_of(time)
         if not claims:
             continue
-        actual = [measure_beats(items[index], divisions_at(items, index)) for items in measures]
+        actual = [reading[0] for items in measures
+                  if (reading := observation(items[index], divisions_at(items, index))) is not None]
         best = None
         best_score = -1
+        frequencies = Counter(claims.values())
         for claim in set(claims.values()):
             target = length_of(*claim)
-            score = sum(1 for value in actual if abs(value - target) <= 0.34)
+            score = frequencies[claim] * 2 + sum(1 for value in actual if abs(value - target) <= 0.34)
             if score > best_score:
                 best, best_score = claim, score
         if best is None:
@@ -198,52 +323,122 @@ def align_meters(root: ET.Element, report: list[str]) -> int:
     return fixed
 
 
-def infer_meters(root: ET.Element, report: list[str]) -> int:
-    """Make the meter agree with what the notes actually add up to.
+def set_meter(measure: ET.Element, beats: int, beat_type: int) -> None:
+    attributes = measure.find('attributes')
+    if attributes is None:
+        attributes = ET.Element('attributes')
+        measure.insert(0, attributes)
+    time = attributes.find('time')
+    if time is None:
+        time = ET.Element('time')
+        before = next((i for i, node in enumerate(attributes) if node.tag in {'staves', 'clef', 'staff-details', 'transpose'}), len(attributes))
+        attributes.insert(before, time)
+    for node in list(time):
+        if node.tag in {'beats', 'beat-type'}:
+            time.remove(node)
+    ET.SubElement(time, 'beats').text = str(beats)
+    ET.SubElement(time, 'beat-type').text = str(beat_type)
 
-    When Audiveris invents a 6/8 that nothing follows, the only reliable
-    evidence is the music: if a bar and the two after it consistently hold the
-    same number of beats, that is the meter.
-    """
-    from collections import Counter
+
+def signature_for_run(measures: list[list[ET.Element]], start: int, end: int, value: float,
+                      explicit: list[tuple[float, float]]) -> tuple[int, int] | None:
+    if explicit:
+        return int(explicit[0][0]), int(explicit[0][1])
+    if abs(value - 3) > TOLERANCE:
+        return (int(value), 4) if value.is_integer() else (int(value * 2), 8)
+    simple = compound = 0
+    for items in measures:
+        for measure in items[start:end]:
+            if any(node.tag in {'backup', 'forward'} for node in measure):
+                continue
+            notes = [node for node in measure.findall('note') if node.find('rest') is None and node.find('chord') is None]
+            notation = sorted((note.findtext('type'), len(note.findall('dot'))) for note in notes)
+            if notation in ([('quarter', 0)] * 3, [('half', 0), ('quarter', 0)], [('half', 1)]):
+                simple += 1
+            elif notation == [('quarter', 1)] * 2:
+                compound += 2
+            elif notation == [('eighth', 0)] * 6 or notation == [('eighth', 0)] * 3 + [('quarter', 1)]:
+                compound += 1
+    if compound >= 2 and compound > simple:
+        return 6, 8
+    if simple >= 2 and simple > compound:
+        return 3, 4
+    # The duration alone cannot distinguish 3/4 from 6/8.
+    return None
+
+
+def infer_meters(root: ET.Element, report: list[str]) -> tuple[int, set[ET.Element]]:
+    """Infer missing changes from sustained agreement, then expose uncertainty."""
     measures = [part.findall('measure') for part in root.findall('part')]
     count = min(len(items) for items in measures) if measures else 0
-    changed = 0
+    votes: list[tuple[float, int, int] | None] = []
     for index in range(count):
-        actual = [round(measure_beats(items[index], divisions_at(items, index)) * 4) / 4 for items in measures]
-        if not actual:
-            continue
-        value, hits = Counter(actual).most_common(1)[0]
-        if value < 1 or hits * 2 < len(actual):
-            continue
+        readings = [observation(items[index], divisions_at(items, index)) for items in measures]
+        printed = [meter_of(time) for items in measures if (time := items[index].find('./attributes/time')) is not None]
         current = meter_at(measures[0], index)
-        if abs(value - current) <= TOLERANCE:
+        values = [(2.0 if reading[1] and (abs(current - 2) <= TOLERANCE or any(abs(length_of(*claim) - 2) <= TOLERANCE for claim in printed)) else reading[0])
+                  for reading in readings if reading is not None]
+        ranking = Counter(values).most_common()
+        if not ranking or (len(ranking) > 1 and ranking[0][1] == ranking[1][1]) or ranking[0][1] * 2 < len(values):
+            votes.append(None)
+        else:
+            value, hits = ranking[0]
+            votes.append((value, hits, len(values)) if 1 <= value <= 6 else None)
+
+    changed = 0
+    index = 0
+    while index < count:
+        if votes[index] is None:
+            index += 1
             continue
-        ahead = []
-        for j in range(index, min(index + 3, count)):
-            ahead.extend(round(measure_beats(items[j], divisions_at(items, j)) * 4) / 4 for items in measures)
-        if not ahead:
-            continue
-        ahead_value, ahead_hits = Counter(ahead).most_common(1)[0]
-        if abs(ahead_value - value) > TOLERANCE or ahead_hits * 2 < len(ahead):
-            continue
+        value = votes[index][0]
+        end = index + 1
+        while end < count and votes[end] is not None and abs(votes[end][0] - value) <= TOLERANCE:
+            end += 1
+        explicit = []
+        conflicts = 0
+        for position in range(index, end):
+            claims = [meter_of(time) for items in measures if (time := items[position].find('./attributes/time')) is not None]
+            explicit.extend(claim for claim in claims if abs(length_of(*claim) - value) <= TOLERANCE)
+            if len(claims) >= 2 and all(abs(length_of(*claim) - value) > TOLERANCE for claim in claims):
+                conflicts += 1
+        multiple_parts = len(measures) > 1 and all(votes[j][1] >= 2 for j in range(index, end))
+        threshold = (2 if multiple_parts else 3) + (2 if conflicts else 0)
+        signature = signature_for_run(measures, index, end, value, explicit)
+        strong = end - index >= threshold and signature is not None
+        if strong:
+            previous = meter_at(measures[0], index - 1) if index else 4.0
+            for position in range(index, end):
+                all_marked = all((time := items[position].find('./attributes/time')) is not None
+                                 and abs(length_of(*meter_of(time)) - value) <= TOLERANCE for items in measures)
+                has_conflict = any((time := items[position].find('./attributes/time')) is not None
+                                   and abs(length_of(*meter_of(time)) - value) > TOLERANCE for items in measures)
+                if (position == index and abs(previous - value) > TOLERANCE and not all_marked) or has_conflict:
+                    for items in measures:
+                        set_meter(items[position], int(signature[0]), int(signature[1]))
+                    changed += 1
+                    report.append(f'第 {position + 1} 小节：连续 {end - index} 小节支持 {int(signature[0])}/{int(signature[1])}，已补正拍号')
+        index = end
+
+    generic_rests = 0
+    for index in range(count):
+        expected = meter_at(measures[0], index)
         for items in measures:
-            attributes = items[index].find('attributes')
-            if attributes is None:
-                attributes = ET.Element('attributes')
-                items[index].insert(0, attributes)
-            time = attributes.find('time')
-            if time is None:
-                time = ET.SubElement(attributes, 'time')
-                ET.SubElement(time, 'beats')
-                ET.SubElement(time, 'beat-type')
-            beats_node = time.find('beats')
-            type_node = time.find('beat-type')
-            beats_node.text = str(int(value)) if float(value).is_integer() else str(value)
-            type_node.text = '4'
-        changed += 1
-        report.append(f'第 {index + 1} 小节：音符是 {value:g} 拍，拍号改成 {value:g}/4')
-    return changed
+            generic_rests += adjust_generic_whole_rests(items[index], divisions_at(items, index), expected)
+    if generic_rests:
+        report.append(f'按已确定拍号调整了 {generic_rests} 个泛用整小节休止符')
+
+    uncertain: set[ET.Element] = set()
+    for index in range(count):
+        expected = meter_at(measures[0], index)
+        for items in measures:
+            reading = observation(items[index], divisions_at(items, index))
+            if reading is not None and abs(measure_beats(items[index], divisions_at(items, index)) - expected) > TOLERANCE:
+                uncertain.add(measures[0][index])
+                break
+    if uncertain:
+        report.append(f'{len(uncertain)} 个小节的拍号与音符仍有冲突，保留原音符供人工校对')
+    return changed, uncertain
 
 
 def rest_note(duration: int) -> ET.Element:
@@ -318,50 +513,57 @@ def split_measure(measure: ET.Element, divisions: int, split_beat: float) -> ET.
     return remainder
 
 
-def fix_part_lengths(root: ET.Element, report: list[str]) -> tuple[int, int]:
-    """Trim or pad the parts of a measure that disagree with each other.
-
-    Audiveris often sustains a note past the barline instead of tying it into
-    the next bar. Trimming the overflow keeps the bar legal without changing how
-    many measures or notes exist.
-    """
+def fix_part_lengths(root: ET.Element, report: list[str], uncertain: set[ET.Element]) -> tuple[int, int]:
+    """Adjust whole-bar rests; preserve conflicting pitched notes for review."""
     measures = [part.findall('measure') for part in root.findall('part')]
     count = min(len(items) for items in measures) if measures else 0
     trimmed = padded = 0
     for index in range(count):
+        if measures[0][index] in uncertain:
+            continue
         expected = meter_at(measures[0], index)
+        unsafe = False
+        for items in measures:
+            measure = items[index]
+            length = measure_beats(measure, divisions_at(items, index))
+            if abs(length - expected) <= TOLERANCE:
+                continue
+            notes = measure.findall('note')
+            whole_rest = len(notes) == 1 and notes[0].find('rest') is not None and notes[0].find('rest').get('measure') == 'yes'
+            if (length > expected and not whole_rest) or (length < expected and any(note.find('rest') is None for note in notes)):
+                unsafe = True
+                break
+        if unsafe:
+            uncertain.add(measures[0][index])
+            continue
         for items in measures:
             divisions = divisions_at(items, index)
             measure = items[index]
             length = measure_beats(measure, divisions)
             if abs(length - expected) <= TOLERANCE:
                 continue
-            if length > expected + TOLERANCE:
-                excess = int(round((length - expected) * divisions))
-                for note in reversed([item['el'] for item in events(measure, divisions) if item['note'] and not item['chord']]):
-                    if excess <= 0:
-                        break
-                    duration = int(note.findtext('duration', '0') or 0)
-                    take = min(duration, excess)
-                    note.find('duration').text = str(duration - take)
-                    excess -= take
-                    if duration - take <= 0:
-                        measure.remove(note)
+            notes = measure.findall('note')
+            whole_rest = len(notes) == 1 and notes[0].find('rest') is not None and notes[0].find('rest').get('measure') == 'yes'
+            if whole_rest:
+                measure.find('./note/duration').text = str(int(round(expected * divisions)))
                 trimmed += 1
-            elif pad_measure(measure, divisions, expected - length, at_start=False):
+            elif length < expected and pad_measure(measure, divisions, expected - length, at_start=False):
                 padded += 1
     if trimmed:
-        report.append(f'裁掉 {trimmed} 处越过小节线多出来的时值')
+        report.append(f'调整了 {trimmed} 个整小节休止符的时值')
     return trimmed, padded
 
 
-def repair_lengths(root: ET.Element, report: list[str]) -> tuple[int, int]:
+def repair_lengths(root: ET.Element, report: list[str], uncertain: set[ET.Element]) -> tuple[int, int]:
     measures = [part.findall('measure') for part in root.findall('part')]
     if not measures or any(not items for items in measures):
         return 0, 0
     splits = pads = 0
     index = 0
     while index < min(len(items) for items in measures):
+        if measures[0][index] in uncertain:
+            index += 1
+            continue
         expected = meter_at(measures[0], index)
         worst = lengths(measures, index)
         if abs(worst - expected) <= TOLERANCE:
@@ -409,11 +611,12 @@ def main() -> None:
 
     root = load_score(args.input)
     report: list[str] = []
+    repair_fingering_tuplets(root, report)
     meters = fix_meters(root, report)
     aligned = align_meters(root, report)
-    inferred = infer_meters(root, report)
-    trimmed, _ = fix_part_lengths(root, report)
-    splits, pads = repair_lengths(root, report)
+    inferred, uncertain = infer_meters(root, report)
+    trimmed, _ = fix_part_lengths(root, report, uncertain)
+    splits, pads = repair_lengths(root, report, uncertain)
     renumber(root)
     save_score(root, args.output)
 
@@ -423,7 +626,7 @@ def main() -> None:
         expected = meter_at(measures[0], index)
         if abs(lengths(measures, index) - expected) > TOLERANCE:
             remaining += 1
-    print(f'撤销错误拍号 {meters} 处 / 裁掉越界 {trimmed} 处 / 统一跨声部 {aligned} 处 / 按音符长度改拍号 {inferred} 处 / 拆分 {splits} 小节 / 补休止符 {pads} 小节 / 仍有 {remaining} 小节对不上', flush=True)
+    print(f'撤销错误拍号 {meters} 处 / 调整整小节休止符 {trimmed} 处 / 统一跨声部 {aligned} 处 / 推断漏识别拍号 {inferred} 处 / 拆分 {splits} 小节 / 补休止符 {pads} 小节 / 仍有 {remaining} 小节对不上', flush=True)
     if args.report:
         for line in report:
             print('  ' + line, flush=True)

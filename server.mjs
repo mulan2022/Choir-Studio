@@ -93,7 +93,11 @@ async function rasterizePdf(input, temp, firstPage, lastPage) {
 
 function runAudiveris(binary, input, output, options = {}) {
   return new Promise((resolve, reject) => {
-    const args = ['-batch', '-export', '-swap'];
+    // Only recognize explicit tuplet digits; do not invent tuplets to fit a bar.
+    // Enable fingering classification so piano finger numbers can compete with tuplets.
+    const args = ['-batch', '-export', '-swap',
+      '-constant', 'org.audiveris.omr.sheet.ProcessingSwitches.implicitTuplets=false',
+      '-constant', 'org.audiveris.omr.sheet.ProcessingSwitches.fingerings=true'];
     if (path.extname(input).toLowerCase() === '.pdf') args.push('-constant', 'org.audiveris.omr.image.ImageLoading.pdfResolution=400');
     if (options.sheets) args.push('-sheets', options.sheets);
     args.push('-output', output, '--', input);
